@@ -1,0 +1,128 @@
+﻿@model DrConsultationOrdersViewModel
+@{
+    ViewData["Title"] = "DrConsultationOrders";
+    Layout = "~/Views/Shared/_HMSMainLayout.cshtml";
+}
+
+<style>
+    table, th, td {
+        border: 1px solid black;
+        border-collapse: collapse;
+    }
+
+    .overflowTest {
+         height:50px;
+        overflow-y: scroll;
+       
+    }
+</style>
+
+@section CurrentPageNavigation{
+    <h4 class="page-title float-left">Doctor WorkBench</h4>
+
+    <ol class="breadcrumb float-right">
+        <li class="breadcrumb-item"><a href="#">Doctor Consultation</a></li>
+        @*<li class="breadcrumb-item"><a href="#">Register</a></li>*@
+    </ol>
+}
+
+@section LeftSideMenu{
+    <partial name="_DoctorWorkBenchLeftSideMenuPartial" />
+}
+<div class="row">
+    <div class="card-box w-100" style="margin-bottom:5px;">
+        <partial name="_PatientAppointmentDataPartial" for="@Model.DoctorConsultationViewModel.DoctorAppointmentData" />
+    </div>
+</div>
+
+<partial name="_DrConsultationActionsTabPartial" for="@Model.DoctorConsultationViewModel" />
+
+<br />
+<div class="row">
+    <div class="card-box w-100">
+        <table width="100%">
+
+            <tr>
+
+                <th colspan="2" style="background-color:lightgray; color:black;">Package<input type="text"></th>
+            </tr>
+            <tbody class="overflowTest">
+                <tr>
+                    <td>Congenital Heart Screening Package</td>
+                    <td><i class="fas fa-check" style="font-size:20px; text-align:right;  padding-left:20px;"></i></td>
+
+                </tr>
+                <tr>
+                    <td>Platinum Heart Screening Package</td>
+                    <td>
+                        <i class="fas fa-plus-circle" style="font-size:20px; text-align:right; padding-left:20px;"></i>
+                    </td>
+
+                </tr>
+                <tr>
+                    <td>Super Senior Package(Female)</td>
+                    <td>
+                        <i class="fas fa-plus-circle" style="font-size:20px; text-align:right;  padding-left:20px;"></i>
+                    </td>
+
+                </tr>
+                <tr>
+                    <td>Super Women Package</td>
+                    <td>
+                        <i class="fas fa-plus-circle" style="font-size:20px; text-align:right;  padding-left:20px;"></i>
+                    </td>
+
+                </tr>
+                <tr>
+                    <td>Gold Heart Screening Package</td>
+                    <td>
+                        <i class="fas fa-plus-circle" style="font-size:20px; text-align:right;  padding-left:20px;"></i>
+                    </td>
+
+                </tr>
+            </tbody>
+
+        </table>
+        <br />
+        <label>
+            Existing Package Orders
+        </label>
+        <table class="customers" width="100%">
+            <tr>
+                <th>Package Name</th>
+                <th>Unit Price</th>
+                <th>FC</th>
+
+
+                <th>Service Center</th>
+                <th> Remarks</th>
+                <th>Action</th>
+
+            </tr>
+            <tr>
+                <td>Congenital Heart Screening Package</td>
+                <td>5000.0</td>
+                <td>
+                    No
+                </td>
+                <td>
+                    <select><option>--Sleect--</option></select>
+                </td>
+                <td>
+                    <input type="text" />
+                </td>
+                <td>
+                    <i class="fas fa-times" style="font-size:20px;  padding-left:20px;"></i>
+                </td>
+            </tr>
+        </table>
+        <br />
+        <button class="btn-success">Save Order</button> &nbsp;
+        <button class="btn-success">Save As Draft </button>&nbsp;
+        <button class="btn-success">Save as order set</button>&nbsp;
+        <button class="btn-success">Back To Patient List</button>&nbsp;
+    </div>
+</div>
+@*
+    For more information on enabling MVC for empty projects, visit http://go.microsoft.com/fwlink/?LinkID=397860
+*@

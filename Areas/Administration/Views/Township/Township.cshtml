@@ -1,0 +1,419 @@
+﻿@model HMS.Models.ViewModels.Administration.TownshipViewModel
+
+@{
+    ViewData["Title"] = "Township";
+    Layout = "~/Views/Shared/_HMSMainLayout.cshtml";
+}
+
+@section CurrentPageNavigation{
+    <h4 class="page-title float-left">Setting</h4>
+
+    <ol class="breadcrumb float-right">
+        <li class="breadcrumb-item"><a href="#">Township</a></li>
+    </ol>
+}
+
+@section LeftSideMenu{
+    <partial name="_AdminSettingLeftSideMenuPartial" />
+}
+@{
+    <style>
+        .btn-default {
+            width: 60px;
+            background-color: lightgreen;
+        }
+
+        .btn-cancel {
+            width: 70px;
+            background-color: lightcoral;
+        }
+
+        .fa-plus-square:before {
+            width: 25px;
+            height: 25px;
+        }
+
+        .btnUpdateSubmitToggle {
+            display: @(Model.Tsp_id == null || Model.Tsp_id.Value == 0 ? "none" : "")
+        }
+
+        .btnSaveSubmitToggle {
+            display: @(Model.Tsp_id == null || Model.Tsp_id.Value == 0 ? "" : "none")
+        }
+    </style>
+}
+
+
+
+
+<div class="row">
+    <div class="col-4 p-2 my-2 bg-light separateScrollFullHeight">
+        <div class="card-box">
+
+            <form asp-action="Township" method="post" id="formTsp">
+                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                <div class="col-12">
+
+                    <input type="hidden" asp-for="Tsp_id" class="resetInputValue" />
+
+
+                    <div class="form-group">
+                        <label>Country</label>
+                        <div class="row">
+                            <div class="col-12">
+                                <select asp-for="CountryId" class="form-control input-sm resetInputValue" asp-items='@(new SelectList(Model.CountryList,"Cty_id","Cty_name"))'>
+                                    <option value="">--Select Country--</option>
+
+                                </select>
+                                <span asp-validation-for="CountryId" class="text-danger"></span>
+
+                            </div>
+                            @*<div class="col-2">
+                                    <div class="mt-2" style="display:inline-block;">
+                                        <div style="display:inline-block;">
+                                            <p id="showDialog" style="height:20px;width:27px;border:2px solid green;background-color:gray; margin-top:-35px; border-radius:1px;text-align:center;"><i class="fa fa-plus" style="color:white;text-align:center;"></i></p>
+                                        </div>
+                                    </div>
+                                </div>*@
+
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>State</label>
+                        <div class="row">
+                            <div class="col-12">
+
+                                <select asp-for="StateId" class="form-control  input-sm resetInputValue"  asp-items='@(new SelectList(string.Empty,"State_id","State_name"))'>
+                                    <option value="">--Select State--</option>
+                                </select>
+                                <span asp-validation-for="StateId" class="text-danger"></span>
+
+                            </div>
+                            @*<div class="col-2">
+                                    <div class="mt-2" style="display:inline-block;">
+                                        <div style="display:inline-block;">
+                                            <p id="showStateDialog" style="height:20px;width:27px;border:2px solid green;background-color:gray; margin-top:-35px; border-radius:1px;text-align:center;"><i class="fa fa-plus" style="color:white;text-align:center;"></i></p>
+                                        </div>
+                                    </div>
+                                </div>*@
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label asp-for="Tsp_name" class="control-label">Township Name</label>
+                        <input asp-for="Tsp_name" class="form-control input-sm resetInputValue" />
+                        <span asp-validation-for="Tsp_name" class="text-danger"></span>
+
+                    </div>
+                    <div class="form-group">
+
+                        @if ((await authorizationService.AuthorizeAsync(User, "TownshipUpdate")).Succeeded)
+
+                        {
+                            <button type="submit" id="btnUpdateSubmit" name="btnSubmit" value="Update" class="btn btn-success btnUpdateSubmitToggle">Update</button>
+                        }
+
+
+                        @if ((await authorizationService.AuthorizeAsync(User, "TownshipCreate")).Succeeded)
+                        {
+                            <button type="submit" id="btnSaveSubmit" name="btnSubmit" value="Create" class="btn btn-success btnSaveSubmitToggle">Save</button>
+                        }
+
+                        <button type="button" class="btn btn-secondary" onclick="ResetFormAndShowHideBtnSubmit('form#formTsp'); FormResetStateEmpty();">Cancel</button>
+                    </div>
+                </div>
+            </form>
+
+        </div>
+    </div>
+
+    <div class="col-8 p-2 my-2 bg-light separateScrollFullHeight">
+        <div class="row">
+            <div class="col-12">
+                <div class="card-box">
+                    <div class="form-inline m-b-20">
+                        <div class="row" style=" width: 48rem;">
+                            <div class="col-md-6 text-xs-center" style="display:none;">
+                                <div class="form-group">
+                                    <label class="control-label m-r-5">Status</label>
+                                    <select id="demo-foo-filter-status" class="form-control input-sm">
+                                        <option value="">Show all</option>
+                                        <option value="active">Active</option>
+                                        <option value="disabled">Disabled</option>
+                                        <option value="suspended">Suspended</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-6 text-center ">
+                                <div class="form-group ">
+                                    <input id="demo-foo-search" type="text" placeholder="Search" class="form-control input-sm col-10" autocomplete="on">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <table id="demo-foo-filtering" class="table table-striped table-bordered toggle-circle m-b-0" data-page-size="7">
+                        <thead>
+                            <tr>
+                                <th>
+                                    <b>No.</b>
+                                </th>
+                                <th>
+                                    <b> Country Name</b>
+                                </th>
+                                <th>
+                                    <b> State Name</b>
+                                </th>
+                                <th>
+                                    <b>TownshipName</b>
+                                </th>
+
+                                <th class="text-center"><b>Action</b></th>
+
+                            </tr>
+                        </thead>
+
+                        <tbody>
+                            @foreach (var item in Model.TownshipList.Select((value, i) => new { value, i }))
+                            {
+                                @*<input type="hidden" asp-for="@Model.CountryId"/>*@
+                                string unitJsonData = Newtonsoft.Json.JsonConvert
+                                        .SerializeObject(new
+                                        {
+                                            Tsp_name = item.value.Tsp_name,
+                                            Tsp_id = item.value.Tsp_id,
+                                            StateId = item.value.StateId,
+                                            CountryId = item.value.State.CountryId
+                                        });
+                                <tr>
+                                    <td>
+                                        @(item.i + 1)
+                                    </td>
+                                    <td>
+                                        @item.value.State.Country.Cty_name
+                                    </td>
+                                    <td>
+                                        @item.value.State.State_name
+
+                                    </td>
+                                    <td>
+                                        @item.value.Tsp_name
+                                    </td>
+
+                                    <td class="text-center">
+                                        @if ((await authorizationService.AuthorizeAsync(User, "TownshipUpdate")).Succeeded)
+                                        {
+                                            <button class="btn btn-outline-primary" onclick="TableRowEditClick(@unitJsonData); GetState('@item.value.StateId');"><i class="fa fa-edit"></i></button>
+
+                                        }
+
+                                        @if ((await authorizationService.AuthorizeAsync(User, "TownshipDelete")).Succeeded)
+                                        {
+                                            <button class="btn btn-outline-danger" onclick="TableRowDeleteClick('@item.value.Tsp_id', '@($"Are You Sure To Delete Township Name ({item.value.Tsp_name})")'); FormResetStateEmpty();"><i class="fa fa-trash-alt"></i></button>
+
+                                        }
+                                    </td>
+
+                                </tr>
+                            }
+                        </tbody>
+                        <tfoot>
+                            <tr class="active">
+                                <td colspan="5">
+                                    <div class="text-right">
+                                        <ul class="pagination pagination-split footable-pagination m-t-10 m-b-0"></ul>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+@*<div id="dialogState" title="Create State" style="display:none">
+        <div class="row">
+            <div class="col-md-12">
+                <span id="successState"></span>
+                <div class="form-group">
+                    <label class="control-label">CountryName</label>
+                    <select id="CountryId" class="form-control input" asp-items='@(new SelectList(Model.CountryList,"Cty_id","Cty_name"))'>
+                        <option value="">--Select Country--</option>
+                    </select>
+                    <label class="control-label">StateName</label>
+                    <input id="stateName" name="Name" class="form-control" />
+                </div>
+                <div class="row">
+                    <div class="col-md-6">
+                        <input type="button" id="btnStateSubmit" value="Create" style="width:100%" class="btn btn-success" />
+                    </div>
+                    <div class="col-md-6">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>*@
+@*<partial name="_CountryStatePartialView" />
+    <partial name="_StateDialogPartialView" />*@
+@{
+    ViewData["DeleteConfirmPolicyName"] = "TownshipDelete";
+    ViewData["DeleteConfirmActionName"] = "Township";
+    ViewData["DeleteConfirmControllerName"] = "Township";
+    ViewData["DeleteConfirmAreaName"] = "Administration";
+    ViewData["DeleteConfirmParameterName"] = "toDeleteId";
+}
+
+<partial name="_DeleteConfirmPartial" view-data="ViewData" />
+
+
+@section Scripts{
+    @*@{
+            await Html.RenderPartialAsync("_CountryStateScriptPartial");
+        }
+
+        @{
+            await Html.RenderPartialAsync("_StateScriptPartialView");
+        }*@
+
+    <!-- Counter js  -->
+    <script src="~/plugins/waypoints/jquery.waypoints.min.js"></script>
+    <script src="~/plugins/counterup/jquery.counterup.min.js"></script>
+
+
+    <!--FooTable-->
+    <script src="~/plugins/footable/js/footable.all.min.js"></script>
+
+    <!--FooTable Example-->
+    <script src="~/pages/jquery.footable.js"></script>
+    <script>
+        jQuery.validator.addMethod("isuniquetownship",
+            function (value, element, param) {
+                var tblJsonData = @Html.Raw(Json.Serialize(Model.TownshipList));
+                var id = $("#Tsp_id").val().trim();
+                var isCreate = id == null || id == "" || id == "0";
+                var message = $(element).attr('data-val-isuniquetownship');
+                $.validator.messages.isuniquetownship = $.validator.format(message, value);
+                if (isCreate) {
+                    return tblJsonData.filter(d => StringCompareFormat(d.tsp_name) == StringCompareFormat(value)).length == 0;
+                } else {
+                    return tblJsonData.filter(d => StringCompareFormat(d.tsp_name) == StringCompareFormat(value) && StringCompareFormat(d.tsp_id) != StringCompareFormat(id)).length == 0;
+                }
+            });
+
+        $.validator.unobtrusive.adapters.add('isuniquetownship',
+            function (options) {
+                options.rules['isuniquetownship'] = options.params;
+                if (options.message != null) {
+                    $.validator.messages.isuniquetownship = options.message;
+                }
+            }
+        );
+    </script>
+    <script>
+
+        function FormResetStateEmpty() {
+                var defaultSelect = "<option value='" + "" + "'>" + "--Select State--" + "</option>";
+                $("#StateId").empty();
+                $("#StateId").html(defaultSelect);
+            }
+
+        $(document).ready(function () {
+
+
+             var successedAlertMessage = "@ViewBag.SuccessedAlertMessage";
+            AlertSnackBarByActionName(successedAlertMessage);
+
+            @*var actionName = "@Model.BtnActionName";
+            if (actionName== "Delete") {
+                $("#TownshipName").attr("readonly", true);
+                $("#ddlCountry").attr("disabled", true);
+                $("#ddlState").attr("disabled", true);
+            }*@
+        });
+
+        function GetState(selectedStateId) {
+            var url = '@Url.Content("~/")' + "Administration/Township/GetStates";
+            var ddlSource = "#CountryId";
+            var defaultSelect = "<option value='" + "" + "'>" + "--Select State--" + "</option>";
+            $("#StateId").empty();
+            $("#StateId").html(defaultSelect);
+            $.getJSON(url, { CountryId: $(ddlSource).val() }, function (data) {
+                var items = '';
+                $.each(data, function (i, states) {
+                    items += "<option value='" + states.value + "'>" + states.text + "</option>";
+                });
+                $("#StateId").append(items);
+
+                if (selectedStateId != null) {
+                    $("#StateId").val(selectedStateId);
+                }
+            });
+
+        }
+        GetState("@Model.StateId");
+
+        $("#CountryId").change(function () {
+            GetState();
+        });
+
+
+    </script>
+
+    @*<link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+        <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+        <script src="~/lib/jquery/dist/jquery-ui.min.js"></script>*@
+    @*<script type="text/javascript">
+            $(document).ready(function () {
+
+
+
+
+                 $("#showStateDialog").click(function () {
+                     $("#dialogState").css("display", "show");
+                     $("#dialogState").dialog();
+                    });
+                    $("#stateName").change(function () {
+                        $("#successState").text("");
+                    });
+                    $("#CountryId").change(function () {
+                        $("#successState").text("");
+                    });
+                    $("#btnStateSubmit").click(function () {
+                       //$(this).prop('disabled', true);
+                        var ctyname = $("#CountryId").val();
+                        var name = $("#stateName").val();
+                        var traimName = $.trim(ctyname, name);
+                        var url = '@Url.Content("~/")' +"Administration/State/AddState";
+                        if (traimName == "") {
+                            $("#successState").text("fill the state name");
+                            $("#successState").css('color', 'red');
+                            alert("Success");
+
+                          //  $("#btnStateSubmit").prop('disabled', false);
+                        }
+                        else {
+                            $.getJSON(url, {
+                            CountryName: ctyname,
+                            name: name
+                             }, function (data)
+                                {
+                                    console.log(url);
+                                    $("#CountryId").val("");
+
+                                    $("#stateName").val("");
+                                    alert("Success");
+                                    $("#successState").text("state create success");
+                                    $("#successState").css('color', 'green');
+                                    $("#ddlState").append("<option value=' " + data.state_id + " ' >" + data.state_name + "</option>");
+
+                                    $("#btnStateSubmit").prop('disabled', false);
+                       });
+                        }
+                    });
+                });
+
+
+        </script>*@
+
+}

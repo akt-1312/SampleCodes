@@ -1,0 +1,234 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@{
+}
+@model HMS.Models.ViewModels.Administration.OnSetTypeViewModel
+
+
+@{
+    ViewData["Title"] = "OnSetType";
+    Layout = "~/Views/Shared/_HMSMainLayout.cshtml";
+}
+
+@section CurrentPageNavigation{
+    <h4 class="page-title float-left">Setting</h4>
+
+    <ol class="breadcrumb float-right">
+        <li class="breadcrumb-item"><a href="#">OnSetType</a></li>
+    </ol>
+}
+
+@section LeftSideMenu{
+    <partial name="_AdminSettingLeftSideMenuPartial" />
+}
+@{
+    <style>
+        .btn-default {
+            width: 60px;
+            background-color: lightgreen;
+        }
+
+        .btn-cancel {
+            width: 70px;
+            background-color: lightcoral;
+        }
+
+       
+
+         .btnUpdateSubmitToggle {
+            display: @(Model.OnSetTypeId == null || Model.OnSetTypeId.Value == 0 ? "none" : "")
+        }
+        .btnSaveSubmitToggle {
+            display: @(Model.OnSetTypeId == null || Model.OnSetTypeId.Value == 0 ? "" : "none")
+        }
+    </style>
+}
+
+<div class="row">
+    <div class="col-4 p-2 my-2 bg-light">
+        <div class="card-box">
+
+            <form method="post" id="formOnsettype" asp-action="OnSetType">
+
+                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+                <input type="hidden" asp-for="OnSetTypeId" class="resetInputValue" />
+
+                <div class="form-group">
+                    <label asp-for="OnSetTypeName" class="control-label"></label>
+                    <input asp-for="OnSetTypeName" class="form-control  input-sm resetInputValue" />
+                    <span asp-validation-for="OnSetTypeName" class="text-danger"></span>
+                </div>
+
+                <div class="form-group">
+
+                    @if ((await authorizationService.AuthorizeAsync(User, "OnsetTypeUpdate")).Succeeded)
+
+                    {
+                        <button type="submit" id="btnUpdateSubmit" name="btnSubmit" value="Update" class="btn btn-success btnUpdateSubmitToggle">Update</button>
+                    }
+
+
+                    @if ((await authorizationService.AuthorizeAsync(User, "OnsetTypeCreate")).Succeeded)
+                    {
+
+                        <button type="submit" id="btnSaveSubmit" name="btnSubmit" value="Create" class="btn btn-success btnSaveSubmitToggle">Save</button>
+                    }
+
+                    <button type="button" class="btn btn-secondary" onclick="ResetFormAndShowHideBtnSubmit('form#formOnsettype');">Cancel</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div class="col-8 p-2 my-2 bg-light">
+        <div class="row">
+            <div class="col-12">
+                <div class="card-box">
+
+                    <table id="demo-foo-filtering" class="table table-striped table-bordered toggle-circle m-b-0" data-page-size="7">
+                        <thead>
+                            <tr>
+                                <th>
+                                    <b>No.</b>
+                                </th>
+                                <th>
+                                    @Html.DisplayNameFor(model => model.OnSetType.OnSetTypeName)
+                                </th>
+                                @if ((await authorizationService.AuthorizeAsync(User, "OnsetTypeUpdate")).Succeeded
+                                    || (await authorizationService.AuthorizeAsync(User, "OnsetTypeDelete")).Succeeded)
+                                {
+                                    <th class="text-center"><b>Action</b></th>
+                                }
+                            </tr>
+                        </thead>
+                        <div class="form-inline m-b-20">
+                            <div class="row" style=" width: 48rem;">
+                                <div class="col-md-6 text-xs-center" style="display:none;">
+                                    <div class="form-group">
+                                        <label class="control-label m-r-5">Status</label>
+                                        <select id="demo-foo-filter-status" class="form-control input-sm">
+                                            <option value="">Show all</option>
+                                            <option value="active">Active</option>
+                                            <option value="disabled">Disabled</option>
+                                            <option value="suspended">Suspended</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col-md-6 text-center ">
+                                    <div class="form-group ">
+                                        <input id="demo-foo-search" type="text" placeholder="Search" class="form-control input-sm col-10" autocomplete="on">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <tbody>
+                            @foreach (var item in Model.OnSetTypeList.Select((value, i) => new { value, i }))
+                            {
+                                string unitJsonData = Newtonsoft.Json.JsonConvert.SerializeObject(item.value);
+                                <tr>
+                                    <td>
+                                        @(item.i + 1)
+                                    </td>
+                                    <td>
+                                        @item.value.OnSetTypeName
+                                    </td>
+
+                                    <td class="text-center">
+                                        @if ((await authorizationService.AuthorizeAsync(User, "OnsetTypeUpdate")).Succeeded)
+                                        {
+                                            <button class="btn btn-outline-primary" onclick="TableRowEditClick(@unitJsonData);"><i class="fa fa-edit"></i></button>
+
+                                        }
+
+                                        @if ((await authorizationService.AuthorizeAsync(User, "OnsetTypeDelete")).Succeeded)
+                                        {
+                                            <button class="btn btn-outline-danger" onclick="TableRowDeleteClick('@item.value.OnSetTypeId', '@($"Are You Sure To Delete OnSetType Name ({item.value.OnSetTypeName})")')"><i class="fa fa-trash-alt"></i></button>
+
+                                        }
+
+                                    </td>
+
+                                </tr>
+                            }
+                        </tbody>
+                        <tfoot>
+                            <tr class="active">
+                                <td colspan="5">
+                                    <div class="text-right">
+                                        <ul class="pagination pagination-split footable-pagination m-t-10 m-b-0"></ul>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+@{
+    ViewData["DeleteConfirmPolicyName"] = "OnSetTypeDelete";
+    ViewData["DeleteConfirmActionName"] = "OnSetType";
+    ViewData["DeleteConfirmControllerName"] = "OnSetType";
+    ViewData["DeleteConfirmAreaName"] = "Administration";
+    ViewData["DeleteConfirmParameterName"] = "toDeleteId";
+}
+
+<partial name="_DeleteConfirmPartial" view-data="ViewData" />
+
+
+@section Scripts{
+
+    <!-- Counter js  -->
+    <script src="~/plugins/waypoints/jquery.waypoints.min.js"></script>
+    <script src="~/plugins/counterup/jquery.counterup.min.js"></script>
+
+
+    <!--FooTable-->
+    <script src="~/plugins/footable/js/footable.all.min.js"></script>
+
+    <!--FooTable Example-->
+    <script src="~/pages/jquery.footable.js"></script>
+    <script>
+
+
+        jQuery.validator.addMethod("isuniqueonsettype",
+            function (value, element, param) {
+                var tblJsonData = @Html.Raw(Json.Serialize(Model.OnSetTypeList));
+                var id = $("#OnSetTypeId").val().trim();
+                var isCreate = id == null || id == "" || id == "0";
+                var message = $(element).attr('data-val-isuniqueonsettype');
+                $.validator.messages.isuniqueonsettype = $.validator.format(message, value);
+                if (isCreate) {
+                    return tblJsonData.filter(d => StringCompareFormat(d.onSetTypeName) == StringCompareFormat(value)).length == 0;
+                } else {
+                    return tblJsonData.filter(d => StringCompareFormat(d.onSetTypeName) == StringCompareFormat(value) && StringCompareFormat(d.onSetTypeId) != StringCompareFormat(id)).length == 0;
+                }
+            });
+
+        $.validator.unobtrusive.adapters.add('isuniqueonsettype',
+            function (options) {
+                options.rules['isuniqueonsettype'] = options.params;
+                if (options.message != null) {
+                    $.validator.messages.isuniqueonsettype = options.message;
+                }
+            }
+        );
+
+
+
+
+
+        $(document).ready(function () {
+             var successedAlertMessage = "@ViewBag.SuccessedAlertMessage";
+            AlertSnackBarByActionName(successedAlertMessage);
+
+            @*var actionName = "@Model.BtnActionName";
+            if (actionName== "Delete") {
+                $("#OnSetType_OnSetTypeName").attr("readonly", true);
+            }*@
+        });
+    </script>
+}

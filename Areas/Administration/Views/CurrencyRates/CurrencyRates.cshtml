@@ -1,0 +1,231 @@
+﻿@model HMS.Models.ViewModels.CurrencyRateViewModel
+@{
+    ViewData["Title"] = "CurrencyRate";
+    Layout = "~/Views/Shared/_HMSMainLayout.cshtml";
+}
+
+@section CurrentPageNavigation{
+    <h4 class="page-title float-left">Admin</h4>
+
+    <ol class="breadcrumb float-right">
+        <li class="breadcrumb-item"><a href="#">CurrencyRate</a></li>
+    </ol>
+}
+@{
+    <style>
+        .btn-default {
+            width: 60px;
+            background-color: lightgreen;
+        }
+
+        .btn-cancel {
+            width: 70px;
+            background-color: lightcoral;
+        }
+
+        .btnUpdateSubmitToggle {
+            display: none;
+        }
+    </style>
+}
+@section LeftSideMenu{
+    <partial name="_AdministrationLeftSideMenuPartial" />
+}
+
+
+
+<div class="row">
+    <div class="col-3 p-2 my-2 bg-light">
+        <div class="card-box">
+            <form asp-action="CurrencyRates" method="post" id="formCR">
+                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                <input type="hidden" asp-for="CurrencyRateId" />
+                <div class="form-group">
+                    <label asp-for="CurrencyId" class="control-label">Currency Code</label>
+                    <select asp-for="CurrencyId" class="form-control input-sm"  
+                            asp-items='@(new SelectList(Model.Currencies,"CurrencyId","CurrencyCode"))'>
+                        <option value="">--Select Currency--</option>
+                    </select>
+                    <span asp-validation-for="CurrencyId" class="text-danger"></span>
+
+                </div>
+
+                <div class="form-group">
+                    <label asp-for="FormulaSign" class="control-label"></label>
+                    <select asp-for="FormulaSign" class="form-control">
+                        <option value="">--Select--</option>
+
+                        @foreach (CurrencyFormulaSign item in Enum.GetValues(typeof(CurrencyFormulaSign)))
+                        {
+                            <option value="@item.ToString()">@item.GetEnumDisplayName()</option>
+                        }
+                    </select>
+                    <span asp-validation-for="FormulaSign" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="FormulaRate" class="control-label"></label>
+                    <input asp-for="FormulaRate" class="form-control input-sm" />
+                    <span asp-validation-for="FormulaRate" class="text-danger"></span>
+                </div>
+
+                <div class="form-group">
+                    @if ((await authorizationService.AuthorizeAsync(User, "CurrencyRateUpdate")).Succeeded)
+                    {
+                        <button type="submit" name="btnSubmit" value="Update" class="btn btn-success btnUpdateSubmitToggle">Update</button>
+                    }
+                    @if ((await authorizationService.AuthorizeAsync(User, "CurrencyRateCreate")).Succeeded)
+                    {
+                        <button type="submit" name="btnSubmit" value="Create" class="btn btn-success btnSaveSubmitToggle">Save</button>
+                    }
+                    <button type="button" class="btn btn-secondary" onclick="ResetFormAndShowHideBtnSubmit('form#formCR');">Cancel</button>
+                </div>
+            </form>
+        </div>
+    </div>
+    <div class="col-9 p-2 my-2 bg-light">
+        <div class="row">
+            <div class="col-12">
+                <div class="card-box">
+                    <table id="demo-foo-filtering" class="table table-striped table-bordered toggle-circle m-b-0" data-page-size="7">
+                        <thead>
+                            <tr>
+                                <th>
+                                    No.
+                                </th>
+
+                                <th>
+                                    Currency Code
+                                </th>
+                                <th>
+                                    Formula Sign
+                                </th>
+                                <th>
+                                    Fromula Rate
+                                </th>
+                                <th class="text-center"><b>Action</b></th>
+                            </tr>
+                        </thead>
+                        <div class="form-inline m-b-20">
+                            <div class="row" style=" width: 48rem;">
+                                <div class="col-md-6 text-xs-center" style="display:none;">
+                                    <div class="form-group">
+                                        <label class="control-label m-r-5">Status</label>
+                                        <select id="demo-foo-filter-status" class="form-control input-sm">
+                                            <option value="">Show all</option>
+                                            <option value="active">Active</option>
+                                            <option value="disabled">Disabled</option>
+                                            <option value="suspended">Suspended</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col-md-6 text-center ">
+                                    <div class="form-group ">
+                                        <input id="demo-foo-search" type="text" placeholder="Search" class="form-control input-sm col-10" autocomplete="on">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <tbody>
+                            @foreach (var item in Model.CurrencyRates.Select((value, i) => new { value, i }))
+                            {
+                                string crJsonData = Newtonsoft.Json.JsonConvert.SerializeObject(item.value);
+                                <tr>
+                                    <td>
+                                        @(item.i + 1)
+                                    </td>
+                                    <td>
+                                        @item.value.Currency.CurrencyCode
+                                    </td>
+                                    <td>
+                                        @item.value.FormulaSign
+                                    </td>
+                                    <td id="valueshowCurrencyRate">
+                                        @item.value.FormulaRate
+                                    </td>
+                                    <td class="text-center">
+                                        @if ((await authorizationService.AuthorizeAsync(User, "CurrencyRateUpdate")).Succeeded)
+                                        {
+                                            <button class="btn btn-outline-primary" onclick="TableRowEditClick(@crJsonData);"><i class="fa fa-edit"></i></button>
+                                        }
+                                        @if ((await authorizationService.AuthorizeAsync(User, "CurrencyRateUpdate")).Succeeded)
+                                        {
+                                            <button class="btn btn-outline-danger" onclick="TableRowDeleteClick('@item.value.CurrencyRateId')"><i class="fa fa-trash-alt"></i></button>
+                                        }
+                                    </td>
+
+                                </tr>
+                            }
+                        </tbody>
+                        <tfoot>
+                            <tr class="active">
+                                <td colspan="5">
+                                    <div class="text-right">
+                                        <ul class="pagination pagination-split footable-pagination m-t-10 m-b-0"></ul>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>
+
+
+            </div>
+        </div>
+    </div>
+</div>
+@{
+    ViewData["DeleteConfirmPolicyName"] = "CurrencyRateDelete";
+    ViewData["DeleteConfirmActionName"] = "DeleteCurrencyRate";
+    ViewData["DeleteConfirmControllerName"] = "CurrencyRates";
+    ViewData["DeleteConfirmAreaName"] = "Administration";
+    ViewData["DeleteConfirmParameterName"] = "CurrencyRateId";
+}
+
+<partial name="_DeleteConfirmPartial" view-data="ViewData" />
+
+
+
+@section Scripts{
+    <!-- Counter js  -->
+    <script src="~/plugins/waypoints/jquery.waypoints.min.js"></script>
+    <script src="~/plugins/counterup/jquery.counterup.min.js"></script>
+
+
+    <!--FooTable-->
+    <script src="~/plugins/footable/js/footable.all.min.js"></script>
+
+    <!--FooTable Example-->
+    <script src="~/pages/jquery.footable.js"></script>
+
+    <script>
+        $(document).ready(function () {
+
+            var successedAlertMessage = "@ViewBag.SuccessedAlertMessage";
+            AlertSnackBarByActionName(successedAlertMessage);
+
+            var actionName = "@Model.BtnActionName";
+            if (actionName.toLowerCase().trim() == "delete") {
+                $("#currencycode").attr("disabled", true);
+                $("#value").attr("disabled", true);
+                $("#formulasign").attr("disabled", true);
+
+
+            }
+
+        });
+        $(document).ready(function () {
+
+            $('#save').click(function() {
+            TESTCURRENCY = $('#value').val().toString().match(/(?=[\s\d])(?:\s\.|\d+(?:[.]\d+)*)/gmi);
+            if (TESTCURRENCY.length <= 1) {
+              $('#valueshowCurrencyRate').val(
+                  parseFloat(TESTCURRENCY.toString().match(/^\d+(?:\.\d{0,2})?/)));
+            }
+            else
+            {
+             $('#valueshowCurrencyRate').val('Invalid a value!');
+            }
+        });
+    });
+    </script>
+}

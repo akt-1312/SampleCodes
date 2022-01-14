@@ -1,0 +1,61 @@
+﻿@model HMS.Models.Administration.RegistrationService
+
+@{
+    ViewData["Title"] = "Details";
+    Layout = "~/Views/Shared/_HMSMainLayout.cshtml";
+}
+
+<h1>Details</h1>
+
+<div>
+    <h4>RegistrationService</h4>
+    <hr />
+    <dl class="row">
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.RegistrationServiceDescription)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.RegistrationServiceDescription)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.RegistrationServicePrice)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.RegistrationServicePrice)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.IsForNormal)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.IsForNormal)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.IsForEmergency)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.IsForEmergency)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.IsActive)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.IsActive)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.CreatedDate)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.CreatedDate)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.UpdatedDate)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.UpdatedDate)
+        </dd>
+    </dl>
+</div>
+<div>
+    <a asp-action="Edit" asp-route-id="@Model.RegistrationServiceId">Edit</a> |
+    <a asp-action="Index">Back to List</a>
+</div>

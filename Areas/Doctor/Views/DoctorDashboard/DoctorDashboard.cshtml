@@ -1,0 +1,18 @@
+﻿
+@{
+    ViewData["Title"] = "DoctorDashboard";
+    Layout = "~/Views/Shared/_HMSMainLayout.cshtml";
+}
+
+@section CurrentPageNavigation{
+    <h4 class="page-title float-left">Doctor WorkBench</h4>
+
+    <ol class="breadcrumb float-right">
+        <li class="breadcrumb-item"><a href="#">Doctor Dashboard</a></li>
+        @*<li class="breadcrumb-item"><a href="#">Register</a></li>*@
+    </ol>
+}
+
+@section LeftSideMenu{
+    <partial name="_DoctorWorkBenchLeftSideMenuPartial" />
+}

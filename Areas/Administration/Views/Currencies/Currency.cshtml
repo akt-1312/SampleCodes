@@ -1,0 +1,258 @@
+﻿@model HMS.Models.ViewModels.CurrencyViewModel
+@{
+    ViewData["Title"] = "Currency";
+    Layout = "~/Views/Shared/_HMSMainLayout.cshtml";
+}
+
+@section CurrentPageNavigation{
+    <h4 class="page-title float-left">SuperAdmin</h4>
+
+    <ol class="breadcrumb float-right">
+        <li class="breadcrumb-item"><a href="#">Currency</a></li>
+        @*<li class="breadcrumb-item"><a href="#">Register</a></li>*@
+    </ol>
+}
+@{
+    <style>
+        .btn-default {
+            width: 60px;
+            background-color: lightgreen;
+        }
+
+        .btn-cancel {
+            width: 70px;
+            background-color: lightcoral;
+        }
+
+        .btnUpdateSubmitToggle {
+            display: @(Model.CurrencyId == null || Model.CurrencyId.Value == 0 ? "none" : "")
+        }
+
+        .btnSaveSubmitToggle {
+            display: @(Model.CurrencyId == null || Model.CurrencyId.Value == 0 ? "" : "none")
+        }
+    </style>
+}
+@section LeftSideMenu{
+    <partial name="_AdministrationLeftSideMenuPartial" />
+}
+<div class="row">
+    <div class="col-4 separateScrollFullHeight">
+        <div class="col-12 card-box">
+            <form asp-action="Currency" method="post" id="formCurrency">
+                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                <input type="hidden" asp-for="CurrencyId" class="resetInputValue"/>
+                <div class="form-group">
+                    <label asp-for="CurrencyCode" class="control-label"></label>
+                    <input asp-for="CurrencyCode" class="form-control input-sm resetInputValue" />
+                    <span asp-validation-for="CurrencyCode" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="CurrencyName" class="control-label"></label>
+                    <input asp-for="CurrencyName" class="form-control input-sm resetInputValue" />
+                    <span asp-validation-for="CurrencyName" class="text-danger"></span>
+                </div>
+
+                <div class="form-group">
+                    @if ((await authorizationService.AuthorizeAsync(User, "CurrencyUpdate")).Succeeded)
+                    {
+                        <button id="btnUpdateSubmit" type="submit" name="btnSubmit" value="Update" class="btn btn-success btnUpdateSubmitToggle">Update</button>
+                    }
+                    @if ((await authorizationService.AuthorizeAsync(User, "CurrencyUpdate")).Succeeded)
+                    {
+                        <button id="btnSaveSubmit" type="submit" name="btnSubmit" value="Create" class="btn btn-success btnSaveSubmitToggle">Save</button>
+                    }
+                    <button type="button" class="btn btn-secondary" onclick="ResetFormAndShowHideBtnSubmit('form#formCurrency')">Cancel</button>
+                </div>
+            </form>
+        </div>
+    </div>
+    <div class="col-7 separateScrollFullHeight">
+        <div class="col-12">
+            <div class="card-box">
+
+                <div class="form-inline m-b-20">
+                    <div class="row" style=" width: 48rem;">
+                        <div class="col-md-6 text-xs-center" style="display:none;">
+                            <div class="form-group">
+                                <label class="control-label m-r-5">Status</label>
+                                <select id="demo-foo-filter-status" class="form-control input-sm">
+                                    <option value="">Show all</option>
+                                    <option value="active">Active</option>
+                                    <option value="disabled">Disabled</option>
+                                    <option value="suspended">Suspended</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-6 text-center ">
+                            <div class="form-group ">
+                                <input id="demo-foo-search" type="text" placeholder="Search" class="form-control input-sm col-10" autocomplete="on">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <table id="demo-foo-filtering" class="table table-striped table-bordered toggle-circle m-b-0" data-page-size="7">
+                    <thead>
+                        <tr>
+                            <th>No.</th>
+                            <th>
+                                Currency Name
+                            </th>
+                            <th>
+                                Currency Code
+                            </th>
+                            @if ((await authorizationService.AuthorizeAsync(User, "CurrencyUpdate")).Succeeded
+|| (await authorizationService.AuthorizeAsync(User, "CurrencyDelete")).Succeeded)
+                            {
+                                <th class="text-center thActionMinwidth"><b>Action</b></th>
+                            }
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in Model.Currencies.Select((value, i) => new { value, i }))
+                        {
+                            string currencyData = Newtonsoft.Json.JsonConvert.SerializeObject(item.value);
+                            @*<input type="hidden" asp-for="PageNamesInModule.PageNamesInModuleId" />*@
+                            <tr>
+                                <td>
+                                    @((item.i + 1).ToString())
+                                </td>
+                                <td>
+                                    @item.value.CurrencyName
+                                </td>
+                                <td>
+                                    @item.value.CurrencyCode
+                                </td>
+                                @if ((await authorizationService.AuthorizeAsync(User, "CurrencyUpdate")).Succeeded
+|| (await authorizationService.AuthorizeAsync(User, "CurrencyDelete")).Succeeded)
+                                {
+                                    <td style="text-align: center">
+                                        @if ((await authorizationService.AuthorizeAsync(User, "CurrencyUpdate")).Succeeded)
+                                        {
+                                            <button onclick="TableRowEditClick(@currencyData)" class="btn btn-outline-primary">
+                                                <i class="fa fa-edit"></i>
+                                            </button>
+                                        }
+
+                                        @if ((await authorizationService.AuthorizeAsync(User, "CurrencyUpdate")).Succeeded
+                                     && (await authorizationService.AuthorizeAsync(User, "CurrencyDelete")).Succeeded)
+                                        {
+                                            <span>|</span>
+                                        }
+                                        @*<a asp-action="Details" asp-route-id="@item.Id" class="btn btn-outline-info">Details</a> |*@
+                                        @if ((await authorizationService.AuthorizeAsync(User, "CurrencyDelete")).Succeeded)
+                                        {
+                                            <button onclick="TableRowDeleteClick('@item.value.CurrencyId')" class="btn btn-outline-danger">
+                                                <i class="fa fa-trash-alt"></i>
+                                            </button>
+                                        }
+                                    </td>
+                                }
+                            </tr>
+                        }
+                    </tbody>
+                    <tfoot>
+                        <tr class="active">
+                            <td colspan="3">
+                                <div class="text-right">
+                                    <ul class="pagination pagination-split footable-pagination m-t-10 m-b-0"></ul>
+                                </div>
+                            </td>
+                        </tr>
+                    </tfoot>
+                </table>
+            </div>
+
+
+        </div>
+    </div>
+</div>
+@{
+    ViewData["DeleteConfirmPolicyName"] = "CurrencyDelete";
+    ViewData["DeleteConfirmActionName"] = "Currency";
+    ViewData["DeleteConfirmControllerName"] = "Currencies";
+    ViewData["DeleteConfirmAreaName"] = "Administration";
+    ViewData["DeleteConfirmParameterName"] = "toDeleteCurrencyId";
+}
+
+<partial name="_DeleteConfirmPartial" view-data="ViewData" />
+
+@section Scripts{
+    <!-- Counter js  -->
+    <script src="~/plugins/waypoints/jquery.waypoints.min.js"></script>
+    <script src="~/plugins/counterup/jquery.counterup.min.js"></script>
+
+
+    <!--FooTable-->
+    <script src="~/plugins/footable/js/footable.all.min.js"></script>
+
+    <!--FooTable Example-->
+    <script src="~/pages/jquery.footable.js"></script>
+
+    <script>
+         jQuery.validator.addMethod("isuniquecurrency",
+            function (value, element, param) {
+                var tblJsonData = @Html.Raw(Json.Serialize(Model.Currencies));
+                var id = $("#CurrencyId").val().trim();
+                var isCreate = id == null || id == "" || id == "0";
+                var message = $(element).attr('data-val-isuniquecurrency');
+                $.validator.messages.isuniquecurrency = $.validator.format(message, value);
+                if (isCreate) {
+                    return tblJsonData.filter(d => StringCompareFormat(d.currencyName) == StringCompareFormat(value)
+                        || StringCompareFormat(d.currencyCode) == StringCompareFormat(value)).length == 0;
+                } else {
+                    return tblJsonData.filter(d => (StringCompareFormat(d.currencyName) == StringCompareFormat(value)
+                        || StringCompareFormat(d.currencyCode) == StringCompareFormat(value))
+                        && StringCompareFormat(d.currencyId) != StringCompareFormat(id)).length == 0;
+                }
+            });
+
+        $.validator.unobtrusive.adapters.add('isuniquecurrency',
+            function (options) {
+                options.rules['isuniquecurrency'] = options.params;
+                if (options.message != null) {
+                    $.validator.messages.isuniquecurrency = options.message;
+                }
+            }
+        );
+         jQuery.validator.addMethod("isuniquecurrencycode",
+            function (value, element, param) {
+                var tblJsonData = @Html.Raw(Json.Serialize(Model.Currencies));
+                var id = $("#CurrencyId").val().trim();
+                var isCreate = id == null || id == "" || id == "0";
+                var message = $(element).attr('data-val-isuniquecurrencycode');
+                $.validator.messages.isuniquecurrencycode = $.validator.format(message, value);
+                if (isCreate) {
+                    return tblJsonData.filter(d => StringCompareFormat(d.currencyCode) == StringCompareFormat(value)
+                    || StringCompareFormat(d.currencyName) == StringCompareFormat(value)).length == 0;
+                } else {
+                    return tblJsonData.filter(d => (StringCompareFormat(d.currencyCode) == StringCompareFormat(value)
+                        || StringCompareFormat(d.currencyName) == StringCompareFormat(value))
+                        && StringCompareFormat(d.currencyId) != StringCompareFormat(id)).length == 0;
+                }
+            });
+
+        $.validator.unobtrusive.adapters.add('isuniquecurrencycode',
+            function (options) {
+                options.rules['isuniquecurrencycode'] = options.params;
+                if (options.message != null) {
+                    $.validator.messages.isuniquecurrencycode = options.message;
+                }
+            }
+        );
+        $(document).ready(function () {
+
+            var successedAlertMessage = "@ViewBag.SuccessedAlertMessage";
+            AlertSnackBarByActionName(successedAlertMessage);
+
+            @*var actionName = "@Model.BtnActionName";
+            if (actionName.toLowerCase().trim() == "delete") {
+                $("#currencyName").attr("readonly", true);
+                $("#currencycode").attr("readonly", true);
+
+            }*@
+        });
+    </script>
+}
+
+

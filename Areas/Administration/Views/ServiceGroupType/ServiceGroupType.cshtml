@@ -1,0 +1,105 @@
+﻿@model HMS.Models.ViewModels.ServiceGroupTypeViewModel
+@{
+    ViewData["Title"] = "Unit";
+    Layout = "~/Views/Shared/_HMSMainLayout.cshtml";
+}
+
+@section CurrentPageNavigation{
+    <h4 class="page-title float-left">SuperAdmin</h4>
+
+    <ol class="breadcrumb float-right">
+        <li class="breadcrumb-item"><a href="#">ServiceGroupType</a></li>
+        @*<li class="breadcrumb-item"><a href="#">Register</a></li>*@
+    </ol>
+}
+@{
+    <style>
+        .btn-default {
+            width: 60px;
+            background-color: lightgreen;
+        }
+
+        .btn-cancel {
+            width: 70px;
+            background-color: lightcoral;
+        }
+    </style>
+}
+@section LeftSideMenu{
+    <partial name="_AdministrationLeftSideMenuPartial" />
+}
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="ServiceGroupType" method="post">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            @if (Model.BtnActionName != "Create")
+            {
+                <input type="hidden" asp-for="ServiceGroupType.ServiceGroupTypeId" />
+            }
+            <input type="hidden" asp-for="BtnActionName" />
+            
+            <div class="form-group">
+                <label asp-for="ServiceGroupType.ServiceGroupTypeName" class="control-label"></label>
+                <input asp-for="ServiceGroupType.ServiceGroupTypeName" class="form-control input-sm" />
+                <span asp-validation-for="ServiceGroupType.ServiceGroupTypeName" class="text-danger"></span>
+            </div>
+
+            <div class="form-group">
+                @if (Model.BtnActionName == "Edit")
+                {
+                    <input type="submit" name="btnSubmit" value="Edit" class="btn btn-primary" />
+                }
+                else if (Model.BtnActionName == "Delete")
+                {
+                    <input type="submit" name="btnSubmit" value="Delete" class="btn btn-primary" />
+                }
+                else
+                {
+                    <input type="submit" name="btnSubmit" value="Create" class="btn btn-primary" />
+                }
+                <a asp-action="ServiceGroupType" class="btn btn-primary">Back to List</a>
+            </div>
+        </form>
+    </div>
+    <div class="col-md-6 card">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>
+                        @Html.DisplayNameFor(model => model.ServiceGroupType.ServiceGroupTypeId)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.ServiceGroupType.ServiceGroupTypeName)
+                    </th>
+                    <th></th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                @for (int i = 0; i < Model.ServiceGroupTypes.Count(); i++)
+                {
+                    var item = Model.ServiceGroupTypes;
+                    @*<input type="hidden" asp-for="PageNamesInModule.PageNamesInModuleId" />*@
+                    <tr>
+                        <td>
+                            @(i + 1)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item[i].ServiceGroupTypeName)
+                        </td>
+                        <td>
+                            <a class="btn btn-default" asp-route-btnActionName="Edit" asp-action="ServiceGroupType" asp-route-ServiceGroupTypeId="@item[i].ServiceGroupTypeId">Edit</a> |
+                            <a class="btn btn-cancel" asp-route-btnActionName="Delete" asp-action="ServiceGroupType" asp-route-ServiceGroupTypeId="@item[i].ServiceGroupTypeId" style="color:red">Delete</a>
+                        </td>
+
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+
+
+</div>
+
+
+

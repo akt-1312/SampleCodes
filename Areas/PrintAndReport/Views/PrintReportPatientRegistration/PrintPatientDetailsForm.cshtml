@@ -1,0 +1,794 @@
+﻿
+@model HMS.Models.ViewModels.Reception.PatientRegistrationAKTViewModel
+
+@{
+    ViewData["Title"] = "Print Details Patient Info";
+    Layout = "~/Views/Shared/_HMSMainLayout.cshtml";
+
+    var photoPath = "~/images/PatientRegistrationImages/" +
+(Model.PatientRegistration.PhotoPath ?? (Model.PatientRegistration.Gender.ToLower().Trim() == "Male".ToLower().Trim() ? "MalePatient.jpg" : "FemalePatient.png"));
+}
+@section CurrentPageNavigation{
+    <h4 class="page-title float-left">Reception</h4>
+
+    <ol class="breadcrumb float-right">
+        <li class="breadcrumb-item"><a asp-action="MainMenu" asp-controller="HmsMenu" asp-area="Menu">Patient Registration</a></li>
+        @*<li class="breadcrumb-item"><a href="#">Update Registration</a></li>*@
+    </ol>
+}
+@section LeftSideMenu{
+    <partial name="_ReceptionLeftSideMenuPartial" />
+}
+
+@{
+    <style id="printStyle">
+        .row {
+            margin-bottom: 3px;
+        }
+
+        input[type] {
+            border: none;
+            border-bottom: 1px solid black;
+            border-radius: 0px;
+        }
+
+        .form-control {
+            background-color: transparent !important;
+        }
+        .border{
+            background-color:gray;
+        }
+        .control-label {
+            position: absolute;
+            bottom: 0;
+            width: 120px;
+        }
+
+        #btnPrintRow {
+            position: absolute;
+            height: 150%;
+            top: 71px;
+            right: 0;
+        }
+
+        #btnSticky {
+            position: sticky;
+            top: 0;
+        }
+
+        h1 {
+            text-align: center;
+        }
+
+        label {
+            font-weight: bold;
+        }
+
+        h5 {
+            text-decoration: underline;
+        }
+    </style>
+    <style id="less:concepts-less-css-style" media="print,screen" type="text/css">
+        @@media print {
+
+            h1 {
+                display: none;
+            }
+
+            #btnPrintRow {
+                display: none;
+            }
+
+            form {
+                margin-top: 30px;
+            }
+
+            label {
+                font-weight: bold;
+            }
+
+            h5 {
+                text-decoration: underline;
+            }
+
+            @@page {
+                margin: 0;
+            }
+        }
+    </style>
+}
+<h1>Print Details Patient Info</h1>
+
+
+
+
+
+
+<form method="post">
+    <input hidden asp-for="PatientRegistration.MRNo" />
+    <input hidden asp-for="PatientRegistration.Reg_Id" />
+    <input hidden name="RegName"
+           value="@ViewBag.RegName" id="regName" />
+    <div asp-validation-summary="ModelOnly"></div>
+    <div class="container-fluid" id="printView">
+        <div class="row my-3">
+            <div class="col-2">
+                <div style="position:relative; width:120px; height:120px;">
+                    <img src="@photoPath" asp-append-version="true" style="position:absolute; width:100%; height:100%; top:0; border:1px solid #000000; border-radius:5px;" />
+                </div>
+            </div>
+            <div class="col-2 offset-8">
+                <h4 id="headerRegName">@ViewBag.RegName</h4>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-4">
+                <div class="row">
+                    <div class="col-5">
+                        <div class="">
+                            <label class="control-label">MR No:</label>
+                        </div>
+                    </div>
+                    <div class="col-7">
+                        <div class="row">
+                            <input disabled type="text" asp-for="PatientRegistration.MRNo" id="txtMRNo"
+                                   class="form-control" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-4">
+                <div class="row">
+                    <div class="col-5">
+                        <div class="">
+                            <label class="control-label">Reg: Date</label>
+                        </div>
+                    </div>
+                    <div class="col-7">
+                        <div class="row">
+                            <input disabled type="date" asp-for="PatientRegistration.RegDate"
+                                   id="txtRegDate" class="form-control" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            @*<div class="col-4">
+                    <div class="row">
+                        <div class="ml-2">
+                            <label>Outpatient</label>
+                            <input disabled type="radio" id="rdoOptPatient" value="OutPatient"
+                                   asp-for="PatientRegistration.OptIpt" />
+                        </div>
+                        <div class="ml-2">
+                            <label> Inpatient</label>
+                            <input disabled type="radio" id="rdoInpatient" value="InPatient"
+                                   asp-for="PatientRegistration.OptIpt" />
+                        </div>
+                    </div>
+                </div>*@
+        </div>
+
+        <hr />
+        <h5>
+            Patient Information
+        </h5>
+
+        <div class="row">
+            <div class="col-4">
+                <div class="row">
+                    <div class="col-5">
+                        <div class="">
+                            <label class="control-label">Prefix</label>
+                        </div>
+                    </div>
+                    <div class="col-7">
+                        <div class="row">
+                            <input disabled asp-for="PatientRegistration.PatientPrefix" class="form-control" />
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-5">
+                        <div class="">
+                            <label class="control-label">First Name</label>
+                        </div>
+                    </div>
+                    <div class="col-7">
+                        <div class="row">
+                            <input disabled type="text" asp-for="PatientRegistration.PatientFirstName"
+                                   class="form-control" />
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-5">
+                        <div class="">
+                            <label class="control-label">Middle Name</label>
+                        </div>
+                    </div>
+                    <div class="col-7">
+                        <div class="row">
+                            <input disabled type="text" asp-for="PatientRegistration.PatientMiddleName" class="form-control" />
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-5">
+                        <div class="">
+                            <label class="control-label">Last Name</label>
+                        </div>
+                    </div>
+                    <div class="col-7">
+                        <div class="row">
+                            <input disabled type="text" asp-for="PatientRegistration.PatientLastName"
+                                   class="form-control" />
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-5">
+                        <div class="">
+                            <label class="control-label">Father's Name</label>
+                        </div>
+                    </div>
+                    <div class="col-7">
+                        <div class="row">
+                            <input disabled type="text" asp-for="PatientRegistration.FatherName"
+                                   class="form-control" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-4">
+                <div class="row">
+                    <div class="col-5">
+                        <div class="">
+                            <label class="control-label">Gender</label>
+                        </div>
+                    </div>
+                    <div class="col-7">
+                        <div class="row">
+                            <input asp-for="PatientRegistration.Gender" class="form-control" disabled />
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-5">
+                        <div class="">
+                            <label class="control-label">Marital Status</label>
+                        </div>
+                    </div>
+                    <div class="col-7">
+                        <div class="row">
+                            <input asp-for="PatientRegistration.MaritalStatus" class="form-control" disabled />
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-5">
+                        <div class="">
+                            <label class="control-label">Date of Birth</label>
+                        </div>
+                    </div>
+                    <div class="col-7">
+                        <div class="row">
+                            <input disabled type="date" asp-for="PatientRegistration.DOB" class="form-control" />
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-5">
+                        <div class="">
+                            <label class="control-label">Age</label>
+                        </div>
+                    </div>
+                    <div class="col-7">
+                        <div class="row">
+                            <input disabled type="text" asp-for="PatientRegistration.Age" id="txtAge"
+                                   class="form-control" />
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-5">
+                        <div class="">
+                            <label class="control-label">Occupation</label>
+                        </div>
+                    </div>
+                    <div class="col-7">
+                        <div class="row">
+                            <input asp-for="PatientRegistration.Occupation" class="form-control" disabled />
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-4">
+                <div class="row">
+                    <div class="col-5">
+                        <div class="">
+                            <label class="control-label">Mobile 1</label>
+                        </div>
+                    </div>
+                    <div class="col-7">
+                        <div class="row">
+                            <input disabled type="text" asp-for="PatientRegistration.PatientMobile1"
+                                   class="form-control" />
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-5">
+                        <div class="">
+                            <label class="control-label">Mobile 2</label>
+                        </div>
+                    </div>
+                    <div class="col-7">
+                        <div class="row">
+                            <input disabled type="text" asp-for="PatientRegistration.PatientMobile2"
+                                   class="form-control" />
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-5">
+                        <div class="">
+                            <label class="control-label">Email</label>
+                        </div>
+                    </div>
+                    <div class="col-7">
+                        <div class="row">
+                            <input disabled type="text" asp-for="PatientRegistration.Email" class="form-control" />
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-5">
+                        <div class="">
+                            <label class="control-label">Nationality</label>
+                        </div>
+                    </div>
+                    <div class="col-7">
+                        <div class="row">
+                            <input asp-for="PatientRegistration.Nationality" class="form-control" disabled />
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-5">
+                        <div class="">
+                            <label class="control-label">Alias Name</label>
+                        </div>
+                    </div>
+                    <div class="col-7">
+                        <div class="row">
+                            <input disabled type="text" asp-for="PatientRegistration.AliasName"
+                                   class="form-control" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-8">
+                <div class="row ml-3">
+                    <div class="ml-2">
+                        <label>NRC</label>
+                        <input disabled asp-for="PatientRegistration.PatientIdentityType" value="NRC" type="radio" checked="checked"
+                               id="rdoNRC" />
+                    </div>
+                    <div class="ml-2">
+                        <label> Driving Licence</label>
+                        <input disabled asp-for="PatientRegistration.PatientIdentityType" value="Driving Licence"
+                               type="radio" id="rdoDriveLicence" />
+                    </div>
+                    <div class="ml-2">
+                        <label> Passport </label>
+                        <input disabled asp-for="PatientRegistration.PatientIdentityType" value="Passport"
+                               type="radio" id="rdoPassport" />
+                    </div>
+                </div>
+                <div class="col-6">
+                    <div>
+                        <input disabled type="text" asp-for="PatientRegistration.PatientIdentityNo"
+                               class="form-control" />
+                    </div>
+                </div>
+            </div>
+            <div class="col-2 offset-2">
+                <div class="">
+                    <input disabled asp-for="PatientRegistration.Confidential" type="checkbox" id="chkConfidential" class="align-middle" />
+                    <label>Confidential</label>
+                </div>
+            </div>
+        </div>
+
+        <hr />
+        <h5>
+            Contact Detail
+        </h5>
+
+        <div class="row">
+            <div class="col-4">
+                <div class="row">
+                    <div class="col-5">
+                        <div class="">
+                            <label class="control-label">House No:</label>
+                        </div>
+                    </div>
+                    <div class="col-7">
+                        <div class="row">
+                            <input disabled type="text" asp-for="PatientRegistration.HouseNo" class="form-control" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-4">
+                <div class="row">
+                    <div class="col-5">
+                        <div class="">
+                            <label class="control-label">Street</label>
+                        </div>
+                    </div>
+                    <div class="col-7">
+                        <div class="row">
+                            <input disabled type="text" asp-for="PatientRegistration.Street" class="form-control" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-4">
+                <div class="row">
+                    <div class="col-5">
+                        <div class="">
+                            <label class="control-label">Country</label>
+                        </div>
+                    </div>
+                    <div class="col-7">
+                        <div class="row">
+                            <input asp-for="PatientRegistration.Country" class="form-control" disabled />
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-4">
+                <div class="row">
+                    <div class="col-5">
+                        <div class="">
+                            <label class="control-label">State</label>
+                        </div>
+                    </div>
+                    <div class="col-7">
+                        <div class="row">
+                            <input asp-for="PatientRegistration.State" class="form-control" disabled />
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-4">
+                <div class="row">
+                    <div class="col-5">
+                        <div class="">
+                            <label class="control-label">Township</label>
+                        </div>
+                    </div>
+                    <div class="col-7">
+                        <div class="row">
+                            <input asp-for="PatientRegistration.Township" class="form-control" disabled />
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-12">
+                <div>
+                    <input disabled asp-for="PatientRegistration.CorrespondAddress" type="checkbox" />
+                    <label>Correspondance address same as above.</label>
+                </div>
+            </div>
+        </div>
+
+        <hr />
+        <h5>
+            Next of Kin Details
+        </h5>
+
+        <div class="row">
+            <div class="col-4">
+                <div class="row">
+                    <div class="col-5">
+                        <div class="">
+                            <label class="control-label">Relationship</label>
+                        </div>
+                    </div>
+                    <div class="col-7">
+                        <div class="row">
+                            <input asp-for="PatientRegistration.KinRelationship" class="form-control" disabled />
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-5">
+                        <div class="">
+                            <label class="control-label">Prefix</label>
+                        </div>
+                    </div>
+                    <div class="col-7">
+                        <div class="row">
+                            <input asp-for="PatientRegistration.KinPrefix" class="form-control" disabled />
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-5">
+                        <div class="">
+                            <label class="control-label">First Name</label>
+                        </div>
+                    </div>
+                    <div class="col-7">
+                        <div class="row">
+                            <input disabled type="text" asp-for="PatientRegistration.KinFirstName" class="form-control" />
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-5">
+                        <div class="">
+                            <label class="control-label">Middle Name</label>
+                        </div>
+                    </div>
+                    <div class="col-7">
+                        <div class="row">
+                            <input disabled type="text" asp-for="PatientRegistration.KinMiddleName"
+                                   class="form-control" />
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-5">
+                        <div class="">
+                            <label class="control-label">Last Name</label>
+                        </div>
+                    </div>
+                    <div class="col-7">
+                        <div class="row">
+                            <input disabled type="text" asp-for="PatientRegistration.KinLastName"
+                                   class="form-control" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-4">
+                <div class="row">
+                    <div class="col-5">
+                        <div class="">
+                            <label class="control-label">Mobile 1</label>
+                        </div>
+                    </div>
+                    <div class="col-7">
+                        <div class="row">
+                            <input disabled asp-for="PatientRegistration.KinMobile1"
+                                   class="form-control" />
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-5">
+                        <div class="">
+                            <label class="control-label">Mobile 2</label>
+                        </div>
+                    </div>
+                    <div class="col-7">
+                        <div class="row">
+                            <input disabled asp-for="PatientRegistration.KinMobile2"
+                                   class="form-control" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <hr />
+        <h5>
+            Emergency Contact
+        </h5>
+
+        <div class="row">
+            <div class="col-3">
+                <div class="row">
+                    <div class="col-5">
+                        <div class="">
+                            <label class="control-label">Contact Person</label>
+                        </div>
+                    </div>
+                    <div class="col-7">
+                        <div class="row">
+                            <input disabled asp-for="PatientRegistration.EmgContactPerson"
+                                   class="form-control" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-3">
+                <div class="row">
+                    <div class="col-5">
+                        <div class="">
+                            <label class="control-label">Relationship</label>
+                        </div>
+                    </div>
+                    <div class="col-7">
+                        <div class="row">
+                            <input asp-for="PatientRegistration.EmgRelationship" class="form-control" disabled />
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-3">
+                <div class="row">
+                    <div class="col-5">
+                        <div class="">
+                            <label class="control-label">Mobile 1</label>
+                        </div>
+                    </div>
+                    <div class="col-7">
+                        <div class="row">
+                            <input disabled asp-for="PatientRegistration.EmgMobile1"
+                                   class="form-control" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-3">
+                <div class="row">
+                    <div class="col-5">
+                        <div class="">
+                            <label class="control-label">Mobile 2</label>
+                        </div>
+                    </div>
+                    <div class="col-7">
+                        <div class="row">
+                            <input disabled asp-for="PatientRegistration.EmgMobile2"
+                                   class="form-control" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+
+        <h5>Service Fee</h5>
+
+        <div class="row">
+            <table class="table  border-dark" id="regFeeTable" style="/*min-width:1107px;*/">
+                <thead class="" @*style="background-color:#70a6e4;"*@>
+                    <tr class="text-center">
+                        <th class=" border-dark">
+                            No.
+                        </th>
+                        <th class=" border-dark">
+                            Service Name
+                        </th>
+                        <th class=" border-dark">
+                            Amount
+                        </th>
+                        <th class=" border-dark">
+                            FOC
+                        </th>
+                        @*<th class="border border-dark">
+
+                            </th>*@
+                    </tr>
+                </thead>
+            </table>
+        </div>
+
+        @*<input hidden asp-for="PatientRegistration.RegTotalAmmount" id="txtTotalAmmount" />*@
+        <input hidden name="registrationFees" id="txtserviceFees" />
+
+    </div>
+</form>
+
+<div class="row" id="btnPrintRow">
+    <div class="form-group col-12">
+        <div id="btnSticky">
+            <button type="button" id="btnPrint" value="Print"
+                    class="btn btn-success">
+                Print
+            </button>
+            <a class="btn btn-secondary" asp-area="Registration" asp-controller="PatientRegistrationAKT" asp-action="Create">Cancel</a>
+        </div>
+
+    </div>
+</div>
+
+@section Scripts{
+
+    <script>
+
+        //function printDiv(divID) {
+        //    //Get the HTML of div
+        //    var divElements = document.getElementById(divID).innerHTML;
+        //    var styleElements = document.getElementById(printStyle).textContent;
+        //    //Get the HTML of whole page
+        //    var oldPage = document.body.innerHTML;
+
+        //    //Reset the page's HTML with div's HTML only
+        //    document.body.innerHTML =
+        //        "<html><head><title></title>"+styleElements+"</head><body>" +
+        //        divElements + "</body></html>";
+
+        //    //Print Page
+        //    window.print();
+
+        //    //Restore orignal HTML
+        //    document.body.innerHTML = oldPage;
+        //}
+        $(document).ready(function () {
+
+            function GetRegFeesUpdate() {
+                var url = '@Url.Content("~/")' + "Registration/PatientRegistrationAKT/GetRegTypesUpdate";
+            $.getJSON(url, { MRNo: $("#txtMRNo").val() }, function (data) {
+                if ($("#regFeeTable tbody").length == 0) {
+                    $("#regFeeTable").append("<tbody id='regFeeTbody'></tbody>");
+                }
+                //console.log(data);
+
+                var totalAmmount = 0;
+                $.each(data, function (i, registrationFees) {
+                    var checkedFOC=""
+                    var chkId = "chkFOC" + i;
+                    var focValue = registrationFees.foc
+
+                    //console.log(registrationFees);
+                    var tdNo = '<td class="text-center border border-dark">' + (i+1) + '</td>';
+                    var tdMRNo = '<td hidden id="tdMRNoId">' + '</td>';
+                    var tdServiceName = '<td class="border border-dark" id="tdServiceNameId">' + registrationFees.serviceName + '</td>';
+                    var tdAmount = '<td id="lblAmmount" class="border border-dark">' + registrationFees.registrationAmmount + '</td>';
+                    var tdFoc = '<td class="text-center border border-dark" id="tdFOC">' + '<input disabled class="chkFOC" type="checkbox"'+ 'id='+'"'+ chkId +'"'/*+'checked='*//*+registrationFees.foc*/+'>' + '</input>' + '</td>';
+                    //var tdDel = '<td class="text-center">' + '</td>';
+
+                        //totalAmmount += registrationFees.registrationAmmount;
+                    @*totalAmmount = @Model.PatientRegistration.RegTotalAmmount;*@
+
+                    $("tbody").append('<tr class="TrDataLoop">' + tdNo + tdMRNo + tdServiceName + tdAmount + tdFoc + /*tdDel + */'</tr>');
+
+                    $(".chkFOC#" + chkId).change(function () {
+                        if ($(this).is(':checked')) {
+                            totalAmmount = totalAmmount - registrationFees.registrationAmmount;
+                            //alert(totalAmmount);
+                        }
+                        else if (!($(this).is(':checked'))) {
+                            //alert("Uncheck");
+                            totalAmmount = totalAmmount + registrationFees.registrationAmmount;
+                        }
+                        $("#lblTotalAmmount").html(totalAmmount);
+                    });
+                    $(".chkFOC#" + chkId).attr("checked",focValue);
+                });
+
+                $("tbody").append('<tr>' + '<td>' + '</td>' + '<td class="text-right" style="display:block;">' + '<label>' + 'Total :' + '</label>' + '</td>' + '<td class="border border-dark text-right">' + '<label id="lblTotalAmmount">' + '</label>' + '</td>' + '<td>' + '</td>' +/*'<td>'+'</td>'+*/'</tr>')
+                $("#lblTotalAmmount").html(totalAmmount);
+
+
+            });
+            }
+
+            GetRegFeesUpdate();
+
+            $("#btnPrint").click(function () {
+                window.print();
+            });
+    });
+    </script>
+
+}

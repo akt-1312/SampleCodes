@@ -1,0 +1,111 @@
+﻿@model HMS.Models.ViewModels.Administration.AdministrationDashboardViewModel
+@{
+    ViewData["Title"] = "AdministrationDashboard";
+    Layout = "~/Views/Shared/_HMSMainLayout.cshtml";
+}
+
+@section CurrentPageNavigation{
+    <h4 class="page-title float-left">Administration</h4>
+
+    <ol class="breadcrumb float-right">
+        <li class="breadcrumb-item"><a href="#">Administration Dashboard</a></li>
+        @*<li class="breadcrumb-item"><a href="#">Register</a></li>*@
+    </ol>
+}
+
+@section LeftSideMenu{
+    <partial name="_AdministrationLeftSideMenuPartial" />
+}
+
+
+<div class="row">
+    <div class="col-lg-3 col-md-6">
+        <a asp-area="Administration" asp-controller="Department" asp-action="Department">
+            <div class="card-box widget-box-two widget-two-custom">
+                <i class="far fa-building widget-two-icon"></i>
+                <div class="wigdet-two-content">
+                    <p class="m-0 text-uppercase font-bold font-secondary text-overflow " title="Statistics">Total Departments</p>
+                    <h2 class="font-600"><span><i class="mdi mdi-arrow-up"></i></span> <span data-plugin="counterup">@Model.Departments.Count</span></h2>
+                    <p class="m-0">Jan - Apr 2017</p>
+                </div>
+            </div>
+        </a>
+    </div>         
+
+    <!-- end col -->
+
+    <div class="col-lg-3 col-md-6">
+        <a asp-area="Administration" asp-controller="DoctorInfo" asp-action="DoctorInfo">
+            <div class="card-box widget-box-two widget-two-custom">
+                <i class="fa fa-user-circle widget-two-icon"></i>
+                <div class="wigdet-two-content">
+                    <p class="m-0 text-uppercase font-bold font-secondary text-overflow " title="Statistics">Total Doctors</p>
+                    <h2 class="font-600"><span><i class="mdi mdi-arrow-up"></i></span> <span data-plugin="counterup">@Model.DoctorInfos.Count</span></h2>
+                    <p class="m-0">Jan - Apr 2017</p>
+                </div>
+            </div>
+        </a>
+    </div><!-- end col -->
+    <div class="col-lg-3 col-md-6">
+        <a asp-area="Administration" asp-controller="UserAccount" asp-action="AccountRegister">
+
+            <div class="card-box widget-box-two widget-two-custom">
+                <i class="fa fa-user-circle widget-two-icon"></i>
+                <div class="wigdet-two-content">
+                    <p class="m-0 text-uppercase font-bold font-secondary text-overflow " title="Statistics">Total Users</p>
+                    <h2 class="font-600"><span><i class="mdi mdi-arrow-up"></i></span> <span data-plugin="counterup">@ViewBag.TotalUsers.Count</span></h2>
+                    <p class="m-0">Jan - Apr 2017</p>
+                </div>
+            </div>
+        </a>
+    </div><!-- end col -->
+    <div class="col-lg-3 col-md-6">
+        <a asp-area="Administration" asp-controller="Role" asp-action="Role">
+
+            <div class="card-box widget-box-two widget-two-custom">
+                <i class="fa fa-user-circle widget-two-icon"></i>
+                <div class="wigdet-two-content">
+                    <p class="m-0 text-uppercase font-bold font-secondary text-overflow " title="Statistics">Total Roles</p>
+                    <h2 class="font-600"><span><i class="mdi mdi-arrow-up"></i></span> <span data-plugin="counterup">@ViewBag.TotalRoles.Count</span></h2>
+                    <p class="m-0">Jan - Apr 2017</p>
+                </div>
+            </div>
+        </a>
+    </div>
+    <div class="col-lg-3 col-md-6">
+        <a asp-area="Administration" asp-controller="Currencies" asp-action="Currency">
+            <div class="card-box widget-box-two widget-two-custom">
+                <i class="fas fa-coins widget-two-icon"></i>
+                <div class="wigdet-two-content">
+                    <p class="m-0 text-uppercase font-bold font-secondary text-overflow " title="Statistics">Total Currencies</p>
+                    <h2 class="font-600"><span><i class="mdi mdi-arrow-up"></i></span> <span data-plugin="counterup">@Model.Currencies.Count</span></h2>
+                    <p class="m-0">Jan - Apr 2017</p>
+                </div>
+            </div>
+        </a>
+    </div>
+
+
+
+</div>
+
+
+
+@section Scripts{
+
+    <!-- Counter js  -->
+    <script src="~/plugins/waypoints/jquery.waypoints.min.js"></script>
+    <script src="~/plugins/counterup/jquery.counterup.min.js"></script>
+
+    <!--C3 Chart-->
+    <script type="text/javascript" src="~/plugins/d3/d3.min.js"></script>
+    <script type="text/javascript" src="~/plugins/c3/c3.min.js"></script>
+
+    <!--Echart Chart-->
+    <script src="~/plugins/echart/echarts-all.js"></script>
+
+    <!-- Dashboard init -->
+    <script src="~/pages/jquery.dashboard.js"></script>
+
+}
+

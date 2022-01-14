@@ -1,0 +1,408 @@
+﻿@model DrConsultationCostEstimationViewModel
+
+@{
+    ViewData["Title"] = "DrConsultationCostEstimation";
+    Layout = "~/Views/Shared/_HMSMainLayout.cshtml";
+}
+
+<style>
+    .lblInput {
+        font-weight: normal;
+        margin-bottom: 0px;
+        font-size: 12px;
+    }
+
+    .lblInputContainer {
+    }
+
+    .btnInputPlus {
+        position: absolute;
+        right: 5px;
+        top: 0;
+        border: none;
+        height: 30px;
+        font-size: 15px;
+        width: 15%;
+        color:goldenrod;
+    }
+
+    .inputWithBtnPlus {
+        width: 85%;
+    }
+
+    .tableCharges thead th {
+        padding: 8px 10px;
+        background-color: aquamarine;
+    }
+
+    .tableCharges {
+        margin-bottom: 0px;
+    }
+</style>
+
+
+@section CurrentPageNavigation{
+    <h4 class="page-title float-left">Doctor WorkBench</h4>
+
+    <ol class="breadcrumb float-right">
+        <li class="breadcrumb-item"><a href="#">Cost Estimation</a></li>
+        @*<li class="breadcrumb-item"><a href="#">Register</a></li>*@
+    </ol>
+}
+
+@section LeftSideMenu{
+    <partial name="_DoctorWorkBenchLeftSideMenuPartial" />
+}
+
+<div class="row">
+    <div class="card-box w-100" style="margin-bottom:5px;">
+        <partial name="_PatientAppointmentDataPartial" for="@Model.DoctorAppointmentData" />
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-4">
+        <div class="row">
+            <div class="col-6 lblInputContainer">
+                <label class="lblInput">Select Cost Estimation Template</label>
+            </div>
+            <div class="col-6">
+                <input class="form-control input-sm" />
+            </div>
+        </div>
+    </div>
+    <div class="col-4">
+        <div class="row">
+            <div class="col-6 lblInputContainer">
+                <label class="lblInput">Department</label>
+            </div>
+            <div class="col-6">
+                <select class="form-control input-sm">
+                    <option value="">--Select--</option>
+                </select>
+            </div>
+        </div>
+    </div>
+    <div class="col-4">
+        <div class="row">
+            <div class="col-6 lblInputContainer">
+                <label class="lblInput">Consulting Doctor</label>
+            </div>
+            <div class="col-6">
+                <select class="form-control input-sm">
+                    <option></option>
+                </select>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-12">
+        <label class="mb-0"><b>Bed Charges</b></label>
+    </div>
+    <div class="col-4">
+        <div class="row">
+            <div class="col-6 lblInputContainer">
+                <label class="lblInput">Economic Class</label><span class="text-danger">*</span>
+            </div>
+            <div class="col-6">
+                <select class="form-control input-sm">
+                    <option>Royal Suit RD</option>
+                </select>
+            </div>
+        </div>
+    </div>
+    <div class="col-4">
+        <div class="row">
+            <div class="col-6 lblInputContainer">
+                <label class="lblInput">Estimated Length Of Stay</label><span class="text-danger">*</span>
+            </div>
+            <div class="col-6">
+                <input class="form-control input-sm" />
+            </div>
+        </div>
+    </div>
+    <div class="col-4">
+        <div class="row">
+            <div class="col-6 lblInputContainer">
+                <label class="lblInput">Expected date of procedure/Delivery</label>
+            </div>
+            <div class="col-6 input-group">
+                <input type="text" class="form-control input-sm" id="txtDatePicker" readonly />
+                <div class="input-group-prepend">
+                    <button class="btn btn-outline-secondary rounded-0 input-sm" type="button" id="btnDatePicker">
+                        <i class="fa fa-calendar-alt"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-4">
+        <div class="row">
+            <div class="col-6 lblInputContainer">
+                <label class="lblInput">Bed Type</label><span class="text-danger">*</span>
+            </div>
+            <div class="col-6">
+                <select class="form-control input-sm inputWithBtnPlus">
+                    <option>Single Room</option>
+                </select>
+                <button class="btnInputPlus"><i class="fa fa-plus-circle"></i></button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-12">
+        <div>
+            <table class="table tableCharges table-bordered">
+                <thead>
+                    <tr>
+                        <th>Bed Type</th>
+                        <th>Len. of stay</th>
+                        <th>Bed charge/Day</th>
+                        <th>Total</th>
+                        <th>Remove</th>
+                    </tr>
+                </thead>
+            </table>
+            <div class="row">
+                <div class="col-12">
+                    <div class="row">
+                        <div class="col-3 offset-6">
+                            <label class="lblInput" style="font-weight:900;">Total Bed Charges</label>
+                        </div>
+                        <div>
+                            <input type="number" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-12">
+        <label class="mb-0"><b>Procedure Charges</b></label>
+    </div>
+    <div class="col-4">
+        <div class="row">
+            <div class="col-6 lblInputContainer">
+                <label class="lblInput">Surgical Services</label>
+            </div>
+            <div class="col-6">
+                <input class="form-control input-sm inputWithBtnPlus" />
+                <button class="btnInputPlus"><i class="fa fa-plus-circle"></i></button>
+            </div>
+        </div>
+    </div>
+    <div class="col-12">
+        <div>
+            <table class="table tableCharges table-bordered">
+                <thead>
+                    <tr>
+                        <th>Service Name</th>
+                        <th>Price</th>
+                        <th>Qty</th>
+                        <th>Total</th>
+                        <th>Remove</th>
+                    </tr>
+                </thead>
+            </table>
+            <div class="row">
+                <div class="col-12">
+                    <div class="row">
+                        <div class="col-3 offset-6">
+                            <label class="lblInput" style="font-weight:900;">Total Surgical Charges</label>
+                        </div>
+                        <div>
+                            <input type="number" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-4">
+        <div class="row">
+            <div class="col-6 lblInputContainer">
+                <label class="lblInput">Non-Surgical Services</label>
+            </div>
+            <div class="col-6">
+                <input class="form-control input-sm inputWithBtnPlus" />
+                <button class="btnInputPlus"><i class="fa fa-plus-circle"></i></button>
+            </div>
+        </div>
+    </div>
+    <div class="col-12">
+        <div>
+            <table class="table tableCharges table-bordered">
+                <thead>
+                    <tr>
+                        <th>Service Name</th>
+                        <th>Price</th>
+                        <th>Qty</th>
+                        <th>Total</th>
+                        <th>Remove</th>
+                    </tr>
+                </thead>
+            </table>
+            <div class="row">
+                <div class="col-12">
+                    <div class="row">
+                        <div class="col-3 offset-6">
+                            <label class="lblInput" style="font-weight:900;">Total Non-Surgical Charges</label>
+                        </div>
+                        <div>
+                            <input type="number" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-4">
+        <div class="row">
+            <div class="col-6 lblInputContainer">
+                <label class="lblInput">Package</label>
+            </div>
+            <div class="col-6">
+                <input class="form-control input-sm inputWithBtnPlus" />
+                <button class="btnInputPlus"><i class="fa fa-plus-circle"></i></button>
+            </div>
+        </div>
+    </div>
+    <div class="col-12">
+        <div>
+            <table class="table tableCharges table-bordered">
+                <thead>
+                    <tr>
+                        <th>Service Name</th>
+                        <th>Price</th>
+                        <th>Qty</th>
+                        <th>Total</th>
+                        <th>Remove</th>
+                    </tr>
+                </thead>
+            </table>
+            <div class="row">
+                <div class="col-12">
+                    <div class="row">
+                        <div class="col-3 offset-6">
+                            <label class="lblInput" style="font-weight:900;">Total Surgical Charges</label>
+                        </div>
+                        <div>
+                            <input type="number" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<hr />
+
+<div class="row">
+    <div class="col-12">
+        <div class="row">
+            <div class="col-4">
+                <div class="row">
+                    <div class="col-6 lblInputContainer">
+                        <label class="lblInput">Store</label>
+                    </div>
+                    <div class="col-6">
+                        <select class="form-control input-sm">
+                            <option>2nd Floor IPD Em</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-4">
+        <div class="row">
+            <div class="col-6 lblInputContainer">
+                <label class="lblInput">Item Name</label>
+            </div>
+            <div class="col-6">
+                <input class="form-control input-sm" />
+            </div>
+        </div>
+    </div>
+    <div class="col-12">
+        <div>
+            <table class="table tableCharges table-bordered">
+                <thead>
+                    <tr>
+                        <th>Store</th>
+                        <th>Visit Type</th>
+                        <th>Item Type</th>
+                        <th>Item Name</th>
+                        <th>Qty</th>
+                        <th>Rate</th>
+                        <th>Remove</th>
+                    </tr>
+                </thead>
+            </table>
+            <div class="row mb-3">
+                <div class="col-12">
+                    <div class="row">
+                        <div class="col-3 offset-6">
+                            <label class="lblInput" style="font-weight:900;">Total Drug Charges</label>
+                        </div>
+                        <div class="col-3">
+                            <input type="number" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-12">
+                    <div class="row">
+                        <div class="col-3">
+                            <label class="lblInput" style="font-weight:900;">Additional Charge</label>
+                        </div>
+                        <div class="col-3">
+                            <input type="number" />
+                        </div>
+                        <div class="col-3">
+                            <label class="lblInput" style="font-weight:900;">Total Charges</label>
+                        </div>
+                        <div class="col-3">
+                            <input type="number" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-12">
+        <label class="mb-0"><b>Reason</b></label>
+    </div>
+    <div class="col-5">
+        <textarea class="form-control" rows="10"></textarea>
+    </div>
+</div>
+
+@section Scripts{
+
+    <script>
+        $(document).ready(function () {
+            $('#btnDatePicker').on('click', function (e) {
+                e.preventDefault();
+                $.dateSelect.show({
+                    element: 'input#txtDatePicker',
+                    dobType: false, //Do not allow over current year
+                });
+            });
+        });
+    </script>
+}

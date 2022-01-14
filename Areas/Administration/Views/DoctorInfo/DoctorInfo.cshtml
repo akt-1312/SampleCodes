@@ -1,0 +1,313 @@
+﻿@model HMS.Models.ViewModels.DoctorInfoViewModel
+@{
+    ViewData["Title"] = "Module";
+    Layout = "~/Views/Shared/_HMSMainLayout.cshtml";
+}
+
+@section CurrentPageNavigation{
+    <h4 class="page-title float-left">Admin</h4>
+
+    <ol class="breadcrumb float-right">
+        <li class="breadcrumb-item"><a href="#">DoctorInfo</a></li>
+        @*<li class="breadcrumb-item"><a href="#">Register</a></li>*@
+    </ol>
+}
+@{
+    <style>
+        .btn-default {
+            width: 60px;
+            background-color: lightgreen;
+        }
+
+        .btn-cancel {
+            width: 70px;
+            background-color: lightcoral;
+        }
+
+        #Dialog-Box {
+        }
+        .btnUpdateSubmitToggle{
+            display: @(Model.DoctorInfoId == null || Model.DoctorInfoId.Value == 0 ? "none" : "")
+        }
+
+        .btnSaveSubmitToggle{
+            display: @(Model.DoctorInfoId == null || Model.DoctorInfoId.Value == 0 ? "" : "none")
+        }
+    </style>
+}
+@section LeftSideMenu{
+    <partial name="_AdministrationLeftSideMenuPartial" />
+}
+<div class="row">
+    <div class="col-4 p-2 my-2 bg-light card-box separateScrollFullHeight">
+        <form asp-action="DoctorInfo" method="post" id="formDrInfo">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <input type="hidden" asp-for="@Model.DoctorInfoId" class="resetInputValue" />
+            <div class="form-group">
+                <label asp-for="DoctorName" class="control-label"></label>
+                <input asp-for="DoctorName" class="form-control input-sm resetInputValue" />
+                <span asp-validation-for="DoctorName" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Email" class="control-label"></label>
+                <input asp-for="Email" class="form-control input-sm resetInputValue" />
+                <span asp-validation-for="Email" class="text-danger"></span>
+            </div>
+            <label asp-for="Department.DepartmentName" class="control-label"></label>
+
+            <div class="card-box" id="resultOne">
+                <ul class="resetInputValue">
+                    @foreach (var item in Model.UnitDepartmentViewModels.Select((value, i) => new { value, i }))
+                    {
+                        <li>
+                            <div class="row">
+                                <div class="col-2" style="text-align:center">
+                                    <input asp-for="UnitDepartmentViewModels[item.i].DrInfoDepartment.IsCheck" onclick="showHide(this)" />
+                                </div>
+                                <div class="col-2">
+                                    <div style="width:1.5px;height:25px;background-color:white;color:white;"></div>
+                                </div>
+                                <div class="col-8">
+                                    <b class="reactName">@item.value.DrInfoDepartment.Department.DepartmentName</b>
+                                </div>
+                                @*<input type="hidden" class="checkUnit" value="@Model.UnitDepartmentViewModels[item.i].DrInfoDepartment.Department.DepartmentId" />*@
+                                <input type="hidden" asp-for="UnitDepartmentViewModels[item.i].DrInfoDepartment.Department.DepartmentId">
+                                <input type="hidden" asp-for="UnitDepartmentViewModels[item.i].DrInfoDepartment.Department.DepartmentName">
+                                @*<div class="unitOfCheckedDepartment">*@
+                                @{
+                                    string displayUl = item.value.DrInfoDepartment.IsCheck ? "" : "none";
+                                }
+                                <ul class="resulttwo resetInputValue" style="display:@displayUl;">
+                                    @foreach (var unit in item.value.DrInfoUnits.Select((value, i) => new { value, i }))
+                                    {
+                                        //var itemUnit = Model.UnitViewModel.UnitList;
+                                        <li>
+                                            <div class="row ">
+                                                <div class="col-2" style="text-align:center">
+                                                    <input asp-for="UnitDepartmentViewModels[item.i].DrInfoUnits[unit.i].IsCheck" />
+                                                </div>
+                                                <div class="col-2">
+                                                    <div style="width:1.5px;height:25px;background-color:white;color:white;"></div>
+                                                </div>
+                                                <div class="col-8">
+                                                    <b class="reactName">@unit.value.Unit.UnitName</b>
+                                                </div>
+
+                                            </div>
+                                            <input type="hidden" asp-for="UnitDepartmentViewModels[item.i].DrInfoUnits[unit.i].Unit.UnitId">
+                                            <input type="hidden" asp-for="UnitDepartmentViewModels[item.i].DrInfoUnits[unit.i].Unit.UnitName">
+                                        </li>
+                                    }
+                                </ul>
+                                @*</div>*@
+                            </div>
+
+                        </li>
+                    }
+                </ul>
+            </div>
+
+            @*<div class="form-group">
+                    @if (Model.BtnActionName == "Edit")
+                    {
+                        <input type="submit" asp-route-DoctorInfoId="Model.DoctorInfoId" name="btnSubmit" value="Update" class="btn btn-success" />
+                    }
+                    else if (Model.BtnActionName == "Delete")
+                    {
+                        <input type="submit" asp-route-DoctorInfoId="Model.DoctorInfoId" name="btnSubmit" value="Delete" class="btn btn-danger" />
+                    }
+                    else
+                    {
+                        <input type="submit" name="btnSubmit" value="Save" class="btn btn-success" />
+                    }
+                    <a asp-action="DoctorInfo" class="btn btn-secondary">Back</a>
+                </div>*@
+            <div class="form-group">
+                @if ((await authorizationService.AuthorizeAsync(User, "DoctorInfoUpdate")).Succeeded)
+                {
+                    <button id="btnUpdateSubmit" type="submit" name="btnSubmit" value="Update" class="btn btn-success btnUpdateSubmitToggle">Update</button>
+                }
+                @if ((await authorizationService.AuthorizeAsync(User, "DoctorInfoCreate")).Succeeded)
+                {
+                    <button id="btnSaveSubmit" type="submit" name="btnSubmit" value="Create" class="btn btn-success btnSaveSubmitToggle">Save</button>
+                }
+                <button type="button" class="btn btn-secondary" onclick="ResetFormAndShowHideBtnSubmit('form#formDrInfo');">Cancel</button>
+            </div>
+        </form>
+    </div>
+    <div class="col-8 p-2 my-2 bg-light separateScrollFullHeight">
+        <div class="row">
+            <div class="col-12">
+                <div class="card-box">
+                    <div class="form-inline m-b-20">
+                        <div class="row" style=" width: 48rem;">
+                            <div class="col-md-6 text-xs-center" style="display:none;">
+                                <div class="form-group">
+                                    <label class="control-label m-r-5">Status</label>
+                                    <select id="demo-foo-filter-status" class="form-control input-sm">
+                                        <option value="">Show all</option>
+                                        <option value="active">Active</option>
+                                        <option value="disabled">Disabled</option>
+                                        <option value="suspended">Suspended</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-6 text-center ">
+                                <div class="form-group ">
+                                    <input id="demo-foo-search" type="text" placeholder="Search" class="form-control input-sm col-10" autocomplete="on">
+                                </div>
+                            </div>
+                        </div>
+                        <table id="demo-foo-filtering" class="table table-striped table-bordered toggle-circle m-b-0" data-page-size="7">
+                            <thead>
+                                <tr>
+                                    <th>No.</th>
+                                    <th>
+                                        @Html.DisplayNameFor(model => model.DoctorName)
+                                    </th>
+                                    <th>
+                                        @Html.DisplayNameFor(model => model.Email)
+                                    </th>
+                                    <th>
+                                        Departments
+                                    </th>
+                                    <th>
+                                        @Html.DisplayNameFor(model => model.Unit.UnitName)
+                                    </th>
+                                    <th class="text-center">
+                                        <b>Action</b>
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody>
+
+                                @foreach (var item in Model.DoctorDeptUnitViewModels.Select((value, i) => new { value, i }))
+                                {
+                                    string drInfoJsonData = Newtonsoft.Json.JsonConvert.SerializeObject(item.value);
+
+                                    <tr>
+                                        <td>
+                                            @(item.i + 1)
+                                        </td>
+                                        <td>
+                                            @item.value.DoctorInfo.DoctorName
+                                        </td>
+                                        <td>
+                                            @item.value.DoctorInfo.Email
+                                        </td>
+                                        <td>
+                                            @foreach (var dept in item.value.DeptUnitsInDrInfo)
+                                            {
+                                                <div>@(dept.Department.DepartmentName + " Department")</div>
+                                            }
+
+                                        </td>
+                                        <td>
+                                            @foreach (var dept in item.value.DeptUnitsInDrInfo)
+                                            {
+                                                string units = string.Join(",", dept.Units.Select(x => x.UnitName + " Unit").ToList());
+                                                <div>@units</div>
+                                            }
+                                        </td>
+                                        <td class="text-center">
+                                            @if ((await authorizationService.AuthorizeAsync(User, "DoctorInfoUpdate")).Succeeded)
+                                            {
+                                                <button class="btn btn-outline-primary" onclick="TableRowEditClick(@drInfoJsonData);"><i class="fa fa-edit"></i></button>
+                                            }
+                                            @if ((await authorizationService.AuthorizeAsync(User, "DoctorInfoDelete")).Succeeded)
+                                            {
+                                                <button class="btn btn-outline-danger" onclick="TableRowDeleteClick('@item.value.DoctorInfo.DoctorInfoId')"><i class="fa fa-trash-alt"></i></button>
+                                            }
+                                        </td>
+
+                                    </tr>
+                                }
+                            </tbody>
+                            <tfoot>
+                                <tr class="active">
+                                    <td colspan="6">
+                                        <div class="text-right">
+                                            <ul class="pagination pagination-split footable-pagination m-t-10 m-b-0"></ul>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </tfoot>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+@{
+    ViewData["DeleteConfirmPolicyName"] = "DoctorInfoDelete";
+    ViewData["DeleteConfirmActionName"] = "DoctorInfo";
+    ViewData["DeleteConfirmControllerName"] = "DoctorInfo";
+    ViewData["DeleteConfirmAreaName"] = "Administration";
+    ViewData["DeleteConfirmParameterName"] = "toDeleteDRId";
+}
+
+<partial name="_DeleteConfirmPartial" view-data="ViewData" />
+
+@section Scripts{
+    <!-- Counter js  -->
+    <script src="~/plugins/waypoints/jquery.waypoints.min.js"></script>
+    <script src="~/plugins/counterup/jquery.counterup.min.js"></script>
+
+
+    <!--FooTable-->
+    <script src="~/plugins/footable/js/footable.all.min.js"></script>
+
+    <!--FooTable Example-->
+    <script src="~/pages/jquery.footable.js"></script>
+    <script>
+        function showHide(checkbox) {
+            var ul = $(checkbox).parents("li").find("ul.resulttwo");
+            console.log(ul);
+            if ($(checkbox).is(":checked")) {
+                ul.show();
+                console.log("isCheck");
+            } else {
+                ul.hide();
+                console.log("notCheck");
+            }
+        }
+
+        //    function InitialDoctor() {
+        //        var $on = 'section';
+        //        $($on).css({
+        //         'background': 'none',
+        //         'border': 'none',
+        //         'box-shadow': 'none'
+        //        });
+        //        $(".checkUnit").each(function () {
+        //    var secIt = $(this).val();
+        //    var trim = $.trim(secIt);
+        //         $(".NewCheckUnit").each(function () {
+        //           var trime = $.trim($(this).val());
+        //            if (trim == trime) {
+        //            $(this).attr('checked', true);
+        //        }
+        //         });
+
+
+        //});
+        //    }
+
+    </script>
+    <script>
+        $(document).ready(function () {
+
+            var successedAlertMessage = "@ViewBag.SuccessedAlertMessage";
+            AlertSnackBarByActionName(successedAlertMessage);
+
+            @*var actionName = "@Model.BtnActionName";
+            if (actionName.toLowerCase().trim() == "delete") {
+                $("#departmentName").attr("readonly", true);
+            }*@
+        });
+    </script>
+
+}
+
+

@@ -1,0 +1,193 @@
+﻿
+
+
+@{
+    ViewData["Title"] = "MainMenu";
+    Layout = "~/Views/Shared/_MenuOnlyLayout.cshtml";
+}
+
+@*@section CurrentPageNavigation{
+    <h4 class="page-title float-left">Menu</h4>
+
+    <ol class="breadcrumb float-right">
+        <li class="breadcrumb-item"><a href="#">Home</a></li>
+    </ol>
+}*@
+
+<style>
+    /*body{
+        overflow:hidden;
+    }*/
+
+    body {
+        overflow: hidden;
+        background-color: lightslategrey;
+    }
+
+    .flexEachRow {
+        display: flex;
+        justify-content: center;
+    }
+
+    .cardBox {
+        margin: 1rem !important;
+        min-width: 8rem;
+        max-width: 20%;
+    }
+
+    .card-headerBox {
+        text-align: center !important;
+        width: 100%;
+        height: 8rem;
+    }
+
+    .iconDiv {
+        display: block;
+        height: 4rem;
+    }
+
+
+    .content-page {
+        margin-left: 0px;
+    }
+
+        .content-page .content {
+            margin-top: 0px;
+        }
+
+    .iconStyle {
+        font-size: 3rem;
+        padding: 1rem;
+    }
+
+    .lblMenu {
+        cursor: pointer;
+        color:white;
+    }
+
+    .card {
+        background-color: transparent !important;
+        border: 1px solid #fff;
+        width: 170px !important;
+        /*height: 170px;*/
+    }
+
+    a.anc {
+        color: white;
+    }
+
+    .card-header {
+        border: none;
+        padding: 1.2rem 0.2rem;
+        width: 100%;
+        height: 100%;
+        background-color: transparent !important;
+    }
+
+    a.anc:hover .card-header, a.anc:hover .card {
+        background-color: white !important;
+        color: lightslategray !important;
+        border: none;
+        margin-top: -15px;
+        transition: 0.4s;
+        border-radius: 0.25rem;
+    }
+
+    a.anc:hover .lblMenu{
+        color:lightslategray !important;
+    }
+
+    .init {
+        position: fixed;
+        right: 10px;
+        bottom: 11px;
+        color: white;
+        text-shadow: 2px 2px 2px #1d1d1d;
+    }
+</style>
+
+<div class="init">
+    <h6 align="center" class="font" style="color:white;">@@2020 Soft Software System</h6>
+</div>
+
+<div style="display: flex; align-items: center; justify-content: center; height: 100vh; margin: 0; padding: 0; ">
+    <div class="row">
+        <div class="col-12 flexEachRow">
+            @if ((await authorizationService.AuthorizeAsync(User, "AdminRoleMenu")).Succeeded)
+            {
+                <a asp-area="Administration" asp-controller="AdministrationDashboard" asp-action="AdministrationDashboard" class="anc">
+                    <div class="card m-3" style="min-width:10rem;max-width:20%;">
+                        <div class="card-header text-center">
+                            <div style="display:block; height:6rem;"><i class="fa fa-users-cog" style="font-size:3rem; padding:1rem;"></i></div>
+                            <div><label class="lblMenu">Administration</label></div>
+                        </div>
+                    </div>
+                </a>
+            }
+
+            @if ((await authorizationService.AuthorizeAsync(User, "AdminRoleMenu")).Succeeded || 
+                (await authorizationService.AuthorizeAsync(User, "SetupSettingModule")).Succeeded)
+            {
+                <a asp-area="Administration" asp-controller="AdminSettingDashboard" asp-action="AdminSettingDashboard" class="anc">
+                    <div class="card m-3" style="min-width:10rem;max-width:20%;">
+                        <div class="card-header text-center">
+                            <div style="display:block; height:6rem;"><i class="fa fa-cogs" style="font-size:3rem; padding:1rem;"></i></div>
+                            <div><label class="lblMenu">Setting</label></div>
+                        </div>
+                    </div>
+                </a>
+            }
+
+            @if ((await authorizationService.AuthorizeAsync(User, "AdminRoleMenu")).Succeeded)
+            {
+                <a asp-area="SuperAdmin" asp-controller="SuperAdminDashboard" asp-action="SuperAdminDashboard" class="anc">
+                    <div class="card m-3" style="min-width:10rem;max-width:20%;">
+                        <div class="card-header text-center">
+                            <div style="display:block; height:6rem;"><i class="fa fa-users-cog" style="font-size:3rem; padding:1rem;"></i></div>
+                            <div><label class="lblMenu">Super Admin</label></div>
+                        </div>
+                    </div>
+                </a>
+            }
+
+            @if ((await authorizationService.AuthorizeAsync(User, "ReceptionModule")).Succeeded)
+            {
+                <a asp-area="Reception" asp-controller="ReceptionDashboard" asp-action="ReceptionDashboard" class="anc">
+                    <div class="card m-3" style="min-width:10rem;max-width:20%;">
+                        <div class="card-header text-center">
+                            <div style="display:block; height:6rem;"><i class="fa fa-female" style="font-size:3rem; padding:1rem;"></i></div>
+                            <div><label class="lblMenu">Reception</label></div>
+                        </div>
+                    </div>
+                </a>
+            }
+
+        </div>
+        <div class="col-12 flexEachRow">
+            @if ((await authorizationService.AuthorizeAsync(User, "NursingModule")).Succeeded)
+            {
+                <a asp-area="Nurse" asp-controller="NursingDashboard" asp-action="NursingDashboard" class="anc">
+                    <div class="card m-3" style="min-width:10rem;max-width:20%;">
+                        <div class="card-header text-center">
+                            <div style="display:block; height:6rem;"><i class="fa fa-user-nurse" style="font-size:3rem; padding:1rem;"></i></div>
+                            <div><label class="lblMenu">Nursing</label></div>
+                        </div>
+                    </div>
+                </a>
+            }
+
+            @if ((await authorizationService.AuthorizeAsync(User, "DoctorModule")).Succeeded)
+            {
+                <a asp-area="Doctor" asp-controller="DoctorDashboard" asp-action="DoctorDashboard" class="anc">
+                    <div class="card m-3" style="min-width:10rem;max-width:20%;">
+                        <div class="card-header text-center">
+                            <div style="display:block; height:6rem;"><i class="fa fa-user-md" style="font-size:3rem; padding:1rem;"></i></div>
+                            <div><label class="lblMenu">Doctor WorkBench</label></div>
+                        </div>
+                    </div>
+                </a>
+            }
+
+        </div>
+    </div>
+</div>

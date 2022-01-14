@@ -1,0 +1,21 @@
+﻿
+@{
+    ViewData["Title"] = "SuperAdminDashboard";
+    Layout = "~/Views/Shared/_HMSMainLayout.cshtml";
+}
+
+@section CurrentPageNavigation{
+    <h4 class="page-title float-left">Super Admin Dashboard</h4>
+
+    <ol class="breadcrumb float-right">
+        <li class="breadcrumb-item"><a href="#">SuperAdmin Dashboard</a></li>
+        @*<li class="breadcrumb-item"><a href="#">Register</a></li>*@
+    </ol>
+}
+
+@section LeftSideMenu{
+    <partial name="_SuperAdminLeftSideMenuPartial" />
+}
+
+<h1>SuperAdminDashboard</h1>
+

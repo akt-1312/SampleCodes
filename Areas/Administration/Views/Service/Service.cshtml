@@ -1,0 +1,161 @@
+﻿@model HMS.Models.ViewModels.ServiceViewModel
+@{
+    ViewData["Title"] = "Module";
+    Layout = "~/Views/Shared/_HMSMainLayout.cshtml";
+}
+
+@section CurrentPageNavigation{
+    <h4 class="page-title float-left">Admin</h4>
+
+    <ol class="breadcrumb float-right">
+        <li class="breadcrumb-item"><a href="#">Service</a></li>
+        @*<li class="breadcrumb-item"><a href="#">Register</a></li>*@
+    </ol>
+}
+@{
+    <style>
+        .btn-default {
+            width: 60px;
+            background-color: lightgreen;
+        }
+
+        .btn-cancel {
+            width: 70px;
+            background-color: lightcoral;
+        }
+    </style>
+}
+@section LeftSideMenu{
+    <partial name="_AdministrationLeftSideMenuPartial" />
+}
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="Service" method="post">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            @if (Model.BtnActionName != "Create")
+            {
+                <input type="hidden" asp-for="Service.ServiceId" />
+            }
+            <input type="hidden" asp-for="BtnActionName" />
+            <div class="form-group">
+                <label asp-for="Service.ServiceId" class="control-label"></label>
+                <input asp-for="Service.ServiceId" class="form-control input-sm" />
+                <span asp-validation-for="Service.ServiceId" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Service.ServiceName" class="control-label"></label>
+                <input asp-for="Service.ServiceName" class="form-control input-sm" />
+                <span asp-validation-for="Service.ServiceName" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Service.ServiceGroupTypeId" class="control-label"></label>
+                <select asp-for="Service.ServiceGroupTypeId" class="form-control" asp-items="ViewBag.ServiceGroupTypeId"></select>
+            </div>
+            <div class="form-group">
+                <label asp-for="Service.CurrencyTypeId" class="control-label"></label>
+                <select asp-for="Service.CurrencyTypeId" class="form-control" asp-items="ViewBag.CurrencyTypeId"></select>
+            </div>
+            <div class="form-group">
+                <label>
+                    <input type="checkbox" class="NewCheckUnit" value="IsForNormal" name="CheckData" id="chkisfornormal" onchange="chkBox1" />
+                    IsForNormal
+                </label>
+            </div>
+            <div class="form-group">
+                <label>
+                    <input type="checkbox" class="NewCheckUnit" value="IsForEmergency" name="CheckData" id="chkisforemergency" onchange="chkBox2" />
+                    IsForEmergency
+                </label>
+            </div>
+            <div class="form-group">
+                @if (Model.BtnActionName == "Edit")
+                {
+                    <input type="submit" name="btnSubmit" value="Edit" class="btn btn-primary" />
+                }
+                else if (Model.BtnActionName == "Delete")
+                {
+                    <input type="submit" name="btnSubmit" value="Delete" class="btn btn-primary" />
+                }
+                else
+                {
+                    <input type="submit" name="btnSubmit" value="Create" class="btn btn-primary" />
+                }
+                <a asp-action="Service" class="btn btn-primary">Back to List</a>
+            </div>
+        </form>
+    </div>
+    <div class="col-md-6 card">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>
+                        @Html.DisplayNameFor(model => model.Service.ServiceId)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.Service.ServiceName)
+                    </th>
+                    <th></th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                @for (int i = 0; i < Model.Services.Count(); i++)
+                {
+                    var item = Model.Services;
+                    @*<input type="hidden" asp-for="PageNamesInModule.PageNamesInModuleId" />*@
+                    <tr>
+                        <td>
+                            @(i + 1)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item[i].ServiceName)
+                        </td>
+                        @*<td>
+                              @Html.DisplayFor(modelItem => item[i].CurrencyName)
+                            </td>*@
+                        @*<td>
+                                <a class="btn btn-default" asp-route-btnActionName="Edit" asp-action="Currency" asp-route-CurrencyId="@item[i].CurrencyId">Edit</a> |
+                                <a class="btn btn-cancel" asp-route-btnActionName="Delete" asp-action="Currency" asp-route-CurrencyId="@item[i].CurrencyId" style="color:red">Delete</a>
+                            </td>*@
+
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+
+
+</div>
+
+@section Scripts{
+    <!-- Counter js  -->
+    <script src="~/plugins/waypoints/jquery.waypoints.min.js"></script>
+    <script src="~/plugins/counterup/jquery.counterup.min.js"></script>
+
+
+    <!--FooTable-->
+    <script src="~/plugins/footable/js/footable.all.min.js"></script>
+
+    <!--FooTable Example-->
+    <script src="~/pages/jquery.footable.js"></script>
+
+    <script>
+        $(function () {
+                    $("#chkisfornormal").change(function chkBox1() {
+                        var ischecked = $(this).is(":checked");
+                        if (ischecked) {
+                            $("#chkAddUserNo").prop("checked", true);
+                        }
+                    });
+
+                    $("#chkisforemergency").change(function chkBox2() {
+                        var ischecked = $(this).is(":checked");
+                        if (ischecked) {
+                            $("#chkAddUserNo").prop("checked", false);
+                        }
+                    });
+                })
+    </script>
+}
+
+

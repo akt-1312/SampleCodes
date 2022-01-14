@@ -1,0 +1,222 @@
+﻿
+@model HMS.Models.ViewModels.Administration.NationalityViewModel
+
+
+@{
+    ViewData["Title"] = "Nationality";
+    Layout = "~/Views/Shared/_HMSMainLayout.cshtml";
+}
+
+@section CurrentPageNavigation{
+    <h4 class="page-title float-left">Setting</h4>
+
+    <ol class="breadcrumb float-right">
+        <li class="breadcrumb-item"><a href="#">Nationality</a></li>
+    </ol>
+}
+
+@section LeftSideMenu{
+    <partial name="_AdminSettingLeftSideMenuPartial" />
+}
+@{
+    <style>
+        .btn-default {
+            width: 60px;
+            background-color: lightgreen;
+        }
+
+        .btn-cancel {
+            width: 70px;
+            background-color: lightcoral;
+        }
+      
+        .btnUpdateSubmitToggle {
+            display: @(Model.Nation_Id == null || Model.Nation_Id.Value == 0 ? "none" : "")
+        }
+        .btnSaveSubmitToggle {
+            display: @(Model.Nation_Id == null || Model.Nation_Id.Value == 0 ? "" : "none")
+        }
+    </style>
+}
+
+<div class="row">
+    <div class="col-4 p-2 my-2 bg-light">
+        <div class="card-box">
+
+            <form method="post" id="formNationality" asp-action="Nationality">
+
+                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+                <input type="hidden" asp-for="Nation_Id" class="resetInputValue" />
+
+                <div class="form-group">
+                    <label asp-for="NationalityName" class="control-label">Nationality Name</label>
+                    <input asp-for="NationalityName" class="form-control  input-sm resetInputValue" />
+                    <span asp-validation-for="NationalityName" class="text-danger"></span>
+                </div>
+
+                <div class="form-group">
+
+                    @if ((await authorizationService.AuthorizeAsync(User, "NationalityUpdate")).Succeeded)
+
+                    {
+                        <button type="submit" id="btnUpdateSubmit" name="btnSubmit" value="Update" class="btn btn-success btnUpdateSubmitToggle">Update</button>
+                    }
+
+                    @if ((await authorizationService.AuthorizeAsync(User, "NationalityCreate")).Succeeded)
+                    {
+                        <button type="submit" id="btnSaveSubmit" name="btnSubmit" value="Create" class="btn btn-success btnSaveSubmitToggle">Save</button>
+                    }
+
+                    <button type="button" class="btn btn-secondary" onclick="ResetFormAndShowHideBtnSubmit('form#formNationality');">Cancel</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div class="col-8 p-2 my-2 bg-light">
+        <div class="row">
+            <div class="col-12">
+                <div class="card-box">
+
+                    <table id="demo-foo-filtering" class="table table-striped table-bordered toggle-circle m-b-0" data-page-size="7">
+                        <thead>
+                            <tr>
+                                <th>
+                                    <b>No.</b>
+                                </th>
+                                <th>
+                                    @Html.DisplayNameFor(model => model.Nationality.NationalityName)
+                                </th>
+                                @if ((await authorizationService.AuthorizeAsync(User, "NationalityUpdate")).Succeeded
+                            || (await authorizationService.AuthorizeAsync(User, "NationalityDelete")).Succeeded)
+                                {
+                                    <th class="text-center"><b>Action</b></th>
+                                }
+                            </tr>
+                        </thead>
+                        <div class="form-inline m-b-20">
+                            <div class="row" style=" width: 48rem;">
+                                <div class="col-md-6 text-xs-center" style="display:none;">
+                                    <div class="form-group">
+                                        <label class="control-label m-r-5">Status</label>
+                                        <select id="demo-foo-filter-status" class="form-control input-sm">
+                                            <option value="">Show all</option>
+                                            <option value="active">Active</option>
+                                            <option value="disabled">Disabled</option>
+                                            <option value="suspended">Suspended</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col-md-6 text-center ">
+                                    <div class="form-group ">
+                                        <input id="demo-foo-search" type="text" placeholder="Search" class="form-control input-sm col-10" autocomplete="on">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <tbody>
+                            @foreach (var item in Model.NationalityList.Select((value, i) => new { value, i }))
+                            {
+                                string unitJsonData = Newtonsoft.Json.JsonConvert.SerializeObject(item.value);
+                                <tr>
+                                    <td>
+                                        @(item.i + 1)
+                                    </td>
+                                    <td>
+                                        @item.value.NationalityName
+                                    </td>
+                                    <td class="text-center">
+                                        @if ((await authorizationService.AuthorizeAsync(User, "NationalityUpdate")).Succeeded)
+                                        {
+                                            <button class="btn btn-outline-primary" onclick="TableRowEditClick(@unitJsonData);"><i class="fa fa-edit"></i></button>
+
+                                        }
+
+                                        @if ((await authorizationService.AuthorizeAsync(User, "NationalityDelete")).Succeeded)
+                                        {
+                                            <button class="btn btn-outline-danger" onclick="TableRowDeleteClick('@item.value.Nation_Id', '@($"Are You Sure To Delete Nationality Name ({item.value.NationalityName})")')"><i class="fa fa-trash-alt"></i></button>
+
+                                        }
+                                    </td>
+
+                                </tr>
+                            }
+                        </tbody>
+                        <tfoot>
+                            <tr class="active">
+                                <td colspan="5">
+                                    <div class="text-right">
+                                        <ul class="pagination pagination-split footable-pagination m-t-10 m-b-0"></ul>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+@{
+    ViewData["DeleteConfirmPolicyName"] = "NationalityDelete";
+    ViewData["DeleteConfirmActionName"] = "Nationality";
+    ViewData["DeleteConfirmControllerName"] = "Nationality";
+    ViewData["DeleteConfirmAreaName"] = "Administration";
+    ViewData["DeleteConfirmParameterName"] = "toDeleteId";
+}
+
+<partial name="_DeleteConfirmPartial" view-data="ViewData" />
+
+
+@section Scripts{
+
+    <!-- Counter js  -->
+    <script src="~/plugins/waypoints/jquery.waypoints.min.js"></script>
+    <script src="~/plugins/counterup/jquery.counterup.min.js"></script>
+
+
+    <!--FooTable-->
+    <script src="~/plugins/footable/js/footable.all.min.js"></script>
+
+    <!--FooTable Example-->
+    <script src="~/pages/jquery.footable.js"></script>
+    <script>
+        jQuery.validator.addMethod("isuniquenationality",
+            function (value, element, param) {
+                var tblJsonData = @Html.Raw(Json.Serialize(Model.NationalityList));
+                var id = $("#Nation_Id").val().trim();
+                var isCreate = id == null || id == "" || id == "0";
+                var message = $(element).attr('data-val-isuniquenationality');
+                $.validator.messages.isuniquenationality = $.validator.format(message, value);
+                if (isCreate) {
+                    return tblJsonData.filter(d => StringCompareFormat(d.nationalityName) == StringCompareFormat(value)).length == 0;
+                } else {
+                    return tblJsonData.filter(d => StringCompareFormat(d.nationalityName) == StringCompareFormat(value) && StringCompareFormat(d.nation_Id) != StringCompareFormat(id)).length == 0;
+                }
+            });
+
+        $.validator.unobtrusive.adapters.add('isuniquenationality',
+            function (options) {
+                options.rules['isuniquenationality'] = options.params;
+                if (options.message != null) {
+                    $.validator.messages.isuniquenationality = options.message;
+                }
+            }
+        );
+
+
+
+
+
+        $(document).ready(function () {
+             var successedAlertMessage = "@ViewBag.SuccessedAlertMessage";
+            AlertSnackBarByActionName(successedAlertMessage);
+
+            @*var actionName = "@Model.BtnActionName";
+            if (actionName== "Delete") {
+                $("#Nationality_NationalityName").attr("readonly", true);
+            }*@
+        });
+    </script>
+}

@@ -1,0 +1,143 @@
+﻿@model List<DoctorAppointmentData>
+@{
+    ViewData["Title"] = "OnlinePatient";
+    Layout = "~/Views/Shared/_HMSMainLayout.cshtml";
+}
+
+@section LeftSideMenu{
+    <partial name="_ReceptionLeftSideMenuPartial" />
+}
+
+@section CurrentPageNavigation{
+    <h4 class="page-title float-left">Reception</h4>
+
+    <ol class="breadcrumb float-right">
+        @*<li class="breadcrumb-item"><a asp-action="DoctorModuleMenu" asp-controller="HmsMenu" asp-area="Menu">Doctor Module</a></li>*@
+        <li class="breadcrumb-item"><a href="#">Online Booking Patient</a></li>
+    </ol>
+}
+
+<div class="row">
+    <div class="col-12">
+        <div class="form-inline m-b-20">
+            <div class="row" style=" width: 48rem;">
+                <div class="col-md-6 text-xs-center" style="display:none;">
+                    <div class="form-group">
+                        <label class="control-label m-r-5">Status</label>
+                        <select id="demo-foo-filter-status" class="form-control input-sm">
+                            <option value="">Show all</option>
+                            <option value="active">Active</option>
+                            <option value="disabled">Disabled</option>
+                            <option value="suspended">Suspended</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="col-md-6 text-center ">
+                    <div class="form-group ">
+                        <input id="demo-foo-search" type="text" placeholder="Search" class="form-control input-sm col-10" autocomplete="on">
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <table id="demo-foo-filtering" class="table table-hover table-striped m-b-0 toggle-circle" data-page-size="7">
+            <thead>
+                <tr>
+                    <th>No.</th>
+                    <th>Visit No</th>
+                    <th>Patient Name</th>
+                    <th>Gender/Age</th>
+                    <th>DOB</th>
+                    <th>Appointment Date</th>
+                    <th>Consultant</th>
+                    <th>Token No</th>
+                    <th>Ph No:</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model.Select((value, i) => new { value, i }))
+                {
+                    string fullname = item.value.PatientRegistration != null ? (item.value.PatientRegistration.PatientPrefix != null ? item.value.PatientRegistration.PatientPrefix + " " + item.value.PatientRegistration.FullName : item.value.PatientRegistration.FullName )
+                        :( item.value.NewPatientBookingAppointment.Prefix != null ? item.value.NewPatientBookingAppointment.Prefix + " " + item.value.NewPatientBookingAppointment.FullName : item.value.NewPatientBookingAppointment.FullName);
+                    string genderAndAge = item.value.PatientRegistration != null ? item.value.PatientRegistration.Gender + " / " + item.value.PatientRegistration.Age
+                        : item.value.NewPatientBookingAppointment.Gender + " / " + item.value.NewPatientBookingAppointment.Age;
+                    string dateOfBirth = item.value.PatientRegistration != null ? ( item.value.PatientRegistration.DOB.HasValue ? item.value.PatientRegistration.DOB.Value.FormattedDateString() : ""):
+                        (item.value.NewPatientBookingAppointment.DateOfBirth.HasValue ? item.value.NewPatientBookingAppointment.DateOfBirth.Value.FormattedDateString() : "");
+                    string phoneNo = item.value.PatientRegistration != null ? item.value.PatientRegistration.PatientMobile1 ?? "" :
+                        item.value.NewPatientBookingAppointment.PhoneNo ?? "";
+
+                <tr>
+                    <td>@(item.i + 1)</td>
+                    <td>@item.value.VisitNo</td>
+                    <td>
+                        @fullname
+                    </td>
+                    <td>@genderAndAge</td>
+                    <td>@dateOfBirth</td>
+                    <td>@(item.value.AppointmentDate.FormattedDateString())</td>
+                    <td>@("Dr." + item.value.DoctorInfo.DoctorName)</td>
+                    <td>@item.value.TokenNo</td>
+                    <td>@phoneNo</td>
+                    <td>
+
+                        @*<td>@(item.i + 1)</td>
+            <td>@item.value.VisitNo</td>
+            <td>
+                @(item.value.NewPatientBookingAppointment.Prefix == null ? item.value.NewPatientBookingAppointment.FullName
+            : (item.value.NewPatientBookingAppointment.Prefix + " ")  + item.value.NewPatientBookingAppointment.FullName)
+            </td>
+            <td>@item.value.NewPatientBookingAppointment.Gender / @item.value.NewPatientBookingAppointment.Age</td>
+            <td>@(item.value.NewPatientBookingAppointment.DateOfBirth == null ? "" : item.value.NewPatientBookingAppointment.DateOfBirth.Value.FormattedDateString())</td>
+            <td>@(item.value.AppointmentDate.FormattedDateString())</td>
+            <td>@("Dr." + item.value.DoctorInfo.DoctorName)</td>
+            <td>@item.value.TokenNo</td>
+            <td>@(item.value.NewPatientBookingAppointment.PhoneNo ?? "")</td>*@
+                    <td>
+                        @{
+                            bool isAlreadyRegistered = item.value.PatientRegId.HasValue;
+                        }
+                        @if (!isAlreadyRegistered)
+                        {
+
+                            <a asp-action="PatientRegistrationCreate" asp-controller="PatientRegistration"
+                               asp-area="Reception" asp-route-bookedPatientId="@item.value.NewBookingPatientId">Register</a>
+
+                        }
+                        else
+                        {
+
+                            <a asp-action="DoctorAppointment" asp-controller="DoctorAppointment"
+                               asp-area="Reception" asp-route-patientRegId="@item.value.PatientRegId"
+                               asp-route-isBookedPatient="@true">Confirm Booking</a>
+
+                        }
+                    </td>
+                </tr>
+                }
+            </tbody>
+            <tfoot>
+                <tr class="active">
+                    <td colspan="3">
+                        <div class="text-right">
+                            <ul class="pagination pagination-split footable-pagination m-t-10 m-b-0"></ul>
+                        </div>
+                    </td>
+                </tr>
+            </tfoot>
+        </table>
+    </div>
+</div>
+
+@section Scripts{
+    <!-- Counter js  -->
+    <script src="~/plugins/waypoints/jquery.waypoints.min.js"></script>
+    <script src="~/plugins/counterup/jquery.counterup.min.js"></script>
+
+
+    <!--FooTable-->
+    <script src="~/plugins/footable/js/footable.all.min.js"></script>
+
+    <!--FooTable Example-->
+    <script src="~/pages/jquery.footable.js"></script>
+}

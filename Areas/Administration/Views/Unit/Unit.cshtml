@@ -1,0 +1,355 @@
+﻿@model HMS.Models.ViewModels.UnitViewModel
+@{
+    ViewData["Title"] = "Unit";
+    Layout = "~/Views/Shared/_HMSMainLayout.cshtml";
+}
+
+
+
+@section CurrentPageNavigation{
+    <h4 class="page-title float-left">Setting</h4>
+
+    <ol class="breadcrumb float-right">
+        <li class="breadcrumb-item"><a href="#">Unit</a></li>
+    </ol>
+}
+
+@section LeftSideMenu{
+    <partial name="_AdminSettingLeftSideMenuPartial" />
+}
+@{
+    <style>
+        .btnUpdateSubmitToggle{
+            display: @(Model.UnitId == null || Model.UnitId.Value == 0 ? "none" : "")
+        }
+
+        .btnSaveSubmitToggle{
+            display: @(Model.UnitId == null || Model.UnitId.Value == 0 ? "" : "none")
+        }
+    </style>
+}
+
+<div class="row">
+    <div class="col-4 p-2 my-2 bg-light separateScrollFullHeight">
+        <div class="card-box">
+            <form asp-action="Unit" method="post" id="formUnit">
+                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                <input type="hidden" asp-for="UnitId" class="resetInputValue"/>
+                <div class="form-group">
+                    <label asp-for="DepartmentId" class="control-label"></label>
+                    <select asp-for="DepartmentId" class="form-control input resetInputValue" asp-items='@(new SelectList(Model.DepartmentList,"DepartmentId","DepartmentName"))'>
+                        <option value="">--Select Department--</option>
+                    </select>
+                    <span asp-validation-for="DepartmentId" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="UnitName" class="control-label"></label>
+                    <input asp-for="UnitName" class="form-control input-sm resetInputValue" />
+                    <span asp-validation-for="UnitName" class="text-danger"></span>
+                </div>
+
+                <div class="form-group">
+                    @if ((await authorizationService.AuthorizeAsync(User, "UnitUpdate")).Succeeded)
+                    {
+                        <button id="btnUpdateSubmit" type="submit" name="btnSubmit" value="Update" class="btn btn-success btnUpdateSubmitToggle">Update</button>
+                    }
+                    @if ((await authorizationService.AuthorizeAsync(User, "UnitCreate")).Succeeded)
+                    {
+                        <button id="btnSaveSubmit" type="submit" name="btnSubmit" value="Create" class="btn btn-success btnSaveSubmitToggle">Save</button>
+                    }
+                    <button type="button" class="btn btn-secondary" onclick="ResetFormAndShowHideBtnSubmit('form#formUnit');">Cancel</button>
+                </div>
+            </form>
+        </div>
+    </div>
+    <div class="col-8 p-2 my-2 bg-light separateScrollFullHeight">
+        <div class="row">
+            <div class="col-12">
+                <div class="card-box">
+                    <div class="form-inline m-b-20">
+                        <div class="row" style=" width: 48rem;">
+                            <div class="col-md-6 text-xs-center" style="display:none;">
+                                <div class="form-group">
+                                    <label class="control-label m-r-5">Status</label>
+                                    <select id="demo-foo-filter-status" class="form-control input-sm">
+                                        <option value="">Show all</option>
+                                        <option value="active">Active</option>
+                                        <option value="disabled">Disabled</option>
+                                        <option value="suspended">Suspended</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-6 text-center ">
+                                <div class="form-group ">
+                                    <input id="demo-foo-search" type="text" placeholder="Search" class="form-control input-sm col-10" autocomplete="on">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <table id="demo-foo-filtering" class="table table-striped table-bordered toggle-circle m-b-0" data-page-size="7">
+                        <thead>
+                            <tr>
+                                <th>
+                                    No.
+                                </th>
+
+                                <th>
+                                    Unit Name
+                                </th>
+                                <th>
+                                    Department Name
+                                </th>
+                                <th class="text-center"><b>Action</b></th>
+                            </tr>
+                        </thead>
+
+                        <tbody>
+                            @foreach (var item in Model.UnitList.Select((value, i) => new { value, i }))
+                            {
+                                string unitJsonData = Newtonsoft.Json.JsonConvert.SerializeObject(item.value);
+                                //var item = Model.UnitList;
+                                @*<input type="hidden" asp-for="PageNamesInModule.PageNamesInModuleId" />*@
+                                <tr>
+                                    <td>
+                                        @(item.i + 1)
+                                    </td>
+                                    <td>
+                                        @item.value.UnitName
+                                    </td>
+                                    <td>
+                                        @item.value.Department.DepartmentName
+                                    </td>
+
+
+                                    <td class="text-center">
+                                        @if ((await authorizationService.AuthorizeAsync(User, "UnitUpdate")).Succeeded)
+                                        {
+                                            <button class="btn btn-outline-primary" onclick="TableRowEditClick(@unitJsonData);"><i class="fa fa-edit"></i></button>
+                                        }
+                                        @if ((await authorizationService.AuthorizeAsync(User, "UnitDelete")).Succeeded)
+                                        {
+                                            <button class="btn btn-outline-danger" onclick="TableRowDeleteClick('@item.value.UnitId')"><i class="fa fa-trash-alt"></i></button>
+                                        }
+                                    </td>
+
+                                </tr>
+                            }
+                        </tbody>
+                        <tfoot>
+                            <tr class="active">
+                                <td colspan="5">
+                                    <div class="text-right">
+                                        <ul class="pagination pagination-split footable-pagination m-t-10 m-b-0"></ul>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>
+
+
+            </div>
+        </div>
+    </div>
+</div>
+
+@{
+    ViewData["DeleteConfirmPolicyName"] = "UnitDelete";
+    ViewData["DeleteConfirmActionName"] = "Unit";
+    ViewData["DeleteConfirmControllerName"] = "Unit";
+    ViewData["DeleteConfirmAreaName"] = "Administration";
+    ViewData["DeleteConfirmParameterName"] = "toDeleteUnitId";
+}
+
+<partial name="_DeleteConfirmPartial" view-data="ViewData" />
+
+@{
+    #region OldHtmlData
+}
+
+@*@{
+        var actionName = Model.BtnActionName.ToLower().Trim();
+
+    }*@
+
+@*<div class="row">
+        <div class="col-3 p-2 my-2 bg-light">
+            <div class="card-box">
+                <form asp-action="Unit" method="post">
+                    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                    @if (Model.BtnActionName != "Create")
+                    {
+                        <input type="hidden" asp-for="UnitId" />
+                    }
+                    <input type="hidden" asp-for="BtnActionName" />
+                    <div class="form-group">
+                        <label asp-for="DepartmentId" class="control-label"></label>
+                        <select id="deptid" asp-for="DepartmentId" class="form-control input" asp-items='@(new SelectList(Model.DepartmentList,"DepartmentId","DepartmentName"))'>
+                            <option value="">--Select Department--</option>
+                        </select>
+                            <span asp-validation-for="DepartmentId" class="text-danger"></span>
+                    </div>
+                    <div class="form-group">
+                        <label asp-for="UnitName" class="control-label"></label>
+                        <input id="unitid" asp-for="UnitName" class="form-control input-sm" />
+                        <span asp-validation-for="UnitName" class="text-danger"></span>
+                    </div>
+
+                    <div class="form-group">
+                        @if (actionName == "edit")
+                        {
+                            <button type="submit" name="btnSubmit" value="Edit" class="btn btn-success">Update</button>
+                        }
+                        else if (actionName == "delete")
+                        {
+                            <button type="submit" name="btnSubmit" value="Delete" class="btn btn-danger">Delete</button>
+                        }
+                        else
+                        {
+                            <button type="submit" name="btnSubmit" value="Create" class="btn btn-success">Save</button>
+                        }
+                        <a asp-action="Unit" class="btn btn-secondary">Cancel</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+        <div class="col-9 p-2 my-2 bg-light">
+            <div class="row">
+                <div class="col-12">
+                    <div class="card-box">
+                        <table id="demo-foo-filtering" class="table table-striped table-bordered toggle-circle m-b-0" data-page-size="7">
+                            <thead>
+                                <tr>
+                                    <th>
+                                        No.
+                                    </th>
+
+                                    <th>
+                                        @Html.DisplayNameFor(model => model.UnitName)
+                                    </th>
+                                    <th>
+                                        @Html.DisplayNameFor(model => model.DepartmentName)
+                                    </th>
+                                    <th class="text-center"><b>Action</b></th>
+                                </tr>
+                            </thead>
+                            <div class="form-inline m-b-20">
+                                <div class="row" style=" width: 48rem;">
+                                    <div class="col-md-6 text-xs-center" style="display:none;">
+                                        <div class="form-group">
+                                            <label class="control-label m-r-5">Status</label>
+                                            <select id="demo-foo-filter-status" class="form-control input-sm">
+                                                <option value="">Show all</option>
+                                                <option value="active">Active</option>
+                                                <option value="disabled">Disabled</option>
+                                                <option value="suspended">Suspended</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6 text-center ">
+                                        <div class="form-group ">
+                                            <input id="demo-foo-search" type="text" placeholder="Search" class="form-control input-sm col-10" autocomplete="on">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <tbody>
+                                @for (int i = 0; i < Model.UnitList.Count(); i++)
+                                {
+                                    var item = Model.UnitList;
+                                    <input type="hidden" asp-for="PageNamesInModule.PageNamesInModuleId" />
+                                    <tr>
+                                        <td>
+                                            @(i + 1)
+                                        </td>
+                                        <td>
+                                            @Html.DisplayFor(modelItem => item[i].UnitName)
+                                        </td>
+                                        <td>
+                                            @Html.DisplayFor(modelItem => item[i].Department.DepartmentName)
+                                        </td>
+
+
+                                        <td class="text-center">
+                                            <a class="btn btn-outline-primary" asp-route-btnActionName="Edit" asp-action="Unit" asp-route-UnitId="@item[i].UnitId" asp-route-DepartmentId="@item[i].DepartmentId"><i class="fa fa-edit"></i></a>
+                                            <a class="btn btn-outline-danger" asp-route-btnActionName="Delete" asp-action="Unit" asp-route-UnitId="@item[i].UnitId" asp-route-DepartmentId="@item[i].DepartmentId"><i class="fa fa-trash-alt"></i></a>
+                                        </td>
+
+                                    </tr>
+                                }
+                            </tbody>
+                            <tfoot>
+                                <tr class="active">
+                                    <td colspan="5">
+                                        <div class="text-right">
+                                            <ul class="pagination pagination-split footable-pagination m-t-10 m-b-0"></ul>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </tfoot>
+                        </table>
+                    </div>
+
+
+                </div>
+            </div>
+        </div>
+    </div>*@
+
+@{
+    #endregion
+}
+
+@section Scripts{
+
+    <!-- Counter js  -->
+    <script src="~/plugins/waypoints/jquery.waypoints.min.js"></script>
+    <script src="~/plugins/counterup/jquery.counterup.min.js"></script>
+
+
+    <!--FooTable-->
+    <script src="~/plugins/footable/js/footable.all.min.js"></script>
+
+    <!--FooTable Example-->
+    <script src="~/pages/jquery.footable.js"></script>
+    <script>
+        jQuery.validator.addMethod("isuniqueunit",
+            function (value, element, param) {
+                var tblJsonData = @Html.Raw(Json.Serialize(Model.UnitList));
+                var id = $("#UnitId").val().trim();
+                var isCreate = id == null || id == "" || id == "0";
+                var message = $(element).attr('data-val-isuniqueunit');
+                $.validator.messages.isuniqueunit = $.validator.format(message, value);
+                if (isCreate) {
+                    return tblJsonData.filter(d => StringCompareFormat(d.unitName) == StringCompareFormat(value)).length == 0;
+                } else {
+                    return tblJsonData.filter(d => StringCompareFormat(d.unitName) == StringCompareFormat(value) && StringCompareFormat(d.unitId) != StringCompareFormat(id)).length == 0;
+                }
+            });
+
+        $.validator.unobtrusive.adapters.add('isuniqueunit',
+            function (options) {
+                options.rules['isuniqueunit'] = options.params;
+                if (options.message != null) {
+                    $.validator.messages.isuniqueunit = options.message;
+                }
+            }
+        );
+        $(document).ready(function () {
+             var successedAlertMessage = "@ViewBag.SuccessedAlertMessage";
+            AlertSnackBarByActionName(successedAlertMessage);
+
+            @*var actionName = "@Model.BtnActionName";
+            if (actionName== "Delete") {
+                $("#unitid").attr("readonly", true);
+                $("#deptid").attr("disabled", true);
+            }*@
+        });
+    </script>
+}
+
+
+
+
+
+

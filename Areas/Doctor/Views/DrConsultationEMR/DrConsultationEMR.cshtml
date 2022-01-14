@@ -1,0 +1,331 @@
+﻿@model DrConsultationEMRViewModel
+
+@{
+    ViewData["Title"] = "DrConsultationEMR";
+    Layout = "~/Views/Shared/_HMSMainLayout.cshtml";
+}
+
+<style>
+    .tree, .tree ul {
+        margin: 0;
+        padding: 0;
+        list-style: none;
+        margin-left: 10px;
+        font-size: 12px;
+    }
+
+        .tree ul {
+            margin-left: 1em;
+            position: relative;
+            font-size: 12px;
+        }
+
+            .tree ul ul {
+                margin-left: .5em;
+                font-size: 12px;
+            }
+
+            .tree ul:before {
+                content: "";
+                display: block;
+                width: 0;
+                position: absolute;
+                top: 0;
+                bottom: 0;
+                left: 0;
+                border-left: 1px solid;
+                font-size: 12px;
+            }
+
+        .tree li {
+            margin: 0;
+            padding: 0 1em;
+            line-height: 2em;
+            color: black;
+            position: relative;
+            font-size:12px;
+            
+        }
+
+        .tree ul li:before {
+            content: "";
+            display: block;
+            width: 10px;
+            height: 0;
+            border-top: 1px solid;
+           
+            position: absolute;
+            top: 1em;
+            left: 0 ;
+            font-size:12px;
+        }
+
+       
+
+        .tree li button, .tree li button:active, .tree li button:focus {
+            text-decoration: none;
+            color: #369;
+            border: none;
+            background: transparent;
+          
+            outline: 0;
+            font-size:12px;
+        }
+
+
+    table, th, td {
+        border: 1px solid black;
+        border-collapse: collapse;
+        font-size: 12px;
+    }
+
+    .customers {
+        background-color: lightgray;
+    }
+
+    .cardbox {
+        padding: 3px;
+        background-color: lightgray;
+    }
+
+    .tree1 {
+        border: 2px solid black;
+        height: 12rem;
+        /*width:12rem;*/
+        overflow-y: scroll;
+    }
+</style>
+
+@section CurrentPageNavigation{
+    <h4 class="page-title float-left">Doctor WorkBench</h4>
+
+    <ol class="breadcrumb float-right">
+        <li class="breadcrumb-item"><a href="#">Doctor Consultation</a></li>
+        @*<li class="breadcrumb-item"><a href="#">Register</a></li>*@
+    </ol>
+}
+
+@section LeftSideMenu{
+    <partial name="_DoctorWorkBenchLeftSideMenuPartial" />
+}
+
+<div class="row">
+    <div class="card-box w-100" style=" margin-bottom: 5px;">
+        <partial name="_PatientAppointmentDataPartial" for="@Model.DoctorConsultationViewModel.DoctorAppointmentData" />
+    </div>
+</div>
+
+<partial name="_DrConsultationActionsTabPartial" for="@Model.DoctorConsultationViewModel" />
+<br />
+<div class="row">
+
+    <div class="col-1">
+        <label>
+            ViewType:
+        </label>
+    </div>
+    <div class="col-3">
+        <select class="form-control input-sm"><option>--Select--</option></select>
+    </div>
+    <div class="col-1">
+        <label>Babiec:</label>
+    </div>
+    <div class="col-3">
+        <select class="form-control input-sm"><option>--Select--</option></select>
+    </div>
+</div>
+<div class="row">
+    <div class="col-3 p-2 my-2 bg-light">
+        <div class="tree1">
+            <ul id="tree1">
+                <li>
+                   
+                    <ul>
+                        <li>Visit Summary </li>
+                        <li>
+                             Encounter Summery
+
+
+                        </li>
+                        <li>
+                            Vital Signs
+
+                        </li>
+                        <li>
+                            Allergic Recording
+                        </li>
+                        <li>
+                            Medication
+                        </li>
+                        <li>
+                            Progress Notes
+                        </li>
+                        <li>
+                            Nursing Notes
+                        </li>
+                        <li>
+                            Referrals
+                        </li>
+                        <li>
+                            SBAR
+                        </li>
+                        <li>
+                            Examination
+                        </li>
+                    </ul>
+                </li>
+
+            </ul>
+
+        </div>
+    </div>
+    <div class="col-9 p-2 my-2 bg-light" style="width:75px">
+        <div class="row">
+            <div class="col-12">
+                <div class="card-box cardbox">
+                    <label>Previous Vital Sign</label>
+                </div>
+            </div>
+
+            <br />
+            <div class="col-12">
+                <div class="card-box">
+                    <table data-page-size="7" width="100%">
+                        <thead class="customers">
+                            <tr>
+                                <th>
+                                    DateTime
+                                </th>
+                                <th>
+                                    Height
+                                </th>
+                                <th>
+                                    Weight
+                                </th>
+                                <th>
+                                    Oxygen Saturation
+                                </th>
+                                <th>
+                                    HEART RATE
+                                </th>
+                                <th>
+                                    SYSTOLIC BP
+                                </th>
+                                <th>
+                                    DIASTOLIC BP
+                                </th>
+                                <th>
+                                    Temperature
+                                </th>
+                                <th>
+                                    BMI
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>
+                                    23.2.2020
+                                </td>
+                                <td>
+                                    125
+                                </td>
+                                <td>
+                                    135
+                                </td>
+                                <td>
+                                    90
+                                </td>
+                                <td>
+                                    58
+                                </td>
+                                <td>
+                                    78
+                                </td>
+                                <td>
+                                    78
+                                </td>
+                                <td>
+                                    67
+                                </td>
+                                <td>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+
+        </div>
+    </div>
+</div>
+@section Scripts{
+
+    @*<link href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.0.0-alpha.6/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.0/css/all.css" integrity="sha384-lZN37f5QGtY3VHgisS14W3ExzMWZxybE1SJSEsQp9S+oqd12jhcu+A56Ebc1zFSJ" crossorigin="anonymous">*@
+    <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
+    @*@*<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.js"></script>*@
+    <script>
+        $.fn.extend({
+            treed: function (o) {
+
+                var openedClass = 'fa-minus-circle';
+                var closedClass = 'fa-plus-circle';
+
+                if (typeof o != 'undefined') {
+                    if (typeof o.openedClass != 'undefined') {
+                        openedClass = o.openedClass;
+                    }
+                    if (typeof o.closedClass != 'undefined') {
+                        closedClass = o.closedClass;
+                    }
+                };
+
+                //initialize each of the top levels
+                var tree = $(this);
+                tree.addClass("tree");
+                tree.find('li').has("ul").each(function () {
+                    //var branch = $(this); //li with children ul
+                    //branch.prepend("");
+                    //branch.addClass('branch');
+                    //branch.on('click', function (e) {
+                    if (this == e.target) {
+                        var icon = $(this).children('i:first');
+                        icon.addClass(openedClass + " " + closedClass);
+                        $(this).children().children().toggle();
+                    }
+                    //})
+                    branch.children().children().toggle();
+                });
+                //fire event from the dynamically added icon
+                tree.find('.branch .indicator').each(function () {
+                    $(this).on('click', function () {
+                        $(this).closest('li').click();
+                    });
+                });
+                //fire event to open branch if the li contains an anchor instead of text
+                //tree.find('.branch>a').each(function () {
+                //    $(this).on('click', function (e) {
+                //        $(this).closest('li').click();
+                //        e.preventDefault();
+                //    });
+                //});
+                ////fire event to open branch if the li contains a button instead of text
+                //tree.find('.branch>button').each(function () {
+                //    $(this).on('click', function (e) {
+                //        $(this).closest('li').click();
+                //        e.preventDefault();
+                //    });
+                //});
+            }
+        });
+
+        //Initialization of treeviews
+
+        $('#tree1').treed();
+
+        $('#tree2').treed({ openedClass: 'fa-folder-open', closedClass: 'fa-folder' });
+
+    </script>
+}

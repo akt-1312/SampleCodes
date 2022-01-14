@@ -1,0 +1,133 @@
+﻿@model DrConsultationOrderDrugViewModel
+@{
+    ViewData["Title"] = "DrConsultationOrders";
+    Layout = "~/Views/Shared/_HMSMainLayout.cshtml";
+}
+
+<style>
+    .table
+    {
+        border-width:1px;
+        border-color:black;
+    }
+    .largeform
+    {
+        border-width:1px;
+        border-bottom-width:4px;
+        border-color:gray;
+        
+    }
+</style>
+
+@section CurrentPageNavigation{
+    <h4 class="page-title float-left">Doctor WorkBench</h4>
+
+    <ol class="breadcrumb float-right">
+        <li class="breadcrumb-item"><a href="#">Doctor Consultation</a></li>
+        @*<li class="breadcrumb-item"><a href="#">Register</a></li>*@
+    </ol>
+}
+@section LeftSideMenu{
+    <partial name="_DoctorWorkBenchLeftSideMenuPartial" />
+}
+
+<div class="row">
+    <div class="card-box w-100" style="margin-bottom: 5px;
+">
+        <partial name="_PatientAppointmentDataPartial" for="@Model.DoctorConsultationViewModel.DoctorAppointmentData" />
+    </div>
+</div>
+
+<partial name="_DrConsultationActionsTabPartial" for="@Model.DoctorConsultationViewModel" />
+<br />
+<div class="row">
+    <div class="card-box w-100">
+        <partial name="_OrderActonsTabPartial" for="@Model.DoctorConsultationViewModel" />
+        <div class="row form-control" style="background-color:lightgray">
+            <input type="radio" name="type" checked />
+            <label>Generic / Item</label>
+            <input type="radio" name="type" />
+            <label>IV Fluid</label>
+            <input type="radio" name="type" />
+            <label>TPN Orde</label>
+        </div>
+        <div class="row">
+            <div class="col-2">
+                <a style="color:blue;text-decoration-line:underline;font-size:14px">Previous Orders</a>
+            </div>
+            <div class="col-8">
+            </div>
+            <div class="col-2">
+               <button style="background-color:#313a46">Search</button>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-6" >
+                <table class="table">
+                    <thead style="background-color:lightgray">
+                        <tr>
+                            <th>
+                                <label> Generic</label>
+                                <input type="text" />
+                                <input type="checkbox" /><label>Logged in Site</label>
+                            </th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @for (int i = 0; i < 6; i++)
+                        {
+                        <tr>
+                            <td class="col-5">
+                                Paracetamol
+                            </td>
+                            <td class="col-1">
+                                <i class="fas fa-plus-circle"></i>
+                            </td>
+                        </tr>
+                        }
+                        </tbody>
+                </table>
+            </div>
+            <div class="col-6" >
+                <table class="table" >
+                    <thead style="background-color:lightgray">
+                        <tr>
+                            <th>
+                                <label> Trade</label>
+                            </th>
+                            <th>
+                                <input type="text" />
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @for (int i = 0; i < 6; i++)
+                        {
+                            <tr>
+
+                            </tr>
+                        }
+
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <div class="row largeform" style="background-color:lightgray">
+            <label>Generic Name</label> 
+            <label>Item Name</label>
+            <label>Frequency</label>
+            <label>Intake Qty</label>
+            <label>Start Date</label>
+            <label>No Days</label>
+            <label>Total Qty</label>
+            <label>FC</label>
+        </div>
+        <div class="col-5">
+            <label>Remark</label>
+            <br/>
+            <textarea></textarea>
+        </div>
+
+        </div>
+</div>

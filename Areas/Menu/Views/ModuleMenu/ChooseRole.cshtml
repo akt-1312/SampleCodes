@@ -1,0 +1,205 @@
+﻿@model HMS.Models.ViewModels.Menu.UserChooseRoleViewModel
+
+@{
+    Layout = "~/Views/Shared/_MenuOnlyLayout.cshtml";
+}
+
+@*@section CurrentPageNavigation{
+    <h4 class="page-title float-left">Menu</h4>
+
+    <ol class="breadcrumb float-right">
+        <li class="breadcrumb-item"><a href="#">Choose Role</a></li>
+    </ol>
+}*@
+
+<style>
+    /*body{
+            overflow:hidden;
+        }*/
+
+    body {
+        overflow: hidden;
+        background-color: lightslategrey;
+    }
+
+    .flexEachRow {
+        display: flex;
+        justify-content: center;
+    }
+
+    .cardBox {
+        margin: 1rem !important;
+        min-width: 8rem;
+        max-width: 20%;
+    }
+
+    .card-headerBox {
+        text-align: center !important;
+        width: 100%;
+        height: 8rem;
+    }
+
+    .content-page {
+         margin-left: 0px; 
+    }
+        .content-page .content{
+            margin-top:0px;
+        }
+
+        .iconDiv {
+            display: block;
+            height: 4rem;
+        }
+
+    .iconStyle {
+        font-size: 3rem;
+        padding: 1rem;
+    }
+
+    .lblMenu {
+        cursor: pointer;
+    }
+
+    .card {
+        background-color: transparent !important;
+        border: 1px solid #fff;
+        width: 170px !important;
+        /*height: 170px;*/
+    }
+
+    a.anc {
+        color: white;
+    }
+
+    .card-header {
+        border: none;
+        padding: 3rem 1.2rem;
+        width: 100%;
+        height: 100%;
+    }
+
+    a.anc:hover .card-header, a.anc:hover .card {
+        background-color: white;
+        color: lightslategray;
+        border: none;
+        margin-top: -15px;
+        transition: 0.4s;
+        border-radius: 0.25rem;
+    }
+
+    .init {
+        position: fixed;
+        right: 10px;
+        bottom: 11px;
+        color: white;
+        text-shadow: 2px 2px 2px #1d1d1d;
+    }
+</style>
+@if (Model.Roles.Any() && signInManager.IsSignedIn(User))
+    {
+<div class="init">
+    <h6 align="center" class="font" style="color:white;">@@2020 Soft Software System</h6>
+</div>
+
+<div style="display: flex; align-items: center; justify-content: center; height: 100vh; margin: 0; padding: 0; ">
+
+    @{
+                int rowCount = (int)Math.Ceiling((decimal)Model.Roles.Count / 4);
+                int columnIndex = 0;
+    }
+
+    @for (int i = 1; i <= rowCount; i++)
+            {
+    <div class="row">
+        <div class="col-12 flexEachRow">
+            @for (int j = columnIndex; j < (4*i)-1 && j<Model.Roles.Count ; j++)
+                        {
+
+            <a asp-area="Menu" asp-controller="ModuleMenu" asp-action="UserRoleSelect" asp-route-role="@Model.Roles[j]" asp-route-isPersistent="@Model.IsPersistent" class="anc">
+                <div class="card m-3" style="min-width:10rem;max-width:20%;">
+                    <div class="card-header text-center">
+                        @*<div style="display:block; height:6rem;"><i class="fa fa-users-cog" style="font-size:3rem; padding:1rem;"></i></div>*@
+                        <div><label class="lblMenu" style="font-size:1.2rem;">@Model.Roles[j]</label></div>
+
+                        <div><label class="lblMenu">Role</label></div>
+                    </div>
+                </div>
+            </a>
+
+                            columnIndex += 1;
+                        }
+        </div>
+    </div>
+
+            }
+
+
+
+
+    @*<div class="row">
+            <div class="col-12 flexEachRow">
+                <a asp-area="Menu" asp-controller="HmsMenu" asp-action="AdministrationMenu" class="anc">
+                    <div class="card m-3" style="min-width:10rem;max-width:20%;">
+                        <div class="card-header text-center">
+                            <div style="display:block; height:6rem;"><i class="fa fa-users-cog" style="font-size:3rem; padding:1rem;"></i></div>
+                            <div><label class="lblMenu">Administration</label></div>
+                        </div>
+                    </div>
+                </a>
+
+                <a asp-area="Registration" asp-controller="PatientRegistrationAKT" asp-action="Create" class="anc">
+                    <div class="card m-3" style="min-width:10rem;max-width:20%;">
+                        <div class="card-header text-center">
+                            <div style="display:block; height:6rem;"><i class="fa fa-registered" style="font-size:3rem; padding:1rem;"></i></div>
+                            <div><label class="lblMenu">Patient Registration</label></div>
+                        </div>
+                    </div>
+                </a>
+
+                <a asp-area="Registration" asp-controller="PatientRegistrationAKT" asp-action="PatientRegList" class="anc">
+                    <div class="card m-3" style="min-width:10rem;max-width:20%;">
+                        <div class="card-header text-center">
+                            <div style="display:block; height:6rem;"><i class="fa fa-user-injured" style="font-size:3rem; padding:1rem;"></i></div>
+                            <div><label class="lblMenu">Out Patient</label></div>
+                        </div>
+                    </div>
+                </a>
+                <a asp-area="Registration" asp-controller="PatientRegistrationAKT" asp-action="PatientRegList" class="anc">
+                    <div class="card m-3" style="min-width:10rem;max-width:20%;">
+                        <div class="card-header text-center">
+                            <div style="display:block; height:6rem;"><i class="fa fa-user-injured" style="font-size:3rem; padding:1rem;"></i></div>
+                            <div><label class="lblMenu">In Patient</label></div>
+                        </div>
+                    </div>
+                </a>
+
+                <a asp-area="Registration" asp-controller="PatientRegistrationAKT" asp-action="PatientRegList" class="anc">
+                    <div class="card m-3" style="min-width:10rem;max-width:20%;">
+                        <div class="card-header text-center">
+                            <div style="display:block; height:6rem;"><i class="fa fa-user-injured" style="font-size:3rem; padding:1rem;"></i></div>
+                            <div><label class="lblMenu">In Patient</label></div>
+                        </div>
+                    </div>
+                </a>
+
+                <a asp-area="Registration" asp-controller="PatientRegistrationAKT" asp-action="PatientRegList" class="anc">
+                    <div class="card m-3" style="min-width:10rem;max-width:20%;">
+                        <div class="card-header text-center">
+                            <div style="display:block; height:6rem;"><i class="fa fa-user-injured" style="font-size:3rem; padding:1rem;"></i></div>
+                            <div><label class="lblMenu">In Patient</label></div>
+                        </div>
+                    </div>
+                </a>
+
+                <a asp-area="Registration" asp-controller="PatientRegistrationAKT" asp-action="PatientRegList" class="anc">
+                    <div class="card m-3" style="min-width:10rem;max-width:20%;">
+                        <div class="card-header text-center">
+                            <div style="display:block; height:6rem;"><i class="fa fa-user-injured" style="font-size:3rem; padding:1rem;"></i></div>
+                            <div><label class="lblMenu">In Patient</label></div>
+                        </div>
+                    </div>
+                </a>
+            </div>
+        </div>*@
+</div>
+    }

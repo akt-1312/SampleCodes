@@ -1,0 +1,157 @@
+﻿@model List<PatientRegistration>
+@{
+    ViewData["Title"] = "ViewAllRegisteredPatients";
+    Layout = "~/Views/Shared/_HMSMainLayout.cshtml";
+}
+
+<style>
+    .thActionMinwidth {
+        min-width: 120px;
+        text-align: center;
+    }
+</style>
+
+@section CurrentPageNavigation{
+    <h4 class="page-title float-left">Reception</h4>
+
+    <ol class="breadcrumb float-right">
+        <li class="breadcrumb-item"><a href="#">Patient Registration Create</a></li>
+        @*<li class="breadcrumb-item"><a href="#">Register</a></li>*@
+    </ol>
+}
+
+@section LeftSideMenu{
+    <partial name="_ReceptionLeftSideMenuPartial" />
+}
+
+<div class="row">
+    <div class="card-box w-100">
+        <div class="col-12">
+            <div class="form-inline m-b-20">
+                <div class="row" style=" width: 48rem;">
+                    <div class="col-md-6 text-xs-center" style="display:none;">
+                        <div class="form-group">
+                            <label class="control-label m-r-5">Status</label>
+                            <select id="demo-foo-filter-status" class="form-control input-sm">
+                                <option value="">Show all</option>
+                                <option value="active">Active</option>
+                                <option value="disabled">Disabled</option>
+                                <option value="suspended">Suspended</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-md-6 text-center ">
+                        <div class="form-group ">
+                            <input id="demo-foo-search" type="text" placeholder="Search" class="form-control input-sm col-10" autocomplete="on">
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <table id="demo-foo-filtering" class="table table-hover table-striped table-bordered m-b-0 toggle-circle" data-page-size="7">
+                <thead>
+                    <tr>
+                        <th>No.</th>
+                        <th>Photo</th>
+                        <th>MRNO:</th>
+                        <th>Name</th>
+                        <th>Father Name</th>
+                        <th>Age/Gender</th>
+                        <th>Mobile</th>
+                        <th>DoB</th>
+                        <th>Address</th>
+                        <th>Marital Status</th>
+                        <th>Identity No</th>
+                        <th class="thActionMinwidth">Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model.Select((value, i) => new { value, i }))
+                    {
+                        var photoPath = "~/images/PatientRegistrationImages/" +
+                                        (item.value.PhotoPath ?? (item.value.Gender.ToLower().Trim() == "Male".ToLower().Trim() ?
+                                        "MalePatient.jpg" : "FemalePatient.png"));
+                        //string mobile = string.IsNullOrEmpty(item.value.PatientMobile1) && string.IsNullOrEmpty(item.value.PatientMobile2) ?
+                        //              item.value.PatientMobile1 + ", " + item.value.PatientMobile2 : item.value.PatientMobile1 + item.value.PatientMobile2;
+                        <tr>
+                            <td>@(item.i + 1)</td>
+                            <td style="width:50px; height:50px;">
+                                <div style="position:relative; width:50px; height:50px;">
+                                    <img src="@photoPath" asp-append-version="true" style="position:absolute; width:100%; height:100%; top:0; border:1px solid #000000; border-radius:5px;" />
+                                </div>
+                            </td>
+                            <td>@item.value.MRNo</td>
+                            <td>
+                                @(string.IsNullOrEmpty(item.value.PatientPrefix) ? item.value.FullName
+                            : item.value.PatientPrefix + " " + item.value.FullName)
+                            </td>
+                            <td>@item.value.FatherName</td>
+                            <td>@(item.value.Age + "/" + item.value.Gender)</td>
+                            <td>@item.value.PatientMobiles</td>
+                            <td>@(item.value.DOB.HasValue ? item.value.DOB.Value.ToString("MM/dd/yyyy") : "item.value.DOB")</td>
+                            <td>@item.value.Address</td>
+                            <td>@item.value.MaritalStatus</td>
+                            <td>@item.value.PatientIdentityNo</td>
+                            <td>
+                                @if ((await authorizationService.AuthorizeAsync(User, "PatientRegistrationUpdate")).Succeeded)
+                                {
+                                    <a class="btn btn-primary" asp-action="PatientRegistrationUpdate" asp-controller="PatientRegistration"
+                                       asp-area="Reception" asp-route-patientRegId="@item.value.Reg_Id"><i class="fa fa-edit"></i></a>
+                                }
+                                @if ((await authorizationService.AuthorizeAsync(User, "PatientRegistrationView")).Succeeded)
+                                {
+                                    <a class="btn btn-info" asp-action="PatientRegistrationDetails" asp-controller="PatientRegistration"
+                                       asp-area="Reception" asp-route-patientRegId="@item.value.Reg_Id"><i class="fa fa-info-circle"></i></a>
+                                }
+                                @if ((await authorizationService.AuthorizeAsync(User, "PatientRegistrationDelete")).Succeeded)
+                                {
+                                    <button type="button" class="btn btn-danger" onclick="TableRowDeleteClick('@item.value.Reg_Id');"><i class="fa fa-trash-alt"></i></button>
+
+                                }
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+                <tfoot>
+                    <tr class="active">
+                        <td colspan="3">
+                            <div class="text-right">
+                                <ul class="pagination pagination-split footable-pagination m-t-10 m-b-0"></ul>
+                            </div>
+                        </td>
+                    </tr>
+                </tfoot>
+            </table>
+        </div>
+    </div>
+</div>
+
+@{
+    ViewData["DeleteConfirmPolicyName"] = "PatientRegistrationDelete";
+    ViewData["DeleteConfirmActionName"] = "ViewAllRegisteredPatients";
+    ViewData["DeleteConfirmControllerName"] = "PatientRegistration";
+    ViewData["DeleteConfirmAreaName"] = "Reception";
+    ViewData["DeleteConfirmParameterName"] = "patientRegId";
+}
+
+<partial name="_DeleteConfirmPartial" view-data="ViewData" />
+
+
+@section Scripts{
+    <!-- Counter js  -->
+    <script src="~/plugins/waypoints/jquery.waypoints.min.js"></script>
+    <script src="~/plugins/counterup/jquery.counterup.min.js"></script>
+
+
+    <!--FooTable-->
+    <script src="~/plugins/footable/js/footable.all.min.js"></script>
+
+    <!--FooTable Example-->
+    <script src="~/pages/jquery.footable.js"></script>
+    <script>
+        $(document).ready(function () {
+            var successedAlertMessage = "@ViewBag.SuccessedAlertMessage";
+            AlertSnackBarByActionName(successedAlertMessage);
+        });
+    </script>
+}

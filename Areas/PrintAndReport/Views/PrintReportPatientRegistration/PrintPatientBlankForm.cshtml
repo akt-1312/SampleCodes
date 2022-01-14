@@ -1,0 +1,736 @@
+﻿
+@{
+    ViewData["Title"] = "PrintPatientBlankForm";
+    Layout = "~/Views/Shared/_HMSMainLayout.cshtml";
+
+}
+
+@section CurrentPageNavigation{
+    <h4 class="page-title float-left">Reception</h4>
+
+    <ol class="breadcrumb float-right">
+        <li class="breadcrumb-item"><a asp-action="MainMenu" asp-controller="HmsMenu" asp-area="Menu">Patient Registration</a></li>
+        @*<li class="breadcrumb-item"><a href="#">Update Registration</a></li>*@
+    </ol>
+}
+@section LeftSideMenu{
+    <partial name="_ReceptionLeftSideMenuPartial" />
+}
+
+
+@{
+    <style>
+        .row {
+            margin-bottom: 3px;
+        }
+        .border-dark {
+            border-color:black;
+        }
+        tr {
+            background-color:dimgrey;
+            color:white;
+        }
+        input[type] {
+            border: none;
+            border-bottom: 1px solid black;
+            border-radius: 0px;
+        }
+        .text-right {
+            padding-left :30px;
+        }
+
+        .form-control {
+            background-color: transparent !important;
+        }
+
+        .control-label {
+            position: absolute;
+            bottom: 0;
+            width: 120px;
+        }
+
+        #btnPrintRow {
+            position: absolute;
+            height: 150%;
+            top: 71px;
+            right: 0;
+        }
+
+        #btnSticky {
+            position: sticky;
+            top: 0;
+        }
+
+        h1 {
+            text-align: center;
+        }
+
+        label {
+            font-weight: bold;
+        }
+
+        h5 {
+            text-decoration: underline;
+        }
+    </style>
+
+    <style media="print,screen" type="text/css">
+        @@media print {
+
+            h1 {
+                display: none;
+            }
+
+            #btnPrintRow {
+                display: none;
+            }
+
+            form {
+                margin-top: 30px;
+            }
+
+            label {
+                font-weight: bold;
+            }
+
+            h5 {
+                text-decoration: underline;
+            }
+
+            @@page {
+                margin: 0;
+            }
+        }
+    </style>
+}
+
+
+
+
+
+<form method="post">
+    <div class="container" id="printView">
+        <h1>PrintPatientBlankForm</h1>
+        <div class="row my-3">
+            <div class="form-group col-3">
+                <h4 id="headerRegName" style="display:inline-block;">Normal</h4>
+                <input type="checkbox" class="mr-2" />
+            </div>
+            <div class="form-group col-3">
+                <h4 id="headerRegName" style="display:inline-block;">Emergency</h4>
+                <input type="checkbox" />
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-4">
+                <div class="row">
+                    <div class="col-5">
+                        <div class="">
+                            <label class="control-label">MR No:</label>
+                        </div>
+                    </div>
+                    <div class="col-7">
+                        <div class="row">
+                            <input type="text" class="form-control" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-4">
+                <div class="row">
+                    <div class="col-5">
+                        <div class="">
+                            <label class="control-label">Reg: Date</label>
+                        </div>
+                    </div>
+                    <div class="col-7">
+                        <div class="row">
+                            <input type="text" class="form-control" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-4">
+                <div class="row">
+                    <div class="ml-2">
+                        <label>Outpatient</label>
+                        <input type="checkbox" id="rdoOptPatient" />
+                    </div>
+                    <div class="ml-2">
+                        <label> Inpatient</label>
+                        <input type="checkbox" id="rdoInpatient" />
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <hr />
+        <h5>
+            Patient Information
+        </h5>
+
+        <div class="row">
+            <div class="col-4">
+                <div class="row">
+                    <div class="col-5">
+                        <div class="control-label">
+                            <label class="">Prefix</label>
+                        </div>
+                    </div>
+                    <div class="col-7">
+                        <div class="row">
+                            <input type="text" class="form-control" />
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-5">
+                        <div class="">
+                            <label class="control-label">First Name</label>
+                        </div>
+                    </div>
+                    <div class="col-7">
+                        <div class="row">
+                            <input type="text" class="form-control" />
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-5">
+                        <div class="control-label">
+                            <label class="">Middle Name</label>
+                        </div>
+                    </div>
+                    <div class="col-7">
+                        <div class="row">
+                            <input type="text" class="form-control" />
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-5">
+                        <div class="">
+                            <label class="control-label">Last Name</label>
+                        </div>
+                    </div>
+                    <div class="col-7">
+                        <div class="row">
+                            <input type="text" class="form-control" />
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-5">
+                        <div class="">
+                            <label class="control-label">Father's Name</label>
+                        </div>
+                    </div>
+                    <div class="col-7">
+                        <div class="row">
+                            <input type="text" class="form-control" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-4">
+                <div class="row">
+                    <div class="col-5">
+                        <div class="">
+                            <label class="control-label">Gender</label>
+                        </div>
+                    </div>
+                    <div class="col-7">
+                        <div class="row">
+                            <input type="text" class="form-control" />
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-5">
+                        <div class="">
+                            <label class="control-label">Marital Status</label>
+                        </div>
+                    </div>
+                    <div class="col-7">
+                        <div class="row">
+                            <input type="text" class="form-control" />
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-5">
+                        <div class="">
+                            <label class="control-label">Date of Birth</label>
+                        </div>
+                    </div>
+                    <div class="col-7">
+                        <div class="row">
+                            <input type="text" class="form-control" />
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-5">
+                        <div class="">
+                            <label class="control-label">Age</label>
+                        </div>
+                    </div>
+                    <div class="col-7">
+                        <div class="row">
+                            <input type="text" class="form-control" />
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-5">
+                        <div class="">
+                            <label class="control-label">Occupation</label>
+                        </div>
+                    </div>
+                    <div class="col-7">
+                        <div class="row">
+                            <input type="text" class="form-control" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-4">
+                <div class="row">
+                    <div class="col-5">
+                        <div class="control-label">
+                            <label class="">Mobile 1</label>
+                        </div>
+                    </div>
+                    <div class="col-7">
+                        <div class="row">
+                            <input type="text" class="form-control" />
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-5">
+                        <div class="">
+                            <label class="control-label">Mobile 2</label>
+                        </div>
+                    </div>
+                    <div class="col-7">
+                        <div class="row">
+                            <input type="text" class="form-control" />
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-5">
+                        <div class="">
+                            <label class="control-label">Email</label>
+                        </div>
+                    </div>
+                    <div class="col-7">
+                        <div class="row">
+                            <input type="text" class="form-control" />
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-5">
+                        <div class="">
+                            <label class="control-label">Nationality</label>
+                        </div>
+                    </div>
+                    <div class="col-7">
+                        <div class="row">
+                            <input type="text" class="form-control" />
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-5">
+                        <div class="">
+                            <label class="control-label">Alias Name</label>
+                        </div>
+                    </div>
+                    <div class="col-7">
+                        <div class="row">
+                            <input type="text" class="form-control" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-8">
+                <div class="row ml-3">
+                    <div class="ml-2">
+                        <label>NRC</label>
+                        <input type="checkbox" />
+                    </div>
+                    <div class="ml-2">
+                        <label> Driving Licence</label>
+                        <input type="checkbox" />
+                    </div>
+                    <div class="ml-2">
+                        <label> Passport </label>
+                        <input type="checkbox" />
+                    </div>
+                </div>
+                <div class="col-6">
+                    <div>
+                        <input type="text" class="form-control" />
+                    </div>
+                </div>
+            </div>
+            <div class="col-2 offset-2">
+                <div class="">
+                    <input type="checkbox" />
+                    <label>Confidential</label>
+                </div>
+            </div>
+        </div>
+
+        <hr />
+        <h5>
+            Contact Detail
+        </h5>
+
+        <div class="row">
+            <div class="col-4">
+                <div class="row">
+                    <div class="col-5">
+                        <div class="">
+                            <label class="control-label">House No:</label>
+                        </div>
+                    </div>
+                    <div class="col-7">
+                        <div class="row">
+                            <input type="text" class="form-control" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-4">
+                <div class="row">
+                    <div class="col-5">
+                        <div class="">
+                            <label class="control-label">Street</label>
+                        </div>
+                    </div>
+                    <div class="col-7">
+                        <div class="row">
+                            <input type="text" class="form-control" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-4">
+                <div class="row">
+                    <div class="col-5">
+                        <div class="">
+                            <label class="control-label">Country</label>
+                        </div>
+                    </div>
+                    <div class="col-7">
+                        <div class="row">
+                            <input type="text" class="form-control" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-4">
+                <div class="row">
+                    <div class="col-5">
+                        <div class="">
+                            <label class="control-label">State</label>
+                        </div>
+                    </div>
+                    <div class="col-7">
+                        <div class="row">
+                            <input type="text" class="form-control" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-4">
+                <div class="row">
+                    <div class="col-5">
+                        <div class="">
+                            <label class="control-label">Township</label>
+                        </div>
+                    </div>
+                    <div class="col-7">
+                        <div class="row">
+                            <input type="text" class="form-control" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-12">
+                <div>
+                    <input type="checkbox" />
+                    <label>Correspondance address same as above.</label>
+                </div>
+            </div>
+        </div>
+
+        <hr />
+        <h5>
+            Next of Kin Details
+        </h5>
+
+        <div class="row">
+            <div class="col-4">
+                <div class="row">
+                    <div class="col-5">
+                        <div class="">
+                            <label class="control-label">Relationship</label>
+                        </div>
+                    </div>
+                    <div class="col-7">
+                        <div class="row">
+                            <input type="text" class="form-control" />
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-5">
+                        <div class="">
+                            <label class="control-label">Prefix</label>
+                        </div>
+                    </div>
+                    <div class="col-7">
+                        <div class="row">
+                            <input type="text" class="form-control" />
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-5">
+                        <div class="">
+                            <label class="control-label">First Name</label>
+                        </div>
+                    </div>
+                    <div class="col-7">
+                        <div class="row">
+                            <input type="text" class="form-control" />
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-5">
+                        <div class="">
+                            <label class="control-label">Middle Name</label>
+                        </div>
+                    </div>
+                    <div class="col-7">
+                        <div class="row">
+                            <input type="text" class="form-control" />
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-5">
+                        <div class="">
+                            <label class="control-label">Last Name</label>
+                        </div>
+                    </div>
+                    <div class="col-7">
+                        <div class="row">
+                            <input type="text" class="form-control" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-4">
+                <div class="row">
+                    <div class="col-5">
+                        <div class="">
+                            <label class="control-label">Mobile 1</label>
+                        </div>
+                    </div>
+                    <div class="col-7">
+                        <div class="row">
+                            <input type="text" class="form-control" />
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-5">
+                        <div class="">
+                            <label class="control-label">Mobile 2</label>
+                        </div>
+                    </div>
+                    <div class="col-7">
+                        <div class="row">
+                            <input type="text" class="form-control" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <hr />
+        <h5>
+            Emergency Contact
+        </h5>
+
+        <div class="row">
+            <div class="col-3">
+                <div class="row">
+                    <div class="col-5">
+                        <div class="">
+                            <label class="control-label">Contact Person</label>
+                        </div>
+                    </div>
+                    <div class="col-7">
+                        <div class="row">
+                            <input type="text" class="form-control" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-3">
+                <div class="row">
+                    <div class="col-5">
+                        <div class="">
+                            <label class="control-label">Relationship</label>
+                        </div>
+                    </div>
+                    <div class="col-7">
+                        <div class="row">
+                            <input type="text" class="form-control" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-3">
+                <div class="row">
+                    <div class="col-5">
+                        <div class="">
+                            <label class="control-label">Mobile 1</label>
+                        </div>
+                    </div>
+                    <div class="col-7">
+                        <div class="row">
+                            <input type="text" class="form-control" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-3">
+                <div class="row">
+                    <div class="col-5">
+                        <div class="">
+                            <label class="control-label">Mobile 2</label>
+                        </div>
+                    </div>
+                    <div class="col-7">
+                        <div class="row">
+                            <input type="text" class="form-control" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+
+        @*<div class="row mt-3">
+                <div class="col-3 text-center border border-dark align-content-center">
+                    <div>
+                        <label>Service Fee</label>
+                    </div>
+                </div>
+
+            </div>*@
+        <h5>Service Fee</h5>
+
+        <div class="row">
+            <table class="table  border-dark text-center" id="regFeeTable" style="/*min-width:1107px;*/">
+                <thead class="" @*style="background-color:#70a6e4;"*@>
+                    <tr class="text-center">
+                        <th class=" border-dark text-center">
+                            No.
+                        </th>
+                        <th class=" border-dark  text-center ">
+                            Service Name
+                        </th>
+                        <th class=" border-dark  text-center">
+                            Amount
+                        </th>
+                        <th class=" border-dark  text-center">
+                            FOC
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td class=" border-dark">1</td>
+                        <td class=" border-dark"></td>
+                        <td class=" border-dark"></td>
+                        <td class=" border-dark"><input type="checkbox" /></td>
+                    </tr>
+                    <tr>
+                        <td class=" border-dark">2</td>
+                        <td class=" border-dark"></td>
+                        <td class=" border-dark"></td>
+                        <td class=" border-dark"><input type="checkbox" /></td>
+                    </tr>
+                    <tr>
+                        <td class=" border-dark">3</td>
+                        <td class=" border-dark"></td>
+                        <td class=" border-dark"></td>
+                        <td class=" border-dark"><input type="checkbox" /></td>
+                    </tr>
+                    <tr>
+                        <td class=" border-dark">4</td>
+                        <td class=" border-dark"></td>
+                        <td class=" border-dark"></td>
+                        <td class=" border-dark"><input type="checkbox" /></td>
+                    </tr>
+                    <tr>
+                        <td>
+                        </td>
+                        <td class="text-right">
+                            Total:
+                        </td>
+                        <td class=" border-dark">
+                        </td>
+                        <td class=" border-dark">
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <div class="row" id="btnPrintRow">
+            <div class="form-group col-12">
+                <div class="" id="btnSticky">
+                    <button type="button" class="btn btn-success" id="btnPrint">Print</button>
+                    <a id="btnExit" class="btn btn-secondary" asp-area="Registration" asp-controller="PatientRegistrationAKT" asp-action="Create">Cancel</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</form>
+
+
+
+
+@section Scripts{
+    <script>
+        $(document).ready(function () {
+            $("#btnPrint").click(function () {
+                window.print();
+            });
+        });
+    </script>
+}

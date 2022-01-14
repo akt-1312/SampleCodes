@@ -1,0 +1,984 @@
+﻿@model HMS.Models.ViewModels.Reception.CreateDoctorAppointmentViewModel
+
+@{
+    ViewData["Title"] = "CreateDoctorAppointment";
+    Layout = "~/Views/Shared/_HmsMainLayout.cshtml";
+}
+
+@{
+    bool isBookedPatient = ViewBag.IsBookedPatient;
+}
+
+<style>
+
+    input.drAppointmentInfo, select.drAppointmentInfo {
+        background-color: #e9ecef;
+        opacity: 1;
+        display: block;
+        /*width: 100%;*/
+        vertical-align: super;
+        height: calc(1.5em + .75rem + 2px);
+        padding: .375rem .75rem;
+        /*font-size: 0.8rem;*/
+        font-weight: 400;
+        line-height: 1.5;
+        color: #495057;
+        background-clip: padding-box;
+        border: 1px solid #ced4da;
+        border-radius: .25rem;
+        transition: border-color .15s ease-in-out,box-shadow .15s ease-in-out;
+    }
+
+    input.drAppointmentInfo {
+        pointer-events: none;
+        width: 140px;
+    }
+
+    select.drAppointmentInfo {
+        vertical-align: text-bottom;
+        width: 140px;
+        cursor: pointer;
+        pointer-events: @(isBookedPatient ? "none;" : "unset;")
+    }
+
+    input.bookingPatientInfo, select.bookingPatientInfo {
+        /*background-color: #e9ecef;*/
+        opacity: 1;
+        display: block;
+        /*width: 100%;*/
+        vertical-align: super;
+        height: calc(1.5em + .75rem + 2px);
+        padding: .375rem .75rem;
+        /*font-size: 0.8rem;*/
+        font-weight: 400;
+        line-height: 1.5;
+        color: #495057;
+        background-clip: padding-box;
+        border: 1px solid #ced4da;
+        border-radius: .25rem;
+        transition: border-color .15s ease-in-out,box-shadow .15s ease-in-out;
+    }
+
+    input.bookingPatientInfo {
+        /*pointer-events: none;*/
+        width: 140px;
+    }
+
+    select.bookingPatientInfo {
+        vertical-align: text-bottom;
+        width: 140px;
+        cursor: pointer;
+    }
+
+    input.drDeptUnitInputOnlyBottomBorder, select.drDeptUnitInputOnlyBottomBorder {
+        outline: 0;
+        border-width: 0 0 2px;
+        border-color: darkslategrey;
+    }
+
+    input.drDeptUnitInputOnlyBottomBorder {
+        pointer-events: none;
+        background-color:transparent;
+        width: 140px;
+    }
+
+    select.drDeptUnitInputOnlyBottomBorder {
+        vertical-align: text-bottom;
+        /*width: 140px;*/
+        cursor: pointer;
+    }
+
+        input.drDeptUnitInputOnlyBottomBorder:focus, select.drDeptUnitInputOnlyBottomBorder:focus {
+            border-color: green;
+        }
+
+    body {
+        font-size: 0.8rem;
+    }
+
+    #tblDrAppointmentScheduleOne tbody td, #tblDrAppointmentScheduleOne thead th {
+        padding: 1px;
+        vertical-align: middle;
+        text-align: center;
+    }
+
+    #tblDrAppointmentScheduleOne tbody td {
+        cursor: pointer;
+    }
+
+    #tblDrAppointmentScheduleTwo tbody td, #tblDrAppointmentScheduleTwo thead th {
+        padding: 1px;
+        vertical-align: middle;
+        text-align: center;
+    }
+
+    #tblDrAppointmentScheduleTwo tbody td {
+        cursor: pointer;
+    }
+
+    @*#btnUpdateAppointment {
+        display: @(ViewBag.UpdateAppointment == "Error" ? "" : "none")
+    }*@
+
+    #btnCreateAppointment, #btnGetPatient {
+        display: @(ViewBag.UpdateAppointment == "Error" || isBookedPatient ? "none;" : "")
+    }
+
+    #btnUpdateAppointment{
+        display: @(isBookedPatient || ViewBag.UpdateAppointment == "Error" ? "inline-block" : "none;")
+    }
+
+    @*#btnCreateAppointment{
+        display: @(isBookedPatient ? "none" : "inline-block")
+    }*@
+
+    #btnDeleteAppointment, #btnEncounteredAppointment, #divRemarks{
+        display : @(ViewBag.UpdateAppointment == "Error" && !isBookedPatient ? "" : "none;")
+    }
+
+    #btnGetPatient, #btnSelectDoctor, #btnDatePicker, #divForExternalPatient{
+        display : @(isBookedPatient ? "none;" : "")
+    }
+
+    #tblDrAppointmentScheduleOne tbody tr:hover,
+    #tblDrAppointmentScheduleTwo tbody tr:hover {
+        background-color: #E9A4B0;
+        color: white;
+    }
+
+    .ui-sortable-helper {
+        display: table;
+    }
+
+    .btn {
+        font-size: 1rem;
+    }
+
+    button[type="submit"][name="btnSubmit"]{
+        width: 140px;
+    }
+</style>
+
+@section LeftSideMenu{
+    <partial name="_ReceptionLeftSideMenuPartial" />
+}
+
+@section CurrentPageNavigation{
+    <h4 class="page-title float-left">Reception</h4>
+
+    <ol class="breadcrumb float-right">
+        @*<li class="breadcrumb-item"><a asp-action="DoctorModuleMenu" asp-controller="HmsMenu" asp-area="Menu">Doctor Module</a></li>*@
+        <li class="breadcrumb-item"><a href="#">Doctor Appointment</a></li>
+    </ol>
+}
+
+@*@foreach(AppointmentStatus item in Enum.GetValues(typeof(AppointmentStatus)).Cast<AppointmentStatus>())
+    {
+        <h1>@item.GetEnumDisplayName()</h1>
+    }*@
+
+<form method="post" asp-action="DoctorAppointment" asp-controller="DoctorAppointment" id="formAppointment">
+    <div class="row mt-2">
+        <div class="col-sm-12 col-md-7 separateScrollFullHeight" style="border-right: groove;">
+            <div class="">
+                <div class="form-group">
+                    <div style="display:inline-block;">
+                        <input hidden asp-for="DrDeptUnitForPartialViewModel.DoctorId" class="txtDoctorId" />
+                        <input id="txtDoctorName" asp-for="DrDeptUnitForPartialViewModel.DoctorName" placeholder="Consultant" class="drDeptUnitInputOnlyBottomBorder txtDoctorName" />
+                        <input hidden asp-for="DrDeptUnitForPartialViewModel.DepartmentId" class="txtDepartmentId" />
+                        <input placeholder="Department" asp-for="DrDeptUnitForPartialViewModel.DepartmentName" class="drDeptUnitInputOnlyBottomBorder txtDepartmentName" />
+                        <input hidden asp-for="DrDeptUnitForPartialViewModel.UnitId" class="txtUnitId" />
+                        <input placeholder="Unit" asp-for="DrDeptUnitForPartialViewModel.UnitName" class="drDeptUnitInputOnlyBottomBorder txtUnitName" />
+                        <input class="drDeptUnitInputOnlyBottomBorder" value="@Model.AppointmentDate.Value.DayOfWeek.ToString()" id="txtDayOfWeek" style="width:90px;" />
+                        @*<select id="ddlDayOfWeek" asp-for="DoctorDuty.DutyDay" class="drDeptUnitInputOnlyBottomBorder">
+                                @foreach (var item in Model.DayOfWeek)
+                                {
+                                    <option value="@item">@item</option>
+                                }
+                            </select>*@
+                    </div>
+                    @*<div class="input-group">
+                            <input asp-for="AppointmentDate" value="@Model.AppointmentDate.Value.FormattedDateString()" type="text"
+                                   class="" id="txtDatePicker" readonly />
+                            <div class="input-group-prepend">
+                                <button class="rounded-0" type="button" id="btnDatePicker">
+                                    <i class="fa fa-calendar-alt"></i>
+                                </button>
+                            </div>
+                        </div>*@
+                    <div class="mt-2" style="display:inline-block;">
+                        <div style="position:relative; display:inline-block; margin-top:2px;">
+                            <input asp-for="AppointmentDate" value="@Model.AppointmentDate.Value.FormattedDateString()" type="text"
+                                   class="" id="txtDatePicker" style="width:7rem; padding:7.5px; border-radius:5px; vertical-align:middle;" readonly />
+                            <button id="btnDatePicker" type="button" style="position:absolute; right:0; height:100%;"><i class="fa fa-calendar-alt"></i></button>
+                        </div>
+                        <div style="display:inline-block;">
+                            <button id="btnSelectDoctor" class="btn btn-info" type="button" data-toggle="modal" data-target="#modalView">
+                                <i class="fa fa-stethoscope"></i>
+                            </button>
+                            @*<button id="btnGetPatient" type="submit" name="btnSubmit" value="GetPatient" class="btn btn-primary">
+                                    <i class="fa fa-user-injured"></i>
+                                </button>*@
+
+                            <button id="btnGetPatient" type="button" class="btn btn-primary" data-toggle="modal" data-target="#patientSearchFormModal">
+                                <i class="fa fa-user-injured"></i>
+                            </button>
+
+                            <partial name="_PatientSearchFormPartial" model="@Model.PatientRegistrations" />
+
+                            <button hidden id="btnGetDoctorDuty" type="submit" name="btnSubmit" value="GetDoctorDuty" class="btn btn-primary btnToSubmitByDoubleClickChooseDoctor"><i class="fa fa-user-clock"></i></button>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+            @{ if (Model.DoctorDuty != null && Model.DoctorDuty.DutyStartTime1.HasValue && Model.DoctorDuty.DutyEndTime1.HasValue)
+                {
+                    var startTime = Model.DoctorDuty.DutyStartTime1.Value;
+                    var endTime = Model.DoctorDuty.DutyEndTime1.Value;
+                    //string startTimeString = startTime.ToString();
+                    <div class="">
+                        <div class="form-group">
+                            <table id="tblDrAppointmentScheduleOne" class="table table-bordered mb-3">
+                                <thead>
+                                    <tr>
+                                        <th>Time</th>
+                                        <th>No:</th>
+                                        <th>MRNo:</th>
+                                        <th>VisitNo:</th>
+                                        <th>Patient Name</th>
+                                        <th>Mobile</th>
+                                        <th>Age</th>
+                                        <th>Gender</th>
+                                        <th>VisitType</th>
+                                        <th>Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="sortable1">
+                                    @for (DateTime i = startTime; i <= endTime; i = i.AddMinutes(Model.DoctorDuty.IntervalGapForPatient))
+                                    {
+                                        DoctorAppointmentData drAppointmentData = Model.DoctorAppointmentDatas
+                                            .Where(x => x.AppointmentTime.ToShortTimeString() == i.ToShortTimeString()).FirstOrDefault();
+                                        string drAppId = drAppointmentData != null ? drAppointmentData.AppointmentId.ToString() : "";
+
+                                        <tr>
+                                            <td>@i.ToShortTimeString().Trim()</td>
+                                            <td hidden class="taskSingleInLine" id="task@(drAppId)" data-taskid="@(drAppId)">@drAppId</td>
+                                            <td id="tdTokenNo">@(drAppointmentData != null ? drAppointmentData.TokenNo.Value.ToString() : "")</td>
+                                            <td id="tdMRNo">
+                                                @(drAppointmentData != null ?
+                                            (drAppointmentData.PatientRegistration != null
+                                            ? drAppointmentData.PatientRegistration.MRNo : "")
+                                            : "")
+                                            </td>
+                                            <td id="tdVisitNo">@(drAppointmentData != null ? drAppointmentData.VisitNo : "")</td>
+                                            <td id="tdPatientName">
+                                                @(drAppointmentData != null ?
+                                            (drAppointmentData.PatientRegistration != null
+                                            ? drAppointmentData.PatientRegistration.FullName : drAppointmentData.NewPatientBookingAppointment.FullName)
+                                            : "")
+                                            </td>
+                                            <td id="tdMobile">
+                                                @(drAppointmentData != null ?
+                                            (drAppointmentData.PatientRegistration != null
+                                            ? drAppointmentData.PatientRegistration.PatientMobile1 : drAppointmentData.NewPatientBookingAppointment.PhoneNo)
+                                            : "")
+                                            </td>
+                                            <td id="tdAge">
+                                                @(drAppointmentData != null ?
+                                            (drAppointmentData.PatientRegistration != null
+                                            ? drAppointmentData.PatientRegistration.Age.ToString() : drAppointmentData.NewPatientBookingAppointment.Age.ToString())
+                                            : "")
+                                            </td>
+                                            <td id="tdGender">
+                                                @(drAppointmentData != null ?
+                                            (drAppointmentData.PatientRegistration != null
+                                            ? drAppointmentData.PatientRegistration.Gender : drAppointmentData.NewPatientBookingAppointment.Gender)
+                                            : "")
+                                            </td>
+                                            <td hidden id="tdVisitType">@(drAppointmentData != null ? drAppointmentData.VisitType.ToString() : "")</td>
+                                            <td hidden id="tdAppointmentStatus">@(drAppointmentData != null ? drAppointmentData.AppointmentStatus.ToString() : "")</td>
+                                            <td>@(drAppointmentData != null ? drAppointmentData.VisitType.GetEnumDisplayName().ToString() : "")</td>
+                                            <td>@(drAppointmentData != null ? drAppointmentData.AppointmentStatus.GetEnumDisplayName().ToString() : "")</td>
+                                            <td id="tdRemarks" hidden>@(drAppointmentData != null ? drAppointmentData.UpdateRemarks : "")</td>
+                                            <td id="tdAppointmentSituation" hidden>@(drAppointmentData != null ? drAppointmentData.AppointmentSituation.ToString() : "")</td>
+                                        </tr>
+                                    }
+                                    @*@while (startTime <= endTime)
+                                        {
+                                            DoctorAppointmentData appointmentData = Model.DoctorAppointmentDatas
+                                                .Where(x => x.AppointmentTime.ToShortTimeString() == startTime.ToShortTimeString()).FirstOrDefault();
+                                            <tr>
+                                                <td>@startTime.ToShortTimeString()</td>
+                                                <td>@(appointmentData != null ? appointmentData.PatientRegistration.FullName : "")</td>
+                                            </tr>
+                                            startTime = startTime.AddMinutes(15);
+                                        }*@
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                }
+            }
+            @{ if (Model.DoctorDuty != null && Model.DoctorDuty.DutyStartTime2.HasValue && Model.DoctorDuty.DutyEndTime2.HasValue)
+                {
+                    var startTime = Model.DoctorDuty.DutyStartTime2.Value;
+                    var endTime = Model.DoctorDuty.DutyEndTime2.Value;
+                    <hr style="border: 1px solid blue;" />
+                    <div class="">
+                        <div class="form-group">
+                            <table id="tblDrAppointmentScheduleTwo" class="table table-bordered mb-3">
+                                <thead>
+                                    <tr>
+                                        <th>Time</th>
+                                        <th>No:</th>
+                                        <th>MRNo:</th>
+                                        <th>VisitNo:</th>
+                                        <th>Patient Name</th>
+                                        <th>Mobile</th>
+                                        <th>Age</th>
+                                        <th>Gender</th>
+                                        <th>VisitType</th>
+                                        <th>Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="sortable2">
+                                    @while (startTime <= endTime)
+                                    {
+                                        DoctorAppointmentData drAppointmentData = Model.DoctorAppointmentDatas
+                                .Where(x => x.AppointmentTime.ToShortTimeString() == startTime.ToShortTimeString()).FirstOrDefault();
+                                        string drAppId = drAppointmentData != null ? drAppointmentData.AppointmentId.ToString() : "";
+
+                                        <tr>
+                                            <td>@startTime.ToShortTimeString().Trim()</td>
+                                            <td hidden class="taskSingleInLine" id="task@(drAppId)" data-taskid="@(drAppId)">@drAppId</td>
+                                            <td id="tdTokenNo">@(drAppointmentData != null ? drAppointmentData.TokenNo.Value.ToString() : "")</td>
+                                            <td id="tdMRNo">@(drAppointmentData != null ? drAppointmentData.PatientRegistration.MRNo : "")</td>
+                                            <td id="tdVisitNo">@(drAppointmentData != null ? drAppointmentData.VisitNo : "")</td>
+                                            <td id="tdPatientName">@(drAppointmentData != null ? drAppointmentData.PatientRegistration.FullName : "")</td>
+                                            <td id="tdMobile">@(drAppointmentData != null ? drAppointmentData.PatientRegistration.PatientMobile1 : "")</td>
+                                            <td id="tdAge">@(drAppointmentData != null ? drAppointmentData.PatientRegistration.Age.ToString() : "")</td>
+                                            <td id="tdGender">@(drAppointmentData != null ? drAppointmentData.PatientRegistration.Gender : "")</td>
+                                            <td id="tdVisitType">@(drAppointmentData != null ? drAppointmentData.VisitType.GetEnumDisplayName().ToString() : "")</td>
+                                            <td id="tdAppointmentStatus">@(drAppointmentData != null ? drAppointmentData.AppointmentStatus.GetEnumDisplayName().ToString() : "")</td>
+                                            <td id="tdRemarks" hidden>@(drAppointmentData != null ? drAppointmentData.UpdateRemarks : "")</td>
+                                            <td id="tdAppointmentSituation" hidden>@(drAppointmentData != null ? drAppointmentData.AppointmentSituation.ToString() : "")</td>
+                                        </tr>
+                                        startTime = startTime.AddMinutes(Model.DoctorDuty.IntervalGapForPatient);
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                }
+            }
+
+        </div>
+        <div class="col-sm-12 col-md-5 separateScrollFullHeight" style="border-left:groove;">
+            @*<div>
+                    <h4 style="text-align:center;">Doctor Appointment Create</h4>
+                </div>*@
+            <div>
+                @{
+                    string appointmentDateTime = Model.AppointmentTime != null ? Model.AppointmentTime.Value.ToString() : "";
+                    string regId = Model.PatientRegId == null || Model.PatientRegId.Value <= 0 ? "" : Model.PatientRegId.ToString();
+                    string tokenNo = Model.TokenNo == null ? "" : Model.TokenNo.ToString();
+                }
+                <input hidden type="text" asp-for="PatientRegId" value="@regId" class="txtSearchedPatientRegId" />
+                <input hidden type="text" asp-for="IsFirstAssign" id="isFirstAssign" />
+                <input hidden type="text" asp-for="AppointmentTime" value="@appointmentDateTime" class="txtAppointmentDateTime" />
+                <input hidden type="text" asp-for="TokenNo" value="@tokenNo" class="txtTokenNo" />
+                <input hidden asp-for="DoctorAppointmentId" />
+                <input hidden name="isBookedPatient" value="@isBookedPatient.ToString()" />
+
+                <div id="warningDiv" class="text-danger alert alert-warning" asp-validation-summary="ModelOnly" style="position:relative; display:flex; align-items:center;">
+                    <button id="closeWarning" type="button" style="position:absolute; right:0; padding:2px; background-color:blue;"><span style="color:white;">X</span></button>
+                </div>
+                @*<div class="form-group">
+                        <button id="btnGetPatient" type="submit" name="btnSubmit" value="GetPatient" class="btn btn-primary ml-3">Get Patient</button>
+                    </div>*@
+
+                <div id="divForExternalPatient">
+                    <label asp-for="IsForExternalPatient">For External Patient</label>
+                    <input type="checkbox" asp-for="IsForExternalPatient" />
+                </div>
+                @{
+                    string toggleBookingPatientData = !Model.IsForExternalPatient ? "style=display:none" : "";
+                    string toggleFinishedRegistrationPatientData = Model.IsForExternalPatient ? "style=display:none" : "";
+                }
+
+                <div id="divBookingPatientData" @toggleBookingPatientData>
+                    <div class="form-group" style="display:inline;">
+                        <div style="display:inline-block">
+                            <label>Token No: &nbsp;</label>
+                            <input disabled class="bookingPatientInfo txtTokenNo" type="text" value="@tokenNo" />
+                        </div>
+                        <div style="display:inline-block;">
+                            <label>Prefix &nbsp;</label>
+                            <select asp-for="Prefix" class="bookingPatientInfo ddlPrefix" asp-items='@(new SelectList(Model.Prefixes, "PrefixName", "PrefixName"))'>
+                                <option value="">--Select--</option>
+                            </select>
+                        </div>
+                        @*</div>
+                            <div class="form-group" style="display:inline;">*@
+                        <div style="display:inline-block;">
+                            <label>FirstName* &nbsp;</label>
+                            <input class="bookingPatientInfo" asp-for="FirstName" />
+                        </div>
+                        <div style="display:inline-block">
+                            <label>MiddleName &nbsp;</label>
+                            <input class="bookingPatientInfo" asp-for="MiddleName" />
+                        </div>
+                        @*</div>
+                            <div class="form-group" style="display:inline;">*@
+                        <div style="display:inline-block;">
+                            <label>LastName &nbsp;</label>
+                            <input class="bookingPatientInfo" asp-for="LastName" />
+                        </div>
+                        <div style="display:inline-block">
+                            <label>Gender* &nbsp;</label>
+                            <select class="bookingPatientInfo" asp-for="Gender" asp-items='@(new  SelectList(TheWholeGlobalSettingData.Genders, "GenderName","GenderName"))'>
+                                <option value="">--Select--</option>
+                            </select>
+                        </div>
+                        @*</div>
+                            <div class="form-group" style="display:inline;">*@
+                        <div style="display:inline-block;">
+                            <label>DateOfBirth &nbsp;</label>
+                            @{
+                                string dateOfBirth = Model.DateOfBirth.HasValue ? Model.DateOfBirth.Value.FormattedDateString() : "";
+
+                            }
+                            <div class="input-group">
+                                <input type="text" class="bookingPatientInfo" id="txtDateOfBirth" readonly asp-for="DateOfBirth" value="@dateOfBirth" />
+                                <div class="input-group-prepend" style="position:absolute; right:0;">
+                                    <button class="btn btn-outline-secondary rounded-0 btn-sm" type="button" id="btnDatePickerDateOfBirth">
+                                        <i class="fa fa-calendar-alt fa-sm"></i>
+                                    </button>
+                                </div>
+                            </div>
+                            @*<input class="drAppointmentInfo txtDepartmentName" asp-for="DateOfBirth" />*@
+                        </div>
+                        <div style="display:inline-block">
+                            <label>Age* &nbsp;</label>
+                            @*@{
+                                    string bookingAge = Model.Age != null && Model.Age.Value > 0 ? Model.Age.Value.ToString() : "";
+                                }*@
+                            <input class="bookingPatientInfo" asp-for="Age" />
+                        </div>
+                        @*</div>
+                            <div class="form-group" style="display:inline;">*@
+                        <div style="display:inline-block;">
+                            <label>PhoneNo* &nbsp;</label>
+                            <input class="bookingPatientInfo" asp-for="PhoneNo" />
+                        </div>
+                        @*<div style="display:inline-block">
+                                <label>Gender* &nbsp;</label>
+                                <select asp-for="Gender" asp-items='@(new  SelectList(TheWholeGlobalSettingData.Genders, "GenderName","GenderName"))'>
+                                    <option value="">--Select--</option>
+                                </select>
+                            </div>*@
+                    </div>
+                    <hr />
+                </div>
+
+                <div id="divFinishedRegistrationPatientData" @toggleFinishedRegistrationPatientData>
+                    <div class="form-group" style="display:inline;">
+                        <div style="display:inline-block;">
+                            <label>MRNo: &nbsp;</label>
+                            <input disabled class="drAppointmentInfo txtMRNo txtSearchedPatientMrNo" asp-for="@Model.PatientRegistration.MRNo" />
+                        </div>
+                        <div style="display:inline-block">
+                            <label>Token No: &nbsp;</label>
+                            <input disabled class="drAppointmentInfo txtTokenNo" type="text" value="@tokenNo" />
+                        </div>
+                        @*</div>
+                            <div class="form-group" style="display:inline;">*@
+                        <div style="display:inline-block;">
+                            <label>Name: &nbsp;</label>
+                            <input disabled class="drAppointmentInfo txtPatientName txtSearchedPatientFullName" asp-for="@Model.PatientRegistration.FullName" />
+                        </div>
+                        <div style="display:inline-block">
+                            <label>Mobile: &nbsp;</label>
+                            <input disabled class="drAppointmentInfo txtMobile txtSearchedPatientMobile1" asp-for="@Model.PatientRegistration.PatientMobile1" />
+                        </div>
+                        @*</div>
+                            <div class="form-group" style="display:inline;">*@
+                        @{
+                            string patientAge = Model.PatientRegistration.Age == 0 ? "" : Model.PatientRegistration.Age.ToString();
+                        }
+                        <div style="display:inline-block;">
+                            <label>Age: &nbsp;</label>
+                            <input disabled class="drAppointmentInfo txtAge txtSearchedPatientAge" asp-for="@Model.PatientRegistration.Age" value="@patientAge" />
+                        </div>
+                        <div style="display:inline-block">
+                            <label>Gender: &nbsp;</label>
+                            <input disabled class="drAppointmentInfo txtGender txtSearchedPatientGender" asp-for="@Model.PatientRegistration.Gender" />
+                        </div>
+                    </div>
+                    <hr />
+                </div>
+
+
+                <div id="divAppointmentInfoData">
+                    <div class="form-group" style="display:inline;">
+                        <div style="display:inline-block;">
+                            <label>Department: &nbsp;</label>
+                            <input disabled class="drAppointmentInfo txtDepartmentName" asp-for="@Model.DrDeptUnitForPartialViewModel.DepartmentName" />
+                        </div>
+                        <div style="display:inline-block">
+                            <label>Unit: &nbsp;</label>
+                            <input disabled class="drAppointmentInfo txtUnitName" asp-for="@Model.DrDeptUnitForPartialViewModel.UnitName" />
+                        </div>
+                        @*</div>
+                            <div class="form-group" style="display:inline;">*@
+                        <div style="display:inline-block;">
+                            <label>Consultant: &nbsp;</label>
+                            <input disabled class="drAppointmentInfo txtDoctorName" asp-for="@Model.DrDeptUnitForPartialViewModel.DoctorName" />
+                        </div>
+                        @{
+                            string appointmentTime = Model.AppointmentTime != null ? Model.AppointmentTime.Value.ToShortTimeString() : "";
+                        }
+                        <div style="display:inline-block">
+                            <label>Time: &nbsp;</label>
+                            <input disabled class="drAppointmentInfo txtAppointmentTime" type="text" value="@appointmentTime" />
+                        </div>
+                        @*</div>
+                            <div class="form-group" style="display:inline;">*@
+                        <div style="display:inline-block;">
+                            <label>VisitType:* &nbsp;</label>
+                            <select class="drAppointmentInfo ddlVisitType" asp-for="VisitType">
+                                <option value="">--Select--</option>
+                                @foreach (VisitType item in Enum.GetValues(typeof(VisitType)).Cast<VisitType>())
+                                {
+                                    <option value="@item.ToString()">@item.GetEnumDisplayName()</option>
+                                }
+                                @*<option value="First Visit">First Visit</option>
+                                    <option value="ReVisit">ReVisit</option>*@
+                            </select>
+                        </div>
+                        <div style="display:inline-block">
+                            <label>Status:* &nbsp;</label>
+                            <select class="drAppointmentInfo ddlAppointmentStatus" asp-for="AppointmentStatus">
+                                <option value="">--Select--</option>
+                                @foreach (AppointmentStatus item in Enum.GetValues(typeof(AppointmentStatus)).Cast<AppointmentStatus>())
+                                {
+                                    <option value="@item.ToString()">@item.GetEnumDisplayName()</option>
+                                }
+                                @*<option value="No Confirm">No Confirm</option>
+                                    <option value="Confirm">Confirm</option>
+                                    <option value="Booked">Booked</option>*@
+                            </select>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div id="divRemarks">
+                <div class="form-group mt-2">
+                    <div>
+                        <label>Remarks* &nbsp;</label>
+                        @{
+                            string remarksValue = Model.Remarks ?? "";
+                        }
+                        <textarea asp-for="Remarks" class="form-control">@remarksValue</textarea>
+                    </div>
+                </div>
+            </div>
+            <div>
+                <div class="form-group mt-2">
+                    @{
+                        string btnUpdateName = isBookedPatient ? "Confirm Booking" : "Update";
+                    }
+                    <button id="btnCreateAppointment" type="submit" name="btnSubmit" class="btn btn-success" value="CreateAppointment">Save</button>
+                    <button id="btnUpdateAppointment" type="submit" name="btnSubmit" class="btn btn-success" value="UpdateAppointment">@btnUpdateName</button>
+                    @*<button id="btnUpdateAppointment" type="submit" name="btnConfirmBooked" class="btn btn-primary" value="UpdateAppointment">Confirm Booking</button>*@
+                    @*<button id="btnDeleteAppointment" type="submit" name="btnSubmit" class="btn btn-success" value="DeleteAppointment">Delete</button>*@
+                    <button id="btnEncounteredAppointment" type="submit" name="btnSubmit" class="btn btn-success" value="EncounteredAppointment">Encounter</button>
+                    <button type="submit" name="btnSubmit" class="btn btn-secondary" value="RejectAppointment">Cancel</button>
+                    <button hidden id="btnDragAndDrop" type="submit" name="btnSubmit" value="DragAndDrop">DragAndDrop</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <partial name="_DrDeptUnitPartial" for="@Model.DrDeptUnitForPartialViewModel" />
+</form>
+
+@section Scripts{
+    <!-- Counter js  -->
+    <script src="~/plugins/waypoints/jquery.waypoints.min.js"></script>
+    <script src="~/plugins/counterup/jquery.counterup.min.js"></script>
+
+
+    <!--FooTable-->
+    <script src="~/plugins/footable/js/footable.all.min.js"></script>
+
+    <!--FooTable Example-->
+    <script src="~/pages/jquery.footable.js"></script>
+
+    <script src="~/js/PatientSearchFormPartial.js"></script>
+
+    <script src="~/lib/jquery/dist/jquery-ui.js"></script>
+    <script>
+
+        $(document).scroll(function () {
+            localStorage['page'] = document.URL;
+            localStorage['scrollTop'] = $(document).scrollTop();
+        });
+
+        $(document).ready(function () {
+
+            FormSubmitLoadingPage("form#formAppointment");
+
+            var bookedPatient = "@isBookedPatient.ToString()";
+            var isBookedPatient = bookedPatient.toLowerCase().trim() == "true" ? true : false;
+
+            $("form input:not([type = 'button'])").on("keyup keypress", function (e) {
+                var keyCode = e.keyCode || e.which;
+                if (keyCode === 13) {
+                    e.preventDefault();
+                    return false;
+                }
+            });
+
+            if (@Model.DrDeptUnitForPartialViewModel.DoctorId == 0) {
+                localStorage.removeItem('scrollTop');
+            }
+
+            if (localStorage['page'] == document.URL && @Model.DrDeptUnitForPartialViewModel.DoctorId != 0 && "@ViewData.ModelState.IsValid" == "True" ) {
+                $(document).scrollTop(localStorage['scrollTop']);
+            }
+
+            var successedAlertMessage = "@ViewBag.SuccessedAlertMessage";
+            successedAlertMessage = successedAlertMessage.trim();
+            AlertSnackBarByActionName(successedAlertMessage);
+
+            var selectedAppointStatus = "@Model.AppointmentStatus";
+            var selectedVisitType = "@Model.VisitType";
+
+            $(".ddlVisitType").val(selectedVisitType);
+            $(".ddlAppointmentStatus").val(selectedAppointStatus);
+
+            $('#btnDatePicker').on('click', function (e) {
+                //alert("Ok");
+                e.preventDefault();
+                $.dateSelect.show({
+                    element: 'input#txtDatePicker'
+                });
+            });
+
+            $('#btnDatePickerDateOfBirth').on('click', function (e) {
+                e.preventDefault();
+                $.dateSelect.show({
+                    element: 'input#txtDateOfBirth',
+                    dobType: true, //Do not allow over current year
+                });
+            });
+
+            //$("#ddlDayOfWeek").change(function () {
+            //    $("#btnGetDoctorDuty").trigger("click");
+            //});
+
+            //console.log($("#Remarks").val());
+
+            $("#tblDrAppointmentScheduleOne tbody tr").click(function () {
+                if (!isBookedPatient) {
+                    var row = $(this).closest("tr");
+                    var rowNo = row.index() + 1;
+                    var tokenNo = row.find("td#tdTokenNo").text().trim();
+                    var patientRegId = $("#PatientRegId").val().trim();
+                    var isForExternalPatient = $("#IsForExternalPatient").is(":checked");
+                    var appointmentTime = $(row).find("td:first-child").text().trim();
+                    var mrNo = row.find("td#tdMRNo").text().trim();
+                    var isBookingPatient = (mrNo.length == 0);
+                    //console.log(appointmentTime);
+
+                    if (patientRegId.length > 0 || isForExternalPatient) {
+                        if (tokenNo.length > 0) {
+
+                        } else {
+                            ShowDelUpdCreateAlternateToggleButton(false, false, isBookingPatient);
+                            //alert(rowNo);
+                            $(".txtAppointmentDateTime").val($("#txtDatePicker").val() + " " + appointmentTime);
+                            $(".txtAppointmentTime").val(appointmentTime);
+                            $("#isFirstAssign").val("True");
+                            $(".txtTokenNo").val(rowNo.toString().trim());
+                            //alert($(this).text());
+                        }
+                    }
+                    else {
+
+                        var mrno = row.find("td#tdMRNo").text().trim();
+                        //var visitNo = row.find("td#tdVisitNo").text().trim();
+                        var patientName = row.find("td#tdPatientName").text().trim();
+                        var mobile = row.find("td#tdMobile").text().trim();
+                        var age = row.find("td#tdAge").text().trim();
+                        var gender = row.find("td#tdGender").text().trim();
+                        var visitType = row.find("td#tdVisitType").text().trim();
+                        var appointmentStatus = row.find("td#tdAppointmentStatus").text().trim();
+                        var remarks = row.find("td#tdRemarks").text().trim();
+                        var appointmentSituation = row.find("td#tdAppointmentSituation").text().trim();
+                        var isNotEncountered = appointmentSituation != "@EncounterEnum.Encounter.ToString().Trim()";
+                        
+
+                        $(".txtMRNo").val(mrno);
+                        $(".txtPatientName").val(patientName);
+                        $(".txtMobile").val(mobile);
+                        $(".txtAge").val(age);
+                        $(".txtGender").val(gender);
+                        $("#Remarks").val(remarks);
+
+
+                        //alert(rowNo);
+                        $(".txtAppointmentDateTime").val($("#txtDatePicker").val() + " " + appointmentTime);
+                        $(".txtAppointmentTime").val(appointmentTime);
+                        $("#isFirstAssign").val("True");
+                        $(".txtTokenNo").val(rowNo.toString().trim());
+                        //alert($(this).text());
+
+                        if (tokenNo.length > 0) {
+                            ShowDelUpdCreateAlternateToggleButton(true, isNotEncountered, isBookingPatient);
+                            $(".ddlVisitType").val(visitType);
+                            $(".ddlAppointmentStatus").val(appointmentStatus);
+
+                        } else {
+                            ShowDelUpdCreateAlternateToggleButton(false, isNotEncountered, isBookingPatient);
+                            $(".ddlVisitType").val("");
+                            $(".ddlAppointmentStatus").val("");
+                        }
+
+                    }
+                }
+                //console.log($("#Remarks").val());
+            });
+
+            function ShowDelUpdCreateAlternateToggleButton(isUpdateDel, isNotEncountered, isBookingPatient = false) {
+                if (isUpdateDel) {
+                    $("#btnCreateAppointment").hide();
+                    $("#btnGetPatient").hide();
+                    $("#btnUpdateAppointment").show();
+                    //$("#btnDeleteAppointment").show();
+                    if (isNotEncountered && !isBookingPatient) {
+                        $("#btnEncounteredAppointment").show();
+                    } else {
+                        $("#btnEncounteredAppointment").hide();
+                    }
+                    $("#divRemarks").show();
+                } else {
+                    $("#btnCreateAppointment").show();
+                    $("#btnGetPatient").show();
+                    $("#btnUpdateAppointment").hide();
+                    //$("#btnDeleteAppointment").hide();
+                    $("#btnEncounteredAppointment").hide();
+                    $("#divRemarks").hide();
+                }
+            }
+
+            //td: first - child
+            $("#tblDrAppointmentScheduleTwo tbody tr").click(function () {
+                if (isBookedPatient) {
+                    var row = $(this).closest("tr");
+                    var rowNo = row.index() + 1;
+                    var tokenNo = row.find("td#tdTokenNo").text().trim();
+                    var patientRegId = $("#PatientRegId").val().trim();
+                    var isForExternalPatient = $("#IsForExternalPatient").is(":checked");
+                    var appointmentTime = $(row).find("td:first-child").text().trim();
+                    var mrNo = row.find("td#tdMRNo").text().trim();
+                    var isBookingPatient = (mrNo.length == 0);
+
+                    if (patientRegId.length > 0 || isForExternalPatient) {
+                        if (tokenNo.length > 0) {
+
+                        } else {
+                            ShowDelUpdCreateAlternateToggleButton(false, false, isBookingPatient);
+                            //alert(rowNo);
+                            $(".txtAppointmentDateTime").val($("#txtDatePicker").val() + " " + appointmentTime);
+                            $(".txtAppointmentTime").val(appointmentTime);
+                            $("#isFirstAssign").val("False");
+                            $(".txtTokenNo").val(rowNo.toString().trim());
+                            //alert($(this).text());
+                        }
+                    }
+                    else {
+
+                        var mrno = row.find("td#tdMRNo").text().trim();
+                        //var visitNo = row.find("td#tdVisitNo").text().trim();
+                        var patientName = row.find("td#tdPatientName").text().trim();
+                        var mobile = row.find("td#tdMobile").text().trim();
+                        var age = row.find("td#tdAge").text().trim();
+                        var gender = row.find("td#tdGender").text().trim();
+                        var visitType = row.find("td#tdVisitType").text().trim();
+                        var appointmentStatus = row.find("td#tdAppointmentStatus").text().trim();
+                        var remarks = row.find("td#tdRemarks").text().trim();
+                        var appointmentSituation = row.find("td#tdAppointmentSituation").text().trim();
+                        var isNotEncountered = appointmentSituation != "@EncounterEnum.Encounter.ToString().Trim()";
+
+                        $(".txtMRNo").val(mrno);
+                        $(".txtPatientName").val(patientName);
+                        $(".txtMobile").val(mobile);
+                        $(".txtAge").val(age);
+                        $(".txtGender").val(gender);
+                        $("#Remarks").val(remarks);
+
+
+                        //alert(rowNo);
+                        $(".txtAppointmentDateTime").val($("#txtDatePicker").val() + " " + appointmentTime);
+                        $(".txtAppointmentTime").val(appointmentTime);
+                        $("#isFirstAssign").val("False");
+                        $(".txtTokenNo").val(rowNo.toString().trim());
+                        //alert($(this).text());
+
+                        if (tokenNo.length > 0) {
+                            ShowDelUpdCreateAlternateToggleButton(true, isNotEncountered, isBookingPatient);
+                            $(".ddlVisitType").val(visitType);
+                            $(".ddlAppointmentStatus").val(appointmentStatus);
+
+                        } else {
+                            ShowDelUpdCreateAlternateToggleButton(false, isNotEncountered, isBookingPatient);
+                            $(".ddlVisitType").val("");
+                            $(".ddlAppointmentStatus").val("");
+                        }
+
+                    }
+                }
+            });
+
+            $("#closeWarning").click(function () {
+                $("#warningDiv").hide();
+            });
+
+            $("input#txtDatePicker").change(function () {
+                var dayOfWeek = $("div.select.day").find("span.text").text().trim();
+                $("#txtDayOfWeek").val(dayOfWeek);
+                ContentPageLoading();
+                $("#btnGetDoctorDuty").delay(300).queue(function () {
+                    $(this).trigger("click");
+                });
+            });
+
+            $("#btnSelect").click(function () {
+                ContentPageLoading();
+                $("#btnGetDoctorDuty").delay(300).queue(function () {
+                    $(this).trigger("click");
+                });
+
+                //setTimeout(function () {
+                //    $('#btnGetDoctorDuty').trigger('click');
+                //}, 300);
+            });
+
+            if (!isBookedPatient) {
+            DragAndDropAppointment("#sortable1");
+            DragAndDropAppointment("#sortable2");
+            }
+
+            function DragAndDropAppointment(sortableId) {
+                $(sortableId).sortable({
+
+                    axis: 'y',
+
+                    beforeStop: function (event, ui) {
+                        var id = ui.item.find(".taskSingleInLine").attr("data-taskid");
+                        if (id.trim().length == 0) {
+                            event.preventDefault();
+                        }
+                    },
+
+                    start: function (event, ui) {
+
+                        var start_pos = ui.item.index();
+                        ui.item.data('start_pos', start_pos);
+                        //console.log(start_pos);
+                        var id = ui.item.find(".taskSingleInLine").attr("data-taskid");
+                        ui.item.data('start_id', id.trim());
+
+                        var start_time = $("tbody" + sortableId).find("tr").eq(ui.item.index()).find("td").eq(0).text().trim();
+                        ui.item.data('start_time', start_time);
+                    },
+
+                    change: function (event, ui) {
+                        var id = ui.item.find(".taskSingleInLine").attr("data-taskid");
+                        if (id.trim().length != 0) {
+                            var changeIndex = ui.placeholder.index();
+                            var start_pos = ui.item.data('start_pos');
+
+                            //console.log("start_pos=" + start_pos);
+                            //console.log(changeIndex);
+
+                            if (start_pos >= changeIndex) {
+                                var tblRow = $("tbody" + sortableId).find("tr").eq(changeIndex + 1);
+                                var changeTime = tblRow.find("td").eq(0).text().trim();
+
+                                if (changeIndex == start_pos) {
+                                    ui.item.find('td').eq(0).text(ui.item.data('start_time'));
+                                } else {
+                                    ui.item.find('td').eq(0).text(changeTime);
+                                }
+                                ui.item.find('td').eq(2).text(changeIndex + 1)
+                            }
+                            if (start_pos < changeIndex) {
+                                var tblRow = $("tbody" + sortableId).find("tr").eq(changeIndex - 1);
+                                var changeTime = tblRow.find("td").eq(0).text().trim();
+
+                                if (changeIndex == start_pos + 1) {
+                                    ui.item.find('td').eq(0).text(ui.item.data('start_time'));
+                                } else {
+                                    ui.item.find('td').eq(0).text(changeTime);
+                                }
+                                ui.item.find('td').eq(2).text(changeIndex)
+                            }
+                        }
+                    },
+
+                    update: function (event, ui) {
+                        $(".loadingDiv").show();
+                        var start_pos = ui.item.data('start_pos');
+                        var start_id = ui.item.data('start_id');
+
+                        //console.log(start_pos);
+                        //console.log(end_pos);
+                        var drop_index = ui.item.index();
+
+                        var replacedIndex = drop_index + 1;
+                        if (start_pos > drop_index) {
+                            var tblRow = $("tbody" + sortableId).find("tr").eq(replacedIndex);
+                            var drop_time = tblRow.find("td").eq(0).text().trim();
+                        } else {
+                            var tblRow = $("tbody" + sortableId).find("tr").eq(replacedIndex - 2);
+                            var drop_time = tblRow.find("td").eq(0).text().trim();
+                        }
+
+                        $("#DoctorAppointmentId").val(start_id);
+                        $(".txtTokenNo").val(replacedIndex);
+                        $(".txtAppointmentDateTime").val($("#txtDatePicker").val() + " " + drop_time.trim());
+
+                        $("#btnDragAndDrop").trigger('click');
+                    }
+                });
+            }
+
+            $("#IsForExternalPatient").change(function () {
+                $(".txtAppointmentDateTime").val("");
+                $(".txtAppointmentTime").val("");
+                $(".txtSearchedPatientRegId").val("");
+                $("#divBookingPatientData").find("input").val("");
+                $("#divFinishedRegistrationPatientData").find("input").val("");
+                $("#divBookingPatientData").find("select").val("");
+                $("#divFinishedRegistrationPatientData").find("select").val("");
+                $("#divAppointmentInfoData").find("select").val("");
+                var isCheck = $(this).is(":checked");
+                $("#divFinishedRegistrationPatientData").toggle();
+                $("#divBookingPatientData").toggle();
+                $("#btnCreateAppointment").show();
+                $("#btnUpdateAppointment").hide();
+                if (isCheck) {
+                    $("#btnGetPatient").hide();                    
+                } else {
+                    $("#btnGetPatient").show();                    
+                }
+            });
+        });
+    </script>
+}

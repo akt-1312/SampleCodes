@@ -1,0 +1,260 @@
+﻿@model HMS.Models.ViewModels.Doctor.CrossConsultationViewModel
+
+@{
+    ViewData["Title"] = "Create";
+    Layout = "~/Views/Shared/_HMSMainLayout.cshtml";
+}
+@{
+    var actionName = Model.BtnActionName.ToLower().Trim();
+
+}
+
+@section CurrentPageNavigation{
+    <h4 class="page-title float-left">Reception</h4>
+
+    <ol class="breadcrumb float-right">
+        <li class="breadcrumb-item"><a href="#">Cross Consultation</a></li>
+    </ol>
+}
+
+@section LeftSideMenu{
+    <partial name="_DoctorWorkBenchLeftSideMenuPartial" />
+}
+<style>
+    .container {
+        border: 2px solid #ccc;
+        width: 300px;
+        height: 100px;
+        overflow-y: scroll;
+    }
+
+    label {
+        font-size: 12px;
+    }
+    form label.required:after {
+        color: red;
+        content: "*";
+    }
+</style>
+
+<div class="row">
+    <div class="card-box w-100">
+        <partial name="_PatientAppointmentDataPartial" for="@Model.DoctorAppointmentData" />
+    </div>
+</div>
+
+<h4>Cross Consultation</h4>
+<hr />
+<div class="row">
+    <div class="col-3 p-2 my-2 bg-light">
+        <div class="card-box">
+            <form asp-action="CrossConsultation" method="post">
+                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                @if (Model.BtnActionName != "Create")
+                {
+                    <input type="hidden" asp-for="CrossConsultationId" />
+                }
+                <input type="hidden" asp-for="DoctorAppointmentData.AppointmentId" />
+
+                <input type="hidden" asp-for="BtnActionName" />
+
+
+                <div class="form-group">
+                    <label asp-for="HospitalName"  class="control-label required">HospitalName</label>
+                    <select asp-for="HospitalName" id="hospitalname" required="required" class="form-control input-sm">
+                        <option value="">--Select--</option>
+                        <option>Kan Thar Yar International Hospital</option>
+                        <option>Testing</option>
+                    </select>
+                    <span asp-validation-for="HospitalName" class="text-danger"></span>
+
+                </div>
+
+                <div class="form-group">
+                    <label asp-for="CrossConsultationDoctorId"  class="control-label required">Consultant</label>
+                    <select asp-for="CrossConsultationDoctorId" id="doctorid" required="required" class="form-control input-sm" asp-items="@(new SelectList(Model.DoctorInfoList, "DoctorInfoId","DoctorName"))"><option value="">--Select--</option></select>
+                    <span asp-validation-for="CrossConsultationDoctorId" class="text-danger"></span>
+
+                </div>
+                <div class="form-group">
+                    <label asp-for="CrossConsultationDepartmentId"  class="control-label required">Department</label>
+                    <select asp-for="CrossConsultationDepartmentId" required="required" id="departmentid"  class="form-control input-sm" asp-items="@(new SelectList(Model.DepartmentList, "DepartmentId","DepartmentName"))"><option value="">--Select--</option></select>
+                    <span asp-validation-for="CrossConsultationDepartmentId" class="text-danger"></span>
+
+                </div>
+                <div class="form-group">
+                    <label asp-for="Reason" class="control-label">Reason</label>
+                    <textarea asp-for="Reason"  id="reason" class="form-control input-sm"></textarea>
+                </div>
+                <div class="form-group">
+
+                    <label asp-for="CrossConsultationRequestType"  class="control-label">Cross Consultation RequestType</label>
+                    <br />
+                    <input type="radio" id="consultationtype" checked   asp-for="CrossConsultationRequestType" value="Opinion only">
+                    <label>Opinion only</label>
+                </div>
+                <div class="form-group">
+                    <label asp-for="Priority" class="control-label">Priority</label>
+                    <select asp-for="Priority" id="priority" class="form-control input-sm">
+                        <option value="">--Select--</option>
+                        @foreach (CrossConsultationPriorityEnum item in Enum.GetValues(typeof(CrossConsultationPriorityEnum)))
+                        {
+                            <option value="@item.ToString()">@item.GetEnumDisplayName()</option>
+                        }
+                    </select>
+
+                </div>
+                <div class="form-group">
+
+                    <label asp-for="CrossConsultationType" class="control-label">Cross Consultation Type*</label>
+                    <select asp-for="CrossConsultationType" id="crosstype" class="form-control input-sm">
+
+                        <option value="">--Select--</option>
+
+                        @foreach (CrossConsultationTypeEnum item in Enum.GetValues(typeof(CrossConsultationTypeEnum)).Cast<CrossConsultationTypeEnum>())
+
+                        {
+                            <option value="@item.ToString()">@item.GetEnumDisplayName()</option>
+                        }
+                    </select>
+                    <span asp-validation-for="CrossConsultationType" class="text-danger"></span>
+
+
+                </div>
+
+
+
+                <div class="form-group">
+                    @if (actionName == "edit" && (await authorizationService.AuthorizeAsync(User, "CrossConsultationUpdate")).Succeeded)
+
+                    {
+                        <button type="submit" name="btnSubmit" value="Edit" class="btn btn-success">Update</button>
+                    }
+                    else if (actionName == "delete" && (await authorizationService.AuthorizeAsync(User, "CrossConsultationDelete")).Succeeded)
+
+                    {
+                        <button type="submit" name="btnSubmit" value="Delete" class="btn btn-danger">Delete</button>
+                    }
+                    else
+                    {
+                        if ((await authorizationService.AuthorizeAsync(User, "CrossConsultationCreate")).Succeeded)
+                        {
+                        <button type="submit" name="btnSubmit" value="Create" class="btn btn-success" asp-route-appointmentId="@Model.DoctorAppointmentData.AppointmentId">Save</button>
+                        }
+                    }
+                    <a asp-action="CrossConsultation" asp-route-appointmentId="@Model.DoctorAppointmentData.AppointmentId" class="btn btn-secondary">Cancel</a>
+                </div>
+
+            </form>
+        </div>
+    </div>
+
+    <div class="col-9 p-2 my-2 bg-light">
+        <div class="row">
+            <div class="col-12">
+                <div class="card-box">
+
+                    <table id="demo-foo-filtering" class="table table-hover table-striped m-b-0 toggle-circle" data-page-size="7">
+                        <thead>
+                            <tr>
+                                <th>
+                                    <b>No.</b>
+                                </th>
+                                <th>
+                                    <b>HospitalName</b>
+                                </th>
+                                <th>
+                                    <b>Consultant</b>
+                                </th>
+                                <th>
+                                    <b>Department</b>
+                                </th>
+                                @if ((await authorizationService.AuthorizeAsync(User, "CrossConsultationUpdate")).Succeeded
+                             || (await authorizationService.AuthorizeAsync(User, "CrossConsultationDelete")).Succeeded)
+                                {
+                                    <th class="text-center"><b>Action</b></th>
+                                }
+                                </tr>
+                        </thead>
+
+                        <tbody>
+                            @for (int i = 0; i < Model.CrossConsultationList.Count(); i++)
+                            {
+                                var item = Model.CrossConsultationList;
+                            <tr>
+                                <td>
+                                    @(i + 1)
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item[i].HospitalName)
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item[i].CrossConlultationDoctorInfo.DoctorName)
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item[i].CrossConsultationDoctorDepartment.DepartmentName)
+                                </td>
+                                @if ((await authorizationService.AuthorizeAsync(User, "CrossConsultationUpdate")).Succeeded
+                                 || (await authorizationService.AuthorizeAsync(User, "CrossConsultationDelete")).Succeeded)
+                                {
+                            <td class="text-center">
+                                @if ((await authorizationService.AuthorizeAsync(User, "CrossConsultationUpdate")).Succeeded)
+                                {
+                                    <a class="btn btn-outline-primary" asp-route-btnActionName="Edit" asp-action="CrossConsultation" asp-route-CrossConsultationId="@item[i].CrossConsultationId " asp-route-appointmentId="@item[i].DoctorAppointmentData.AppointmentId" asp-route-CrossConsultationDepartmentId="@item[i].CrossConsultationDepartmentId" asp-route-CrossConsultationDoctorId="@item[i].CrossConsultationDoctorId"><i class="fa fa-edit"></i></a>
+
+                                }
+                                @if ((await authorizationService.AuthorizeAsync(User, "CrossConsultationUpdate")).Succeeded
+                                 && (await authorizationService.AuthorizeAsync(User, "CrossConsultationDelete")).Succeeded)
+                                {
+                                    <span>|</span>
+                                }
+                                @if ((await authorizationService.AuthorizeAsync(User, "CrossConsultationDelete")).Succeeded)
+                                {
+                                    <a class="btn btn-outline-danger" asp-route-btnActionName="Delete" asp-action="CrossConsultation" asp-route-CrossConsultationId="@item[i].CrossConsultationId" asp-route-appointmentId="@item[i].DoctorAppointmentData.AppointmentId " asp-route-CrossConsultationDepartmentId="@item[i].CrossConsultationDepartmentId" asp-route-CrossConsultationDoctorId="@item[i].CrossConsultationDoctorId"><i class="fa fa-trash-alt"></i></a>
+
+                                }
+
+
+                            </td>
+                                }
+                                </tr>
+                            }
+                        </tbody>
+
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+@section Scripts{
+
+    <script>
+         $(document).ready(function () {
+
+
+             var successedAlertMessage = "@ViewBag.SuccessedAlertMessage";
+            AlertSnackBarByActionName(successedAlertMessage);
+
+            var actionName = "@Model.BtnActionName";
+            if (actionName== "Delete") {
+                $("#hospitalname").attr("readonly", true);
+                $("#reason").attr("readonly", true);
+             
+                $("#departmentid").attr("disabled", true);
+                $("#doctorid").attr("disabled", true);
+                $("#priority").attr("disabled", true);
+                $("#crosstype").attr("disabled", true);
+            
+
+                $("#consultationtype").attr("disabled",true);
+
+
+
+
+            }
+        });
+    </script>
+}

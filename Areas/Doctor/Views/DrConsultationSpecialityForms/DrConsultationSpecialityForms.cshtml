@@ -1,0 +1,33 @@
+﻿@model DrConsultationSpecialityFormsViewModel
+@{
+    ViewData["Title"] = "DrConsultationSpecialityForms";
+    Layout = "~/Views/Shared/_HMSMainLayout.cshtml";
+}
+
+<style>
+</style>
+
+@section CurrentPageNavigation{
+    <h4 class="page-title float-left">Doctor WorkBench</h4>
+
+    <ol class="breadcrumb float-right">
+        <li class="breadcrumb-item"><a href="#">Doctor Consultation</a></li>
+        @*<li class="breadcrumb-item"><a href="#">Register</a></li>*@
+    </ol>
+}
+
+@section LeftSideMenu{
+    <partial name="_DoctorWorkBenchLeftSideMenuPartial" />
+}
+
+<div class="row">
+    <div class="card-box w-100" style="margin-bottom:5px;">
+        <partial name="_PatientAppointmentDataPartial" for="@Model.DoctorConsultationViewModel.DoctorAppointmentData" />
+    </div>
+</div>
+
+<partial name="_DrConsultationActionsTabPartial" for="@Model.DoctorConsultationViewModel" />
+
+<div class="row">
+    SpecialityForms Pending........
+</div>

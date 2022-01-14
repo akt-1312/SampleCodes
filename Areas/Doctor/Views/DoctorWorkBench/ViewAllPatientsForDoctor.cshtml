@@ -1,0 +1,284 @@
+﻿@model List<ViewAllPatientsViewModel>
+@{
+    ViewData["Title"] = "ViewAllPatientsForDoctor";
+    Layout = "~/Views/Shared/_HMSMainLayout.cshtml";
+}
+
+@section CurrentPageNavigation{
+    <h4 class="page-title float-left">Doctor WorkBench</h4>
+
+    <ol class="breadcrumb float-right">
+        <li class="breadcrumb-item"><a href="#">View All Patients</a></li>
+        @*<li class="breadcrumb-item"><a href="#">Register</a></li>*@
+    </ol>
+}
+
+@section LeftSideMenu{
+    <partial name="_DoctorWorkBenchLeftSideMenuPartial" />
+}
+
+
+<style>
+    .selectLink {
+        font-size: 12px;
+        color: #9fa0ae;
+        text-decoration-line: none;
+    }
+
+    .actionsBlockContainer {
+        display: inline-block;
+        position: fixed;
+        right: 0;
+        top: 72px;
+        background-color: aqua;
+        width: 0;
+        height: 89vh;
+        background-color: white;
+        border-left: 2px solid #64c5b1;
+        overflow-x: hidden;
+        overflow-y: auto;
+        transition: 0.5s;
+    }
+
+    .actionsBlock {
+        /*width:250px;*/
+        text-align: center;
+    }
+
+        .actionsBlock:first-child {
+            border-top: 0.1px solid #d6d2d2;
+        }
+
+    .actionsPatientInfo {
+        padding: 20px;
+        text-align: center;
+        border: 1px dotted darkgreen;
+        margin-bottom: 20px;
+        background-color: #343c49;
+        color: white;
+    }
+
+    .btnActionLink {
+        padding: 0px;
+        border-bottom: 0.1px solid #d6d2d2;
+        padding: 2px;
+    }
+
+        .btnActionLink:hover {
+            background-color: blanchedalmond;
+        }
+
+        .btnActionLink > a {
+            color: black;
+            text-decoration: none;
+            display:block;
+        }
+
+            .btnActionLink > a:hover {
+                cursor: pointer;
+            }
+</style>
+
+<div class="row">
+    <div class="card-box w-100">
+        <div class="col-12">
+            <div class="form-inline m-b-20">
+                <div class="row" style=" width: 48rem;">
+                    <div class="col-md-6 text-xs-center" style="display:none;">
+                        <div class="form-group">
+                            <label class="control-label m-r-5">Status</label>
+                            <select id="demo-foo-filter-status" class="form-control input-sm">
+                                <option value="">Show all</option>
+                                <option value="active">Active</option>
+                                <option value="disabled">Disabled</option>
+                                <option value="suspended">Suspended</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-md-6 text-center ">
+                        <div class="form-group ">
+                            <input id="demo-foo-search" type="text" placeholder="Search" class="form-control input-sm col-10" autocomplete="on">
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <table id="demo-foo-filtering" class="table table-bordered table-hover table-striped m-b-0 toggle-circle" data-page-size="7">
+                <thead>
+                    <tr>
+                        <th>
+                            No.
+                        </th>
+                        <th>
+                            Photo
+                        </th>
+                        <th>
+                            Patient Details
+                        </th>
+                        <th>
+                            Action
+                        </th>
+                    </tr>
+                </thead>
+                <tbody class="textMiddle">
+                    @foreach (var item in Model.Select((value, i) => new { value, i }))
+                    {
+                        var photoPath = "~/images/PatientRegistrationImages/" +
+                        (item.value.DoctorAppointmentData.PatientRegistration.PhotoPath ?? (item.value.DoctorAppointmentData.PatientRegistration.Gender.ToLower().Trim() == "Male".ToLower().Trim() ?
+                        "MalePatient.jpg" : "FemalePatient.png"));
+                    
+
+                    var drAppData = item.value.DoctorAppointmentData;
+                    var serializerSettings = new Newtonsoft.Json.JsonSerializerSettings();
+                    serializerSettings.ContractResolver = new Newtonsoft.Json.Serialization.CamelCasePropertyNamesContractResolver();
+                    string drAppDataJson = Newtonsoft.Json.JsonConvert.SerializeObject(drAppData, serializerSettings);
+                    <tr>
+                        <td>
+                            @(item.i + 1)
+                        </td>
+                        <td style="width:50px; height:50px;">
+                            <div style="position:relative; width:50px; height:50px;">
+                                <img src="@photoPath" asp-append-version="true" style="position:absolute; width:100%; height:100%; top:0; border:1px solid #000000; border-radius:5px;" />
+                            </div>
+                        </td>
+                        <td style="display:flex; align-items:center;">
+                            <div style="width:40%; float:left;">
+                                <div>
+                                    @drAppData.PatientRegistration.PatientPrefix @drAppData.PatientRegistration.FullName , @drAppData.PatientRegistration.Gender / @drAppData.PatientRegistration.Age
+                                </div>
+                                <div>
+                                    @drAppData.PatientRegistration.MRNo | @drAppData.VisitType
+                                </div>
+                            </div>
+                            <div style="width:60%; float:right;">
+                                <a asp-area="Doctor" asp-controller="DrConsultationOrders" asp-action="DrConsultationOrders" asp-route-appointmentId="@drAppData.AppointmentId">Order</a>
+                                <span>|</span>
+                                <a asp-area="Doctor" asp-controller="DrConsultationCostEstimation" asp-action="DrConsultationCostEstimation" asp-route-appointmentId="@drAppData.AppointmentId">Cost Estimation</a>
+                                <span>|</span>
+                                <a asp-area="Doctor" asp-controller="DrConsultationSpecialityForms" asp-action="DrConsultationSpecialityForms" asp-route-appointmentId="@drAppData.AppointmentId">Forms</a>
+                                <span>|</span>
+                                <a asp-area="Doctor" asp-controller="DrConsultationEMR" asp-action="DrConsultationEMR" asp-route-appointmentId="@drAppData.AppointmentId">EMR</a>
+                            </div>
+                        </td>
+                        <td>
+                            <button class="btn btn-link p-0 selectLink" onclick="SelectActionOpen(event, @drAppDataJson)">Select</button>
+                        </td>
+                    </tr>
+                }
+                    </tbody>
+                    <tfoot>
+                        <tr class="active">
+                            <td colspan="4">
+                                <div class="text-right">
+                                    <ul class="pagination pagination-split footable-pagination m-t-10 m-b-0"></ul>
+                                </div>
+                            </td>
+                        </tr>
+                    </tfoot>
+                </table>
+        </div>
+    </div>
+</div>
+
+<div id="idActionsBlockContainer" class="actionsBlockContainer">
+    <div id="idActionsPatientInfo" class="actionsPatientInfo">
+        @*<div id="idPatientName">
+                Uakjfaa akjfdkjf fkaj
+            </div>
+            <div id="idPatientMrNo">
+                Aya-7498466
+            </div>
+            <div id="idConsultationDetails">
+                akjfkdu hah Unit / Dr. akfhka jakhfaj
+            </div>
+            <div id="idConsultationTime">
+                08:45AM
+            </div>*@
+    </div>
+    <div class="actionsLinkContainer">
+        <div id="idActionsBlock" class="actionsBlock">
+            @*<div class="btnActionLink"><a id="idLinkCancelEncounter" asp-action="PatientRegistrationUpdate"
+                  asp-controller="PatientRegistration" asp-area="Reception" asp-route-patientRegId="1">Cancel Encounter</a></div>
+                <div class="btnActionLink"><a id="idLinkClinicalNotes" href="#">Clinical Notes</a></div>
+                <div class="btnActionLink"><a id="idLinkEndConsultation" href="#">End Consultation</a></div>
+                <div class="btnActionLink"><a id="idLinkPrintCasesheet" href="#">Print Casesheet</a></div>
+                <div class="btnActionLink"><a id="idLinkOrders" href="#">Orders</a></div>
+                <div class="btnActionLink"><a id="idLinkDirectDrug" href="#">Direct Drug Or Material Issue</a></div>
+                <div class="btnActionLink"><a id="idLinkkVitalSigns" href="#">Vital Signs</a></div>
+                <div class="btnActionLink"><a id="idLinkDrugAdministration" href="#">Drug Administraion</a></div>
+                <div class="btnActionLink"><a id="idLinkBloodSugarRecording" href="#">Blood Sugar Recording</a></div>
+                <div class="btnActionLink"><a id="idLinkNursingNotes" href="#">Nursing Notes</a></div>
+                <div class="btnActionLink"><a id="idLinkAllertyRecording" href="#">Allergy Recording</a></div>
+                <div class="btnActionLink"><a id="idLinkBillsList" href="#">Bills List</a></div>
+                <div class="btnActionLink"><a id="idLinkChangeTariffGroup" href="#">Change tariff group</a></div>
+                <div class="btnActionLink"><a id="idLinkSampleCollection" href="#">Sample Collection</a></div>*@
+        </div>
+    </div>
+</div>
+
+@section Scripts{
+    <!-- Counter js  -->
+    <script src="~/plugins/waypoints/jquery.waypoints.min.js"></script>
+    <script src="~/plugins/counterup/jquery.counterup.min.js"></script>
+
+
+    <!--FooTable-->
+    <script src="~/plugins/footable/js/footable.all.min.js"></script>
+
+    <!--FooTable Example-->
+    <script src="~/pages/jquery.footable.js"></script>
+
+    <script>
+        function SelectActionOpen(event, data) {
+            event.stopPropagation();
+            AssignSelectPatientInfoAndLink(data);
+            $("#idActionsBlockContainer").width(200);
+        }
+
+        function SelectActionClose() {
+            $("#idActionsBlockContainer").width(0);
+            //var info = $("#idActionsPatientInfo");
+            //info.empty();
+        }
+
+        function AssignSelectPatientInfoAndLink(data) {
+            var info = $("#idActionsPatientInfo");
+            var linksBlock = $("#idActionsBlock");
+            var allInfo = '<div>' + data.patientRegistration.patientPrefix + " " + data.patientRegistration.fullName + '</div><div>' +
+                data.patientRegistration.mrNo + '</div><div>' + data.unit.unitName + " / " + data.doctorInfo.doctorName +
+                '</div><div>' + data.appointmentTime + '</div>';
+
+            var startConsultation = '<div class="btnActionLink"><a id="idLinkStartConsultation" href="/Doctor/DrConsultationEMR/DrConsultationEMR?appointmentId=' + data.appointmentId + '">Start Consultation</a></div>';
+            var admissionRequest = '<div class="btnActionLink"><a id="idLinkAdmissionRequest" href="#">Admission Request</a></div>';
+            var admission = '<div class="btnActionLink"><a id="idLinkAdmission" href="#">Admission</a></div>';
+            var callPatient = '<div class="btnActionLink"><a id="idLinkCallPatient" href="#">Call Patient</a></div>';
+            var costEstimation = '<div class="btnActionLink"><a id="idLinkCostEstimation" href="#">Cost Estimation</a></div>';
+            var crossConsultation = '<div class="btnActionLink"><a id="idLinkCrossConsultation" href="/Doctor/CrossConsultation/CrossConsultation?appointmentId=' + data.appointmentId + '">Cross Consultation</a></div>';
+            var dayCareAdmission = '<div class="btnActionLink"><a id="idLinkDayCareAdmission" href="#">DayCare Admission</a></div>';
+            var directDrugIssue = '<div class="btnActionLink"><a id="idLinkDirectDrugIssue" href="#">Direct Drug Issue</a></div>';
+            var encounterSummaryView = '<div class="btnActionLink"><a id="idLinkEncounterSummaryView" href="#">Encounter Summary View</a></div>';
+            var orderPrinting = '<div class="btnActionLink"><a id="idLinkOrderPrinting" href="#">Order Printing</a></div>';
+            var opdAppointment = '<div class="btnActionLink"><a id="idLinkOPDAppointment" href="#">OPD Appointment</a></div>';
+            var surgeryRequest = '<div class="btnActionLink"><a id="idLinkSurgeryRequest" href="#">Surgery Request</a></div>';
+            var specialityForms = '<div class="btnActionLink"><a id="idLinkSpecialityForms" href="#">Speciality Forms</a></div>';
+            var visitSummary = '<div class="btnActionLink"><a id="idLinkVisitSummary" href="#">Visit Summary</a></div>';
+            info.empty();
+            info.append(allInfo);
+            linksBlock.empty();
+            linksBlock.append(startConsultation, admissionRequest, admission, callPatient,
+                costEstimation, crossConsultation, dayCareAdmission, directDrugIssue, encounterSummaryView, orderPrinting,
+                opdAppointment, surgeryRequest, specialityForms, visitSummary);
+        }
+
+        $(document).ready(function () {
+
+            $("html").on("click", function (event) {
+                SelectActionClose();
+            });
+
+            $("#idActionsBlockContainer").click(function (event) {
+                event.stopPropagation();
+            });
+        })
+    </script>
+}

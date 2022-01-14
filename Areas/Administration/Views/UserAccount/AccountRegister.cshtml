@@ -1,0 +1,647 @@
+﻿@model HMS.Models.ViewModels.Administration.RegisterViewModel
+
+@{
+    ViewData["Title"] = "AccountRegister";
+}
+
+@section CurrentPageNavigation{
+    <h4 class="page-title float-left">Administration</h4>
+
+    <ol class="breadcrumb float-right">
+        <li class="breadcrumb-item"><a href="#">Create Account</a></li>
+        @*<li class="breadcrumb-item"><a href="#">Register</a></li>*@
+    </ol>
+}
+
+@section LeftSideMenu{
+    <partial name="_AdministrationLeftSideMenuPartial" />
+}
+
+<style>
+    .rolesBlockDiv {
+        border: 2px solid #453c3c;
+        max-height: 400px;
+        overflow: auto;
+        padding:10px;
+    }
+
+    #idPasswordBlock, .btnSaveSubmitToggle{
+        display: @(string.IsNullOrEmpty(Model.UserId) ? "" : "none")
+    }
+
+    .btnUpdateSubmitToggle{
+        display: @(string.IsNullOrEmpty(Model.UserId) ? "none" : "")
+    }
+</style>
+
+<div class="row">
+    <div class="col-4 separateScrollFullHeight">
+        <div class="card-box w-100">
+            <form id="formAccountRegister" method="post">
+                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                <input asp-for="UserId" class="resetInputValue" hidden />
+                <div class="form-group">
+                    <label asp-for="UserName"></label><b><span class="text-danger">*</span></b>
+                    <input asp-for="UserName" class="form-control input-sm resetInputValue" autofocus autocomplete="off" />
+                    <span asp-validation-for="UserName" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="Email"></label><b><span class="text-danger">*</span></b>
+                    <input asp-for="Email" class="form-control input-sm resetInputValue" autofocus autocomplete="off" />
+                    <span asp-validation-for="Email" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="PhoneNo"></label><b><span class="text-danger">*</span></b>
+                    <input asp-for="PhoneNo" class="form-control input-sm resetInputValue" autofocus autocomplete="off" />
+                    <span asp-validation-for="PhoneNo" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label>Select Role(s)</label><b><span class="text-danger">*</span></b><br />
+                    <input style="visibility:hidden; position:absolute;" asp-for="UserCheckedRolesValidation" value="true" />
+                    <span asp-validation-for="UserCheckedRolesValidation" class="text-danger"></span>
+                    <div class="rolesBlockDiv">
+                        @foreach (var role in Model.Roles.Select((value, i) => new { value, i }))
+                        {
+                            <input id="@(role.value.Replace(" ", string.Empty).Trim() + role.i)" class="custom-checkbox mr-2 chkRole" type="checkbox" value="@role.value.Trim()" />
+                        <label for="@(role.value.Replace(" ", string.Empty).Trim() + role.i)" class="mb-0">@role.value</label><br />
+                        }
+                    </div>
+                </div>
+                <div id="idPasswordBlock">
+                    <div class="form-group">
+                        <label asp-for="Password"></label><b><span class="text-danger">*</span></b>
+                        <input asp-for="Password" class="form-control input-sm resetInputValue" value="@Model.Password" autocomplete="off" />
+                        <span asp-validation-for="Password" class="text-danger"></span>
+                    </div>
+                    <div class="form-group">
+                        <label asp-for="ConfirmPassword"></label><b><span class="text-danger">*</span></b>
+                        <input asp-for="ConfirmPassword" class="form-control input-sm resetInputValue" value="@Model.ConfirmPassword" autocomplete="off" />
+                        <span asp-validation-for="ConfirmPassword" class="text-danger"></span>
+                    </div>
+                </div>
+                <div class="form-group">
+                    @if ((await authorizationService.AuthorizeAsync(User, "AccountRegisterCreate")).Succeeded)
+                    {
+                        <button id="btnSaveSubmit" type="submit" class="btn btn-success btnSaveSubmitToggle" name="btnSubmit" value="Create">Register</button>
+                    }
+                    @if ((await authorizationService.AuthorizeAsync(User, "AccountRegisterUpdate")).Succeeded)
+                    {
+                        <button id="btnUpdateSubmit" type="submit" class="btn btn-success btnUpdateSubmitToggle" name="btnSubmit" value="Update">Update</button>
+                    }
+                    <button id="btnCancel" type="button" class="btn btn-secondary" onclick="ResetFormAndShowHideBtnSubmit('form#formAccountRegister');">Cancel</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div class="col-8 separateScrollFullHeight">
+        <div class="card-box w-100">
+            <div class="form-inline m-b-20">
+                <div class="row" style=" width: 48rem;">
+                    <div class="col-md-6 text-xs-center" style="display:none;">
+                        <div class="form-group">
+                            <label class="control-label m-r-5">Status</label>
+                            <select id="demo-foo-filter-status" class="form-control input-sm">
+                                <option value="">Show all</option>
+                                <option value="active">Active</option>
+                                <option value="disabled">Disabled</option>
+                                <option value="suspended">Suspended</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-md-6 text-center ">
+                        <div class="form-group ">
+                            <input id="demo-foo-search" type="text" placeholder="Search" class="form-control input-sm col-10" autocomplete="on">
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <table id="demo-foo-filtering" class="table table-hover table-striped m-b-0 toggle-circle" data-page-size="7">
+                <thead>
+                    <tr>
+                        <th>No.</th>
+                        <th>User Name</th>
+                        <th>Email</th>
+                        <th>Phone No:</th>
+                        <th>Roles</th>
+                        <th class="thActionMinwidth">Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model.RolesInRegisterUsers.Select((value, i) => new { value, i }))
+                    {
+                        string itemJsonData = Newtonsoft.Json.JsonConvert.SerializeObject(item.value.User);
+                        string rolesJsonData = Newtonsoft.Json.JsonConvert.SerializeObject(item.value.Roles);
+                        <tr>
+                            <td>@(item.i + 1)</td>
+                            <td>@item.value.User.UserName</td>
+                            <td>@item.value.User.Email</td>
+                            <td>@item.value.User.PhoneNo</td>
+                            <td>@item.value.AllRolesToDisplay</td>
+                            <td>
+                                @if ((await authorizationService.AuthorizeAsync(User, "AccountRegisterUpdate")).Succeeded)
+                                {
+                                    <button onclick="TableRowEditClick(@itemJsonData); UserEditBindRoles(@rolesJsonData);" class="btn btn-outline-primary btnTblEdit">
+                                        <i class="fa fa-edit"></i>
+                                    </button>
+                                }
+
+                                @if ((await authorizationService.AuthorizeAsync(User, "AccountRegisterUpdate")).Succeeded
+                            && (await authorizationService.AuthorizeAsync(User, "AccountRegisterDelete")).Succeeded)
+                                {
+                                    <span>|</span>
+                                }
+                                @*<a asp-action="Details" asp-route-id="@item.Id" class="btn btn-outline-info">Details</a> |*@
+                                @if ((await authorizationService.AuthorizeAsync(User, "AccountRegisterDelete")).Succeeded)
+                                {
+                                    <button onclick="TableRowDeleteClick('@item.value.User.UserId', '@($"Are You Sure To Delete User Account ({item.value.User.UserName})")')" class="btn btn-outline-danger">
+                                        <i class="fa fa-trash-alt"></i>
+                                    </button>
+                                }
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+                <tfoot>
+                    <tr class="active">
+                        <td colspan="3">
+                            <div class="text-right">
+                                <ul class="pagination pagination-split footable-pagination m-t-10 m-b-0"></ul>
+                            </div>
+                        </td>
+                    </tr>
+                </tfoot>
+            </table>
+        </div>
+    </div>
+</div>
+
+@{
+    ViewData["DeleteConfirmPolicyName"] = "AccountRegisterDelete";
+    ViewData["DeleteConfirmActionName"] = "AccountRegister";
+    ViewData["DeleteConfirmControllerName"] = "UserAccount";
+    ViewData["DeleteConfirmAreaName"] = "Administration";
+    ViewData["DeleteConfirmParameterName"] = "userId";
+}
+
+<partial name="_DeleteConfirmPartial" view-data="ViewData" />
+
+@section Scripts{
+    <!-- Counter js  -->
+    <script src="~/plugins/waypoints/jquery.waypoints.min.js"></script>
+    <script src="~/plugins/counterup/jquery.counterup.min.js"></script>
+
+
+    <!--FooTable-->
+    <script src="~/plugins/footable/js/footable.all.min.js"></script>
+
+    <!--FooTable Example-->
+    <script src="~/pages/jquery.footable.js"></script>
+    <script>
+        jQuery.validator.addMethod("requiredpassword",
+            function (value, element, param) {
+                var userId = $("#UserId").val().trim();
+                if (userId.length == 0) {
+                    if (value.trim().length == 0) {
+                        return false;
+                    } else {
+                        return true;
+                    }
+                }
+                return true;
+            });
+        jQuery.validator.unobtrusive.adapters.addBool("requiredpassword");
+
+        jQuery.validator.addMethod("comparedpassword",
+            function (value, element, param) {
+                var userId = $("#UserId").val().trim();
+                var password = $("#Password").val().trim();
+                if (userId.length == 0) {
+                    if (value.trim() != password) {
+                        return false;
+                    } else {
+                        return true;
+                    }
+                }
+                return true;
+            });
+        jQuery.validator.unobtrusive.adapters.addBool("comparedpassword");
+
+        jQuery.validator.addMethod("rolerequired",
+            function (value, element, param) {
+                var checkedChk = $("input.chkRole[type=checkbox]:checked").length;
+                if (checkedChk == 0) {
+                    return false;
+                } else {
+                    return true;
+                }
+
+                //console.log(checkedChk);
+                //return false;
+            });
+        jQuery.validator.unobtrusive.adapters.addBool("rolerequired");
+
+        function UserEditBindRoles(data, isInitial = false) {
+            if (!isInitial) {
+                $("#idPasswordBlock").hide();
+            }
+            $(".chkRole").removeAttr("checked").prop("checked", false);
+            $.each(data, function (i, value) {
+                console.log("'" + value + "'");
+                var chk = $("input.chkRole[type=checkbox][value='" + value.trim() + "']");
+                $(chk).attr("checked", "checked").prop("checked", true);
+            });
+            RoleCheckSerialize();
+        }
+
+        function RoleCheckSerialize() {
+            $("input.chkRole").removeAttr("name");
+            $("input.chkRole[type=checkbox]:checked").each(function (i) {
+                $(this).attr("name", "UserCheckedRoles[" + i + "]");
+            });
+
+            $("#UserCheckedRolesValidation").trigger("click");
+        }
+
+        $(document).ready(function () {
+            var successedAlertMessage = "@ViewBag.SuccessedAlertMessage";
+            AlertSnackBarByActionName(successedAlertMessage);
+
+            $("#btnCancel").on("click", function () {
+                $("#idPasswordBlock").show();
+                $(".chkRole").removeAttr("checked").prop("checked", false);
+                RoleCheckSerialize();
+            });
+
+            $("input.chkRole").on("click", function () {
+                RoleCheckSerialize();
+            });
+
+            var roleData = @Html.Raw(Json.Serialize(Model.UserCheckedRoles));
+            UserEditBindRoles(roleData, true);
+        });
+    </script>
+}
+
+
+
+
+<!--@{
+    #region OldForm
+}
+@model HMS.Models.ViewModels.Administration.RegisterViewModel
+
+@{
+    ViewData["Title"] = "AccountRegister";
+}
+
+@section CurrentPageNavigation{
+    <h4 class="page-title float-left">Administration</h4>
+
+    <ol class="breadcrumb float-right">
+        <li class="breadcrumb-item"><a href="#">Create Account</a></li>-->
+        @*<li class="breadcrumb-item"><a href="#">Register</a></li>*@
+<!--</ol>
+}
+
+@section LeftSideMenu{
+    <partial name="_AdministrationLeftSideMenuPartial" />
+}
+
+
+<style>
+    .page-title-box {
+        margin-bottom: 0px;
+    }
+
+    .dropdown dd {
+        position: relative;
+    }
+
+        .dropdown dd ul {
+            background-color: #2e5e68;
+            border: 0;
+            color: #fff;
+            /*display: none;*/
+            left: 0px;
+            padding: 2px 15px 2px 5px;
+            /*position: absolute;*/
+            top: 2px;
+            width: auto;
+            list-style: none;
+            height: 80px;
+            overflow: auto;
+        }
+
+            .dropdown dd ul li {
+                border: 1px solid white;
+            }
+</style>
+
+
+<div class="row">
+    <div class="col-3 p-2 my-2 bg-light">
+        <div class="card-box">
+            <form method="post">-->
+                @*<div class="form-group">
+    <h3 class="fa fa-plus-square fa-lg text-center" style="display:block; text-align:center;">
+        Soft-HMS
+    </h3>
+</div>*@
+<!--<div asp-validation-summary="ModelOnly" class="text-danger"></div>
+<input id="userId" type="hidden" asp-for="Id" />
+@if (Model.Id != "0")
+{
+    @foreach (var item in ViewBag.UserRoleList)
+    {
+        @foreach (var newItem in ViewBag.RoleData)
+        {
+            if (newItem.Id == item.RoleId)
+            {
+                <input class="userRoleId" type="hidden" value="@newItem.Name" />
+            }
+        }
+    }
+}
+<div class="form-group">
+    <label asp-for="UserName"></label>
+    <span asp-validation-for="UserName" class="text-danger"></span>
+    <input asp-for="UserName" class="form-control input-sm" autofocus autocomplete="off" />
+</div>
+<div class="form-group">
+    <label asp-for="Email"></label>
+    <span asp-validation-for="Email" id="emailId" class="text-danger"></span>
+    <input id="emailChange" asp-for="Email" class="form-control input-sm" autocomplete="off" />
+</div>
+<div class="form-group">
+    <label asp-for="PhoneNo"></label>
+    <span asp-validation-for="PhoneNo" class="text-danger"></span>
+    <input asp-for="PhoneNo" class="form-control input-sm" autocomplete="off" />
+</div>
+<div>
+    <span asp-validation-for="CheckData" class="text-danger"></span>
+    <dl class="dropdown">
+        <dd>
+            <div class="mutliSelect">
+                <ul>
+                    @foreach (var item in ViewBag.RoleData)
+                    {
+                        <li>
+                            <div class="row">
+                                <div class="col-2" style="text-align:center">
+                                    <input type="checkbox" class="checkReaction" value="@item.Name" name="CheckData" />
+                                </div>
+                                <div class="col-2">
+                                    <div style="width:1.5px;height:25px;background-color:white;color:white;"></div>
+                                </div>
+                                <div class="col-8">
+                                    <b class="reactName">@item.Name</b>
+                                </div>
+                            </div>
+                            <input type="hidden" value="@item.Id">
+                        </li>
+                    }
+                </ul>
+            </div>
+        </dd>
+    </dl>
+</div>
+<div id="editHideSection">
+    <div class="form-group">
+        <label asp-for="Password"></label>
+        <span asp-validation-for="Password" class="text-danger"></span>
+        <input id="editPassword" asp-for="Password" value="@Model.Password" class="form-control input-sm" autocomplete="off" required />
+    </div>
+    <div class="form-group">
+        <label asp-for="ConfirmPassword"></label><span asp-validation-for="ConfirmPassword" class="text-danger"></span>
+        <input asp-for="ConfirmPassword" value="@Model.ConfirmPassword" class="form-control input-sm" autocomplete="off" />
+
+    </div>
+</div>-->
+                @*
+<input type="submit" value="Register" class="btn btn-primary waves-effect waves-light btn-sm " />*@
+<!--@if ((await authorizationService.AuthorizeAsync(User, "AccountRegisterCreate")).Succeeded)
+            {
+                <button id="btnRegister" type="submit" value="Register" class="btn btn-primary waves-effect waves-light btn-sm "> Register </button>
+            }
+            @if ((await authorizationService.AuthorizeAsync(User, "AccountRegisterUpdate")).Succeeded)
+            {
+                <button id="btnUpdate" type="submit" value="Update" class="btn btn-primary waves-effect waves-light btn-sm "> Update </button>
+            }
+            <a asp-controller="UserAccount" asp-area="Administration" asp-action="AccountRegister" asp-route-id="@null" class="btn btn-secondary waves-effect m-l-5 btn-sm">
+                Cancel
+            </a>
+        </form>
+    </div>
+</div>
+
+<div class="col-9 p-2 my-2 bg-light">
+    <div class="row">
+        <div class="col-12">
+            <div class="card-box">
+
+
+                <div class="form-inline m-b-20">
+                    <div class="row" style=" width: 48rem;">
+                        <div class="col-md-6 text-xs-center" style="display:none;">
+                            <div class="form-group">
+                                <label class="control-label m-r-5">Status</label>
+                                <select id="demo-foo-filter-status" class="form-control input-sm">
+                                    <option value="">Show all</option>
+                                    <option value="active">Active</option>
+                                    <option value="disabled">Disabled</option>
+                                    <option value="suspended">Suspended</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-6 text-center ">
+                            <div class="form-group ">
+                                <input id="demo-foo-search" type="text" placeholder="Search" class="form-control input-sm col-10" autocomplete="on">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <table id="demo-foo-filtering" class="table table-striped table-bordered toggle-circle m-b-0" data-page-size="7">
+                    <thead>
+                        <tr>
+                            <th>
+                                <b>@Html.DisplayNameFor(model => model.RegisterInfo.UserName)</b>
+                            </th>
+                            <th>
+                                <b>@Html.DisplayNameFor(model => model.RegisterInfo.Email)</b>
+                            </th>
+                            <th>
+                                <b>Role</b>
+                            </th>
+                            <th>
+                                <b>@Html.DisplayNameFor(model => model.RegisterInfo.PhoneNumber)</b>
+                            </th>
+                            @if ((await authorizationService.AuthorizeAsync(User, "AccountRegisterUpdate")).Succeeded
+                      || (await authorizationService.AuthorizeAsync(User, "AccountRegisterDelete")).Succeeded)
+                            {
+                                <th><b>Action</b></th>
+                            }
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        @foreach (var item in Model.RegisterList)
+                        {
+                            <tr>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.UserName)
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.Email)
+                                </td>
+                                <td>
+                                    @{
+                                        int j = 1;
+                                        @foreach (var role in ViewBag.UserRole)
+                                        {
+                                            @if (item.Id == role.UserId)
+                                            {
+                                                @foreach (var roleData in ViewBag.RoleData)
+                                                {
+                                                    if (roleData.Id == role.RoleId)
+                                                    {
+                                                        @if (j > 1)
+                                                        {
+                                                            <b>,</b>
+                                                        }
+                                                        <b>@roleData.Name</b>
+                                                        j++;
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.PhoneNumber)
+                                </td>
+                                @if ((await authorizationService.AuthorizeAsync(User, "AccountRegisterUpdate")).Succeeded
+                                 || (await authorizationService.AuthorizeAsync(User, "AccountRegisterDelete")).Succeeded)
+                                {
+                                    <td style="text-align: center">
+                                        <input type="hidden" class="userDeleteId" value="@item.Id" />
+                                        @if ((await authorizationService.AuthorizeAsync(User, "AccountRegisterUpdate")).Succeeded)
+                                        {
+                                            <a asp-action="AccountRegister" id="docED" asp-route-id="@item.Id" class="btn btn-outline-primary">Edit</a>
+                                        }
+
+                                        @if ((await authorizationService.AuthorizeAsync(User, "AccountRegisterUpdate")).Succeeded
+                                         && (await authorizationService.AuthorizeAsync(User, "AccountRegisterDelete")).Succeeded)
+                                        {
+                                            <span>|</span>
+                                        }-->
+                                            @*<a asp-action="Details" asp-route-id="@item.Id" class="btn btn-outline-info">Details</a> |*@
+<!--@if ((await authorizationService.AuthorizeAsync(User, "AccountRegisterDelete")).Succeeded)
+                                            {
+                                                <button type="button" onclick="ClickDelete(this)" class="btn btn-outline-danger">Delete</button>
+                                            }
+                                        </td>
+                                    }
+                                </tr>
+                            }
+                        </tbody>
+                        <tfoot>
+                            <tr class="active">
+                                <td colspan="5">
+                                    <div class="text-right">
+                                        <ul class="pagination pagination-split footable-pagination m-t-10 m-b-0"></ul>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+
+
+
+    </div>
+</div>
+
+
+@section Scripts{-->
+<!-- Counter js  -->
+<!--<script src="~/plugins/waypoints/jquery.waypoints.min.js"></script>
+<script src="~/plugins/counterup/jquery.counterup.min.js"></script>-->
+<!--FooTable-->
+<!--<script src="~/plugins/footable/js/footable.all.min.js"></script>-->
+<!--FooTable Example-->
+<!--<script src="~/pages/jquery.footable.js"></script>
+
+    <script type="text/javascript">
+        function ClickDelete(row1) {
+            var r = confirm("Are you sure U want to delete this?!");
+            if (r == true) {
+                var url = "/Administration/UserAccount/Delete"
+                var row = $(row1).closest('tr');
+                var userId = row.find(".userDeleteId").val();
+                $.getJSON(
+                    url, {
+                    id: userId,
+                },
+                    function (data) {
+                        location.reload();
+                    }
+                );
+            } else {
+                console.log("cancel");
+            }
+        }
+
+        $(document).ready(function () {
+            if ($("#userId").val() == "0") {
+                $("#btnUpdate").hide();
+                $("#btnRegister").show();
+
+                //$("#emailChange").change(function () {
+                //    $("#emailId").text("");
+                //    var email = $(this).val();
+                //    var url = "/Administration/UserAccount/IsEmailInUse";
+                //    $.getJSON(
+                //        url,
+                //        {
+                //            email: email
+                //        },
+                //        function (data) {
+                //            if (data != true) {
+                //                $("#emailId").append(data);
+                //            }
+                //        }
+                //    );
+                //});
+            }
+            else {
+                $("#btnUpdate").show();
+                $("#btnRegister").hide();
+                $("#editHideSection").hide();
+                $("#editPassword").removeAttr("required");
+
+                $(".userRoleId").each(function () {
+                    var userRoleId = $(this).val();
+                    console.log("userRoleId" + userRoleId);
+                    $(".checkReaction").each(function () {
+                        var userId = $(this).val();
+                        console.log("checkReaction" + userId);
+                        if (userRoleId == userId) {
+                            $(this).attr('checked', true);
+                        }
+                    });
+                });
+            }
+        });
+    </script>
+
+}
+
+@{
+    #endregion
+}-->

@@ -1,0 +1,179 @@
+﻿@*@model HMS.Models.Reception.PatientRegistration*@
+@model HMS.Models.ViewModels.Reception.PatientRegistrationAKTViewModel
+
+
+@{
+    ViewData["Title"] = "Print Patient Identity Card";
+    Layout = "~/Views/Shared/_HMSMainLayout.cshtml";
+    var photoPath = "~/images/PatientRegistrationImages/" +
+(Model.PatientRegistration.PhotoPath ?? (Model.PatientRegistration.Gender.ToLower().Trim() == "Male".ToLower().Trim() ? "MalePatient.jpg" : "FemalePatient.png"));
+}
+@section CurrentPageNavigation{
+    <h4 class="page-title float-left">Reception</h4>
+
+    <ol class="breadcrumb float-right">
+        <li class="breadcrumb-item"><a asp-action="MainMenu" asp-controller="HmsMenu" asp-area="Menu">Patient Registration</a></li>
+        @*<li class="breadcrumb-item"><a href="#">Update Registration</a></li>*@
+    </ol>
+}
+@section LeftSideMenu{
+    <partial name="_ReceptionLeftSideMenuPartial" />
+}
+
+
+@{
+    <style media="print,screen">
+
+        #btnSticky {
+            position: sticky;
+            top: 0;
+        }
+
+        h1 {
+            text-align: center;
+        }
+
+        #btnPrintRow {
+            position: absolute;
+            height: 150%;
+            top: 71px;
+            right: 0;
+        }
+
+        label {
+            font-weight: bold;
+            font-size: 16px;
+            line-height: 2em;
+        }
+
+
+        .control-label {
+            width: 150px;
+            display: inline-block;
+        }
+
+        .card {
+            width: 400px;
+            height: 450px;
+            padding: 5px;
+        }
+
+        .txtAlign {
+            padding-left: 20px;
+        }
+
+        @@media print {
+
+
+            h1 {
+                display: none;
+            }
+
+            #btnPrintRow {
+                display: none;
+            }
+
+            #cardView {
+                margin-top: 30px;
+            }
+
+            label {
+                font-weight: bold;
+                font-size: 16px;
+                line-height: 2em;
+            }
+
+
+            .control-label {
+                width: 150px;
+                display: inline-block;
+            }
+
+            .card {
+                width: 400px;
+                height: 450px;
+                padding: 5px;
+            }
+
+            @@page {
+                margin: 0;
+            }
+        }
+    </style>
+}
+
+<h1>Patient Identity Card</h1>
+<br />
+<br />
+<form method="get">
+    <div class="row justify-content-center" id="cardView">
+        <div class="card">
+            <div class="card-header">
+                <h4 style="text-align:center;">Patient Identity Card</h4>
+            </div>
+            <br />
+            <div class="card-body txtAlign">
+                <div class="">
+                    <div style="position:relative; width:120px; height:120px;padding-left:-20px;">
+                        <img src="@photoPath" asp-append-version="true" style="position:absolute; width:100%; height:100%; top:0; border:1px solid #000000; border-radius:5px;" />
+                    </div>
+                </div>
+                <br />
+                <br />
+                <div class="row">
+
+                    <div class="control-label">
+                        <label>MRNo:</label>
+                    </div>
+                    <div class="">
+                        <label>@Model.PatientRegistration.MRNo</label>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="control-label">
+                        <label>Name:</label>
+                    </div>
+                    <div class="">
+                        <label>@Model.PatientRegistration.FullName</label>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="control-label">
+                        <label>Phone No:</label>
+                    </div>
+                    <div class="">
+                        <label>@Model.PatientRegistration.PatientMobile1 </label>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="control-label">
+                        <label>Hospital Name:</label>
+                    </div>
+                    <div class="">
+                        <label>@Model.PatientRegistration.ReferalHospitalName</label>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</form>
+
+<div class="row" id="btnPrintRow">
+    <div class="form-group col-12">
+        <div class="" id="btnSticky">
+            <button type="button" class="btn btn-success" id="btnPrint">Print</button>
+            <a id="btnExit" class="btn btn-secondary" asp-area="Registration" asp-controller="PatientRegistrationAKT" asp-action="Create">Cancel</a>
+        </div>
+    </div>
+</div>
+
+@section Scripts{
+    <script>
+        $(document).ready(function () {
+            $("#btnPrint").click(function () {
+                window.print();
+            });
+        });
+    </script>
+
+}

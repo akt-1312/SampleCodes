@@ -1,0 +1,189 @@
+﻿@model PageNamesInModulesViewModel
+
+@{
+    ViewData["Title"] = "PageNameAction";
+    Layout = "~/Views/Shared/_HMSMainLayout.cshtml";
+}
+
+@section CurrentPageNavigation{
+    <h4 class="page-title float-left">SuperAdmin Dashboard</h4>
+
+    <ol class="breadcrumb float-right">
+        <li class="breadcrumb-item"><a href="#">SuperAdmin Dashboard</a></li>
+        @*<li class="breadcrumb-item"><a href="#">Register</a></li>*@
+    </ol>
+}
+
+@section LeftSideMenu{
+    <partial name="_SuperAdminLeftSideMenuPartial" />
+}
+@{
+    <style>
+        .btn-default {
+            width: 60px;
+            background-color: lightgreen;
+        }
+
+        .btn-cancel {
+            width: 70px;
+            background-color: lightcoral;
+        }
+         .btnUpdateSubmitToggle{
+            display:none;
+        }
+    </style>
+}
+
+<h4>PageNamesInModule</h4>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="PageNameAction" method="post" id="formPG">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <input type="hidden" asp-for="PageNamesInModuleId" />
+            <div class="form-group">
+                <label asp-for="PageName" class="control-label"></label>
+                <input asp-for="PageName" class="form-control input-sm" />
+                <span asp-validation-for="PageName" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="ModuleId" class="control-label"></label>
+                <select asp-for="ModuleId" class="form-control input" asp-items='@(new SelectList(Model.Modules,"ModuleId","ModuleName"))'>
+                    <option value="">--Select Module--</option>
+                </select>
+                <span asp-validation-for="ModuleId" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                @if ((await authorizationService.AuthorizeAsync(User, "PageNamesInModulesUpdate")).Succeeded)
+                {
+                    <button type="submit" name="btnSubmit" value="Update" class="btn btn-success btnUpdateSubmitToggle">Update</button>
+                }
+                @if ((await authorizationService.AuthorizeAsync(User, "PageNamesInModulesCreate")).Succeeded)
+                {
+                    <button type="submit" name="btnSubmit" value="Create" class="btn btn-success btnSaveSubmitToggle">Save</button>
+                }
+                <button type="button" class="btn btn-secondary" onclick="ResetFormAndShowHideBtnSubmit('form#formPG');">Cancel</button>
+            </div>
+        </form>
+    </div>
+    <div class="col-9 p-2 my-2 bg-light">
+        <div class="row">
+            <div class="col-12">
+                <div class="card-box">
+                    <table id="demo-foo-filtering" class="table table-striped table-bordered toggle-circle m-b-0" data-page-size="7">
+                        <thead>
+                            <tr>
+                                <th>
+                                    No.
+                                </th>
+                                <th>
+                                    Module Name
+                                </th>
+                                <th>
+                                    Page Name
+                                </th>
+                                <th class="text-center"><b>Action</b></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var item in Model.PageNamesInModules.Select((value, i) => new { value, i }))
+                            {
+                                string pgJsonData = Newtonsoft.Json.JsonConvert.SerializeObject(item.value);
+                                @*<input type="hidden" asp-for="PageNamesInModule.PageNamesInModuleId" />*@
+                                <tr>
+                                    <td>
+                                        @(item.i + 1)
+                                    </td>
+                                    <td>
+                                        @item.value.Module.ModuleName
+                                    </td>
+                                    <td>
+                                        @item.value.PageName
+                                    </td>
+                                    <td class="text-center">
+                                        @if ((await authorizationService.AuthorizeAsync(User, "PageNamesInModulesUpdate")).Succeeded)
+                                        {
+                                            <button class="btn btn-outline-primary" onclick="TableRowEditClick(@pgJsonData);"><i class="fa fa-edit"></i></button>
+                                        }
+                                        @if ((await authorizationService.AuthorizeAsync(User, "PageNamesInModulesDelete")).Succeeded)
+                                        {
+                                            <button class="btn btn-outline-danger" onclick="TableRowDeleteClick('@item.value.PageNamesInModuleId')"><i class="fa fa-trash-alt"></i></button>
+                                        }
+                                    </td>
+
+                                </tr>
+                            }
+                        </tbody>
+                        <div class="form-inline m-b-20">
+                            <div class="row" style=" width: 48rem;">
+                                <div class="col-md-6 text-xs-center" style="display:none;">
+                                    <div class="form-group">
+                                        <label class="control-label m-r-5">Status</label>
+                                        <select id="demo-foo-filter-status" class="form-control input-sm">
+                                            <option value="">Show all</option>
+                                            <option value="active">Active</option>
+                                            <option value="disabled">Disabled</option>
+                                            <option value="suspended">Suspended</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col-md-6 text-center ">
+                                    <div class="form-group ">
+                                        <input id="demo-foo-search" type="text" placeholder="Search" class="form-control input-sm col-10" autocomplete="on">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <tfoot>
+                            <tr class="active">
+                                <td colspan="3">
+                                    <div class="text-right">
+                                        <ul class="pagination pagination-split footable-pagination m-t-10 m-b-0"></ul>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>
+
+
+            </div>
+
+            @*<div>
+            <a asp-action="PageNameAction">Back to List</a>
+        </div>*@
+            @{
+                ViewData["DeleteConfirmPolicyName"] = "PageNamesInModulesDelete";
+                ViewData["DeleteConfirmActionName"] = "DeletePageNamesInModules";
+                ViewData["DeleteConfirmControllerName"] = "PageNamesInModules";
+                ViewData["DeleteConfirmAreaName"] = "Administration";
+                ViewData["DeleteConfirmParameterName"] = "PageNamesInModuleId";
+            }
+
+            <partial name="_DeleteConfirmPartial" view-data="ViewData" />
+
+            @section Scripts{
+                <!-- Counter js  -->
+                <script src="~/plugins/waypoints/jquery.waypoints.min.js"></script>
+                <script src="~/plugins/counterup/jquery.counterup.min.js"></script>
+
+
+                <!--FooTable-->
+                <script src="~/plugins/footable/js/footable.all.min.js"></script>
+
+                <!--FooTable Example-->
+                <script src="~/pages/jquery.footable.js"></script>
+            }
+            <script>
+        $(document).ready(function () {
+
+            var successedAlertMessage = "@ViewBag.SuccessedAlertMessage";
+            AlertSnackBarByActionName(successedAlertMessage);
+
+            @*var actionName = "@Model.BtnActionName";
+            if (actionName.toLowerCase().trim() == "delete") {
+                $("#module").attr("readonly", true);
+                  $("#pgmodule").attr("disabled", true);
+            }*@
+        });
+            </script>

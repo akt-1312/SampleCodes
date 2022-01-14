@@ -1,0 +1,634 @@
+﻿@model List<HMS.Models.ViewModels.Administration.RoleAndPageViewModal>
+
+@{
+    ViewData["Title"] = "PageNamesInRole";
+    Layout = "~/Views/Shared/_HMSMainLayout.cshtml";
+}
+
+@*<h1>PageNamesInRole</h1>*@
+
+
+@section Styles{
+    <link rel="stylesheet" href="~/css/SnackMessage.css" />
+    @*<link href="/plugins/jstree/style.css" rel="stylesheet" type="text/css" />*@
+}
+
+<style>
+    ul {
+        list-style: none;
+    }
+
+    form#formPageNamesInRole {
+        -webkit-touch-callout: none; /* iOS Safari */
+        -webkit-user-select: none; /* Safari */
+        -khtml-user-select: none; /* Konqueror HTML */
+        -moz-user-select: none; /* Old versions of Firefox */
+        -ms-user-select: none; /* Internet Explorer/Edge */
+        user-select: none; /* Non-prefixed version, currently
+                                  supported by Chrome, Edge, Opera and Firefox */
+        display: none;
+    }
+
+    input[type="checkbox"].chkIsCheck:before {
+        border: 1px solid #333;
+        content: "\00a0";
+        display: inline-block;
+        font: 16px/1em sans-serif;
+        height: 16px;
+        margin: 0 .25em 0 0;
+        padding: 0;
+        vertical-align: top;
+        width: 16px;
+        background: #fff;
+    }
+
+    input[type="checkbox"].chkIsCheck:checked:before {
+        background: #fff;
+        color: #333;
+        content: "\2713";
+        text-align: center;
+    }
+
+    .card-box {
+        margin-bottom: 0px;
+    }
+
+    #checkTree {
+        line-height: 2;
+        padding-top: 15px;
+    }
+
+    .gifLoading {
+        position: fixed;
+        display: block;
+        top: 40%;
+        left: 55%;
+    }
+
+    body.enlarged .gifLoading {
+        top: 40%;
+        left: 47%;
+    }
+
+    .initialLoadingDiv {
+        background-color: floralwhite;
+        position: fixed;
+        width: 100%;
+        height: 100000vh;
+        top: 0;
+        left: 0;
+    }
+</style>
+
+@section CurrentPageNavigation{
+    <h4 class="page-title float-left">Administration</h4>
+
+    <ol class="breadcrumb float-right">
+        <li class="breadcrumb-item"><a href="#">PageNames In Role</a></li>
+        @*<li class="breadcrumb-item"><a href="#">Register</a></li>*@
+    </ol>
+}
+
+@section LeftSideMenu{
+    <partial name="_AdministrationLeftSideMenuPartial" />
+}
+
+<form asp-action="PageNamesInRole" method="post" id="formPageNamesInRole">
+    <div class="row">
+
+        <div class="col-md-12 card-box">
+            <div class="card-box">
+                @*<h4 class="text-dark header-title m-t-0 m-b-30">Checkbox Tree</h4>*@
+
+                <div id="checkTree" customTreeViewCollapse="true">
+
+                    <ul class="ulRole">
+                        @{
+                            var index = 0;
+                            foreach (var role in Model.Select((value, i) => new { value, i }))
+                            {
+                                <li class="liRole" style="color:orange;">
+                                    <span class="spanRole fa fa-minus-square fa-lg"></span>
+                                    <span class="spanRoleCheck far fa-square fa-lg"></span>
+                                    @role.value.Role.Name Role
+                                    <ul class="ulModule">
+                                        @foreach (var module in role.value.PageGroupsByModules.Select((value, i) => new { value, i }))
+                                        {
+                                            <li class="liModule" style="color:cadetblue;">
+                                                <span class="spanModule fa fa-minus-square fa-md"></span>
+                                                <span class="spanModuleCheck far fa-square fa-md"></span>
+                                                @module.value.ModuleName Module
+                                                <ul class="ulPage">
+                                                    @foreach (var pageName in module.value.PageNamesInModules.Select((value, i) => new { value, i }))
+                                                    {
+                                                        string isCheck = pageName.value.IsChecked ? "checked" : "";
+                                                        string isCreateAccess = pageName.value.IsCreateAccess ? "checked" : "";
+                                                        string isUpdateAccess = pageName.value.IsUpdateAccess ? "checked" : "";
+                                                        string isDeleteAccess = pageName.value.IsDeleteAccess ? "checked" : "";
+
+                                                        <li class="liPage" style="color:forestgreen;">
+                                                            <input class="chkIsCheck" type="checkbox" @isCheck name="[@index.ToString().Trim()].IsCheck" value="true" />
+                                                            @pageName.value.PageNamesInModule.PageName View
+                                                            <input hidden type="text" name="[@index.ToString().Trim()].RoleId" value="@role.value.Role.Id" />
+                                                            <input hidden type="text" name="[@index.ToString().Trim()].PageNamesInModuleId" value="@pageName.value.PageNamesInModule.PageNamesInModuleId" />
+                                                            <span class="spanAction fa fa-minus-square fa-sm"></span>
+                                                            <ul class="ulAction" style="color:grey;">
+                                                                <li>
+                                                                    <input class="chkAction chkCreateAction" type="checkbox" @isCreateAccess name="[@index.ToString().Trim()].IsCreateAccess" value="true" />
+                                                                    Create Action
+                                                                </li>
+                                                                <li>
+                                                                    <input class="chkAction chkEditAction" type="checkbox" @isUpdateAccess name="[@index.ToString().Trim()].IsUpdateAccess" value="true" />
+                                                                    Edit Action
+                                                                </li>
+                                                                <li>
+                                                                    <input class="chkAction chkDeleteAction" type="checkbox" @isDeleteAccess name="[@index.ToString().Trim()].IsDeleteAccess" value="true" />
+                                                                    Delete Action
+                                                                </li>
+                                                            </ul>
+                                                        </li>
+                                                        index += 1;
+                                                    }
+                                                </ul>
+                                            </li>
+                                        }
+                                    </ul>
+                                </li>
+                            }
+                        }
+                    </ul>
+                </div>
+            </div>
+        </div><!-- end col -->
+
+
+        <div class="footerBtnRow">
+            <input id="btnSave" type="button" class="btn btn-success regPageButtonWidth" value="Save" />
+            <a id="btnCancel" asp-action="PageNamesInRole" asp-controller="PageNamesInRole" asp-area="Administration"
+               class="btn btn-secondary regPageButtonWidth"> Cancel </a>
+        </div>
+    </div>
+
+    <div id="snackbar">Save Successful</div>
+
+
+</form>
+
+<div id="idInitialLoadingDiv" class="initialLoadingDiv">
+    <img class="gifLoading" src="~/images/LoadingGifts/HospitalLoading.gif" />
+    <div id="fullDiv">
+        <div id="gifContainer">
+        </div>
+    </div>
+</div>
+
+@section Scripts{
+
+    @*<script src="/plugins/jstree/jstree.js"></script>
+        <script src="/pages/jquery.tree.js"></script>*@
+    <script src="~/js/SnackMessage.js"></script>
+    <script>
+
+
+        $(document).ready(function () {
+
+            var isCheckAllAction = true;
+
+            var isSaveSuccess = "@ViewBag.IsSaveSuccess";
+            if (isSaveSuccess.toLowerCase() == "true") {
+                SaveSuccessSnackBar();
+            }
+
+            function ToggleExpand(selector, parent, child) {
+                $(selector).click(function () {
+                    $(this).parent(parent).children(child).toggle();
+                    if ($(this).hasClass("fa-minus-square")) {
+                        $(this).removeClass("fa-minus-square").addClass("fa-plus-square");
+                    } else {
+                        $(this).removeClass("fa-plus-square").addClass("fa-minus-square");
+                    }
+                });
+            }
+
+            function CheckAllChildrenOfRole(element) {
+                if ($(element).hasClass("fa-square")) {
+                    $(element).removeClass("fa-square").addClass("fa-check-square")
+                } else {
+                    $(element).removeClass("fa-minus-square").addClass("fa-check-square");
+                }
+
+                $(element).parent('li.liRole').children('ul.ulModule').children('li.liModule').each(function () {
+                    var module = $(this);
+                    var spanCheck = module.find(".spanModuleCheck")
+                    if (!spanCheck.hasClass("fa-check-square")) {
+                        if (spanCheck.hasClass("fa-square")) {
+                            spanCheck.removeClass("fa-square").addClass("fa-check-square")
+                        } else {
+                            spanCheck.removeClass("fa-minus-square").addClass("fa-check-square");
+                        }
+                    }
+                    //else {
+                    //    spanCheck.removeClass("fa-check-square").addClass("fa-square");
+                    //}
+
+                    $(this).children("ul.ulPage").children("li.liPage").each(function () {
+                        $(this).find('input[type="checkbox"].chkIsCheck').attr("checked", "checked");
+
+                        $(this).find("ul.ulAction").each(function () {
+                            CheckAllAction($(this));
+                        });
+                    });
+                });
+            }
+
+            function UnCheckAllChildrenOfRole(element) {
+                $(element).removeClass("fa-check-square").addClass("fa-square");
+
+                $(element).parent('li.liRole').children('ul.ulModule').children("li.liModule").each(function () {
+                    var module = $(this);
+                    var spanCheck = module.find(".spanModuleCheck")
+                    if (!spanCheck.hasClass("fa-square")) {
+                        if (spanCheck.hasClass("fa-check-square")) {
+                            spanCheck.removeClass("fa-check-square").addClass("fa-square")
+                        } else {
+                            spanCheck.removeClass("fa-minus-square").addClass("fa-square");
+                        }
+                    }
+                    //else {
+                    //    spanCheck.removeClass("fa-check-square").addClass("fa-square");
+                    //}
+
+                    $(this).children("ul.ulPage").children("li.liPage").each(function () {
+                        $(this).find('input[type="checkbox"].chkIsCheck').removeAttr("checked");
+
+                        $(this).find("ul.ulAction").each(function () {
+                            UnCheckAllAction($(this));
+                        });
+                    });
+
+                });
+            }
+
+            function CheckAllChildrenOfModule(element) {
+
+
+                if ($(element).hasClass("fa-square")) {
+                    $(element).removeClass("fa-square").addClass("fa-check-square")
+                } else {
+                    $(element).removeClass("fa-minus-square").addClass("fa-check-square");
+                }
+
+                $(element).parent("li.liModule").children("ul.ulPage").children("li.liPage").each(function () {
+                    $(this).find('input[type="checkbox"].chkIsCheck').attr("checked", "checked");
+
+                    $(this).find("ul.ulAction").each(function () {
+                        CheckAllAction($(this));
+                    });
+                });
+
+                var allCheckBoxInRole = $(element).closest("li.liRole").find('input[type="checkbox"].chkIsCheck').length;
+                var allCheckedCheckBoxInRole = $(element).closest("li.liRole").find('input[type="checkbox"].chkIsCheck').filter(':checked').length;
+                var roleCheckBoxOfModule = $(element).closest("li.liRole").find("span.spanRoleCheck");
+
+                if (allCheckBoxInRole === allCheckedCheckBoxInRole) {
+
+                    if (!$(roleCheckBoxOfModule).hasClass("fa-check-square")) {
+                        if ($(roleCheckBoxOfModule).hasClass("fa-square")) {
+                            $(roleCheckBoxOfModule).removeClass("fa-square").addClass("fa-check-square");
+                        } else {
+                            $(roleCheckBoxOfModule).removeClass("fa-minus-square").addClass("fa-check-square");
+                        }
+                    }
+                } else {
+                    if (allCheckedCheckBoxInRole < 1) {
+                        if (!$(roleCheckBoxOfModule).hasClass("fa-square")) {
+                            if ($(roleCheckBoxOfModule).hasClass("fa-check-square")) {
+                                $(roleCheckBoxOfModule).removeClass("fa-check-square").addClass("fa-square");
+                            } else {
+                                $(roleCheckBoxOfModule).removeClass("fa-minus-square").addClass("fa-square");
+                            }
+                        }
+                    } else {
+                        if (!$(roleCheckBoxOfModule).hasClass("fa-minus-square")) {
+                            if ($(roleCheckBoxOfModule).hasClass("fa-check-square")) {
+                                $(roleCheckBoxOfModule).removeClass("fa-check-square").addClass("fa-minus-square");
+                            } else {
+                                $(roleCheckBoxOfModule).removeClass("fa-square").addClass("fa-minus-square");
+                            }
+                        }
+                    }
+
+                }
+            }
+
+            function UnCheckAllChildrenOfModule(element) {
+
+
+                $(element).removeClass("fa-check-square").addClass("fa-square");
+
+                $(element).parent("li.liModule").children("ul.ulPage").children("li.liPage").each(function () {
+                    $(this).find('input[type="checkbox"].chkIsCheck').removeAttr("checked");
+
+                    $(this).find("ul.ulAction").each(function () {
+                        UnCheckAllAction($(this));
+                    });
+                });
+
+                var allCheckBoxInRole = $(element).closest("li.liRole").find('input[type="checkbox"].chkIsCheck').length;
+                var allCheckedCheckBoxInRole = $(element).closest("li.liRole").find('input[type="checkbox"].chkIsCheck').filter(':checked').length;
+                var roleCheckBoxOfModule = $(element).closest("li.liRole").find("span.spanRoleCheck");
+
+                if (allCheckBoxInRole === allCheckedCheckBoxInRole) {
+
+                    if (!$(roleCheckBoxOfModule).hasClass("fa-check-square")) {
+                        if ($(roleCheckBoxOfModule).hasClass("fa-square")) {
+                            $(roleCheckBoxOfModule).removeClass("fa-square").addClass("fa-check-square");
+                        } else {
+                            $(roleCheckBoxOfModule).removeClass("fa-minus-square").addClass("fa-check-square");
+                        }
+                    }
+                } else {
+                    if (allCheckedCheckBoxInRole < 1) {
+                        if (!$(roleCheckBoxOfModule).hasClass("fa-square")) {
+                            if ($(roleCheckBoxOfModule).hasClass("fa-check-square")) {
+                                $(roleCheckBoxOfModule).removeClass("fa-check-square").addClass("fa-square");
+                            } else {
+                                $(roleCheckBoxOfModule).removeClass("fa-minus-square").addClass("fa-square");
+                            }
+                        }
+                    } else {
+                        if (!$(roleCheckBoxOfModule).hasClass("fa-minus-square")) {
+                            if ($(roleCheckBoxOfModule).hasClass("fa-check-square")) {
+                                $(roleCheckBoxOfModule).removeClass("fa-check-square").addClass("fa-minus-square");
+                            } else {
+                                $(roleCheckBoxOfModule).removeClass("fa-square").addClass("fa-minus-square");
+                            }
+                        }
+                    }
+
+                }
+            }
+
+            function CheckOrUncheckPage(element) {
+                var pages = $(element).closest("ul.ulPage");
+                var modules = $(pages).closest("ul.ulModule");
+                var moduleOfPage = $(pages).parent("li.liModule").find("span.spanModuleCheck");
+                var roleOfAllCheckBox = $(modules).closest("li.liRole");
+                var roleCheckBoxOfModule = $(modules).closest("li.liRole").find("span.spanRoleCheck");
+
+                var allCheckBoxInModule = $(pages).children("li.liPage").length;
+                var allCheckedCheckboxInModule = $(pages).find('input[type="checkbox"].chkIsCheck').filter(':checked').length;
+                var allCheckBoxInRole = $(roleOfAllCheckBox).find('input[type="checkbox"].chkIsCheck').length;
+                var allCheckedCheckBoxInRole = $(roleOfAllCheckBox).find('input[type="checkbox"].chkIsCheck').filter(':checked').length;
+                var allModuleCheckboxInRole = $(modules).children("li.liModule").length;
+                var allCheckedModuleCheckBoxInRole = $(modules).find("span.spanModuleCheck.fa-check-square").length;
+                //console.log(allCheckBoxInRole);
+                //console.log(allCheckedCheckBoxInRole);
+
+                if (allCheckBoxInModule === allCheckedCheckboxInModule) {
+                    if (!$(moduleOfPage).hasClass("fa-check-square")) {
+                        if ($(moduleOfPage).hasClass("fa-square")) {
+                            $(moduleOfPage).removeClass("fa-square").addClass("fa-check-square");
+                        } else {
+                            $(moduleOfPage).removeClass("fa-minus-square").addClass("fa-check-square");
+                        }
+                    }
+                } else {
+                    if (allCheckedCheckboxInModule < 1) {
+                        if (!$(moduleOfPage).hasClass("fa-square")) {
+                            if ($(moduleOfPage).hasClass("fa-check-square")) {
+                                $(moduleOfPage).removeClass("fa-check-square").addClass("fa-square");
+                            } else {
+                                $(moduleOfPage).removeClass("fa-minus-square").addClass("fa-square");
+                            }
+                        }
+                    } else {
+                        if (!$(moduleOfPage).hasClass("fa-minus-square")) {
+                            if ($(moduleOfPage).hasClass("fa-check-square")) {
+                                $(moduleOfPage).removeClass("fa-check-square").addClass("fa-minus-square");
+                            } else {
+                                $(moduleOfPage).removeClass("fa-square").addClass("fa-minus-square");
+                            }
+                        }
+                    }
+
+                }
+
+                if (allCheckBoxInRole === allCheckedCheckBoxInRole) {
+
+                    if (!$(roleCheckBoxOfModule).hasClass("fa-check-square")) {
+                        if ($(roleCheckBoxOfModule).hasClass("fa-square")) {
+                            $(roleCheckBoxOfModule).removeClass("fa-square").addClass("fa-check-square");
+                        } else {
+                            $(roleCheckBoxOfModule).removeClass("fa-minus-square").addClass("fa-check-square");
+                        }
+                    }
+                } else {
+                    if (allCheckedCheckBoxInRole < 1) {
+                        if (!$(roleCheckBoxOfModule).hasClass("fa-square")) {
+                            if ($(roleCheckBoxOfModule).hasClass("fa-check-square")) {
+                                $(roleCheckBoxOfModule).removeClass("fa-check-square").addClass("fa-square");
+                            } else {
+                                $(roleCheckBoxOfModule).removeClass("fa-minus-square").addClass("fa-square");
+                            }
+                        }
+                    } else {
+                        if (!$(roleCheckBoxOfModule).hasClass("fa-minus-square")) {
+                            if ($(roleCheckBoxOfModule).hasClass("fa-check-square")) {
+                                $(roleCheckBoxOfModule).removeClass("fa-check-square").addClass("fa-minus-square");
+                            } else {
+                                $(roleCheckBoxOfModule).removeClass("fa-square").addClass("fa-minus-square");
+                            }
+                        }
+                    }
+
+                }
+
+                if (isCheckAllAction) {
+
+                    var ulAction = $(element).parent("li.liPage").find("ul.ulAction");
+                    if ($(element).is(":checked")) {
+                        CheckAllAction(ulAction);
+                    } else {
+                        UnCheckAllAction(ulAction);
+                    }
+                }
+            }
+
+            function InitializeTreeViewIcon() {
+                $("li.liRole").each(function () {
+                    var allCheckBoxInRole = $(this).find('input[type="checkbox"].chkIsCheck').length;
+                    var allCheckedCheckBoxInRole = $(this).find('input[type="checkbox"].chkIsCheck').filter(":checked").length;
+                    var roleCheckBox = $(this).find("span.spanRoleCheck");
+
+                    if (allCheckBoxInRole === allCheckedCheckBoxInRole) {
+                        if (!$(roleCheckBox).hasClass("fa-check-square")) {
+                            if ($(roleCheckBox).hasClass("fa-square")) {
+                                $(roleCheckBox).removeClass("fa-square").addClass("fa-check-square");
+                            } else {
+                                $(roleCheckBox).removeClass("fa-minus-square").addClass("fa-check-square");
+                            }
+                        }
+                    } else {
+                        if (allCheckedCheckBoxInRole < 1) {
+                            if (!$(roleCheckBox).hasClass("fa-square")) {
+                                if ($(roleCheckBox).hasClass("fa-check-square")) {
+                                    $(roleCheckBox).removeClass("fa-check-square").addClass("fa-square");
+                                } else {
+                                    $(roleCheckBox).removeClass("fa-minus-square").addClass("fa-square");
+                                }
+                            }
+                        } else {
+                            if (!$(roleCheckBox).hasClass("fa-minus-square")) {
+                                if ($(roleCheckBox).hasClass("fa-square")) {
+                                    $(roleCheckBox).removeClass("fa-square").addClass("fa-minus-square");
+                                } else {
+                                    $(roleCheckBox).removeClass("fa-check-square").addClass("fa-minus-square");
+                                }
+                            }
+                        }
+                    }
+
+                    $(this).find("li.liModule").each(function () {
+                        var allCheckBoxInModule = $(this).find('input[type="checkbox"].chkIsCheck').length;
+                        var allCheckedCheckBoxInModule = $(this).find('input[type="checkbox"].chkIsCheck').filter(":checked").length;
+                        var moduleCheckBox = $(this).find("span.spanModuleCheck");
+
+                        if (allCheckBoxInModule === allCheckedCheckBoxInModule) {
+                            if (!$(moduleCheckBox).hasClass("fa-check-square")) {
+                                if ($(moduleCheckBox).hasClass("fa-square")) {
+                                    $(moduleCheckBox).removeClass("fa-square").addClass("fa-check-square");
+                                } else {
+                                    $(moduleCheckBox).removeClass("fa-minus-square").addClass("fa-check-square");
+                                }
+                            }
+                        } else {
+                            if (allCheckedCheckBoxInModule < 1) {
+                                if (!$(moduleCheckBox).hasClass("fa-square")) {
+                                    if ($(moduleCheckBox).hasClass("fa-check-square")) {
+                                        $(moduleCheckBox).removeClass("fa-check-square").addClass("fa-square");
+                                    } else {
+                                        $(moduleCheckBox).removeClass("fa-minus-square").addClass("fa-square");
+                                    }
+                                }
+                            } else {
+                                if (!$(moduleCheckBox).hasClass("fa-minus-square")) {
+                                    if ($(moduleCheckBox).hasClass("fa-square")) {
+                                        $(moduleCheckBox).removeClass("fa-square").addClass("fa-minus-square");
+                                    } else {
+                                        $(moduleCheckBox).removeClass("fa-check-square").addClass("fa-minus-square");
+                                    }
+                                }
+                            }
+                        }
+                    });
+
+                });
+            }
+
+            function InitializeTreeViewCollapseOrNot() {
+
+                if ($("#checkTree").get(0).hasAttribute("customTreeViewCollapse")) {
+                    if ($("#checkTree").attr("customTreeViewCollapse") == "true") {
+                        $("ul.ulAction").hide();
+                        $("span.spanAction").removeClass("fa-minus-square").addClass("fa-plus-square");
+                        $("ul.ulPage").hide();
+                        $("span.spanModule").removeClass("fa-minus-square").addClass("fa-plus-square");
+                        $("ul.ulModule").hide();
+                        $("span.spanRole").removeClass("fa-minus-square").addClass("fa-plus-square");
+                    }
+                }
+            }
+
+            function CheckAllAction(element) {
+                    $(element).find('input[type="checkbox"].chkCreateAction').attr("checked", "checked");
+                    $(element).find('input[type="checkbox"].chkEditAction').attr("checked", "checked");
+                    $(element).find('input[type="checkbox"].chkDeleteAction').attr("checked", "checked");
+            }
+
+            function UnCheckAllAction(element) {
+                $(element).find('input[type="checkbox"].chkCreateAction').removeAttr("checked");
+                $(element).find('input[type="checkbox"].chkEditAction').removeAttr("checked");
+                $(element).find('input[type="checkbox"].chkDeleteAction').removeAttr("checked");
+            }
+
+            function CheckOrUnCheckAction(element) {
+                var pageOfActionsCheckBox = $(element).parents("li.liPage").find('input[type="checkbox"].chkIsCheck');
+                var allCheckedActionCheckBoxCount = $(element).parents("ul.ulAction").find('input[type="checkbox"].chkAction').filter(":checked").length;
+
+                isCheckAllAction = false;
+                if (allCheckedActionCheckBoxCount < 1) {
+
+                    if ($(pageOfActionsCheckBox).is(":checked")) {
+
+                        $(pageOfActionsCheckBox).trigger("click");
+                        //$(pageOfActionsCheckBox).prop("checked", false);
+                    }
+                } else {
+
+                    if (!$(pageOfActionsCheckBox).is(":checked")) {
+                        $(pageOfActionsCheckBox).trigger("click");
+                        //$(pageOfActionsCheckBox).prop("checked", true);
+
+                    }
+                }
+
+                isCheckAllAction = true;
+            }
+
+            InitializeTreeViewCollapseOrNot();
+            InitializeTreeViewIcon();
+
+            ToggleExpand(".spanRole", "li.liRole", "ul.ulModule");
+            ToggleExpand(".spanModule", "li.liModule", "ul.ulPage");
+            $(".spanRoleCheck").click(function () {
+                if (!$(this).hasClass("fa-check-square")) {
+                    CheckAllChildrenOfRole($(this));
+                } else {
+                    UnCheckAllChildrenOfRole($(this));
+                }
+            });
+
+            $(".spanModuleCheck").click(function () {
+                if (!$(this).hasClass("fa-check-square")) {
+                    CheckAllChildrenOfModule($(this));
+                } else {
+                    UnCheckAllChildrenOfModule($(this));
+                }
+            });
+
+            $('input[type="checkbox"].chkIsCheck').click(function () {
+                CheckOrUncheckPage($(this));
+            });
+
+            $(".spanAction").click(function () {
+                $(this).siblings("ul.ulAction").toggle();
+                if ($(this).hasClass("fa-plus-square")) {
+                    $(this).removeClass("fa-plus-square").addClass("fa-minus-square");
+                } else {
+                    $(this).removeClass("fa-minus-square").addClass("fa-plus-square");
+                }
+            });
+
+            $(".chkAction").click(function () {
+                CheckOrUnCheckAction($(this));
+            });
+
+            $("#btnSave").click(function () {
+                $(this).val("Saving...");
+                $(this).prop("disabled", true);
+
+                $(".content-page .content").addClass("loading");
+
+                $("form#formPageNamesInRole").submit();
+            });
+
+            setTimeout(function () {
+                $("form#formPageNamesInRole").show();
+                $("#idInitialLoadingDiv").remove();
+            }, 4000);
+
+        });
+    </script>
+
+}

@@ -1,0 +1,61 @@
+﻿@model HMS.Models.Administration.HomeLocalForeignerCurrencyType
+
+@{
+    ViewData["Title"] = "Details";
+    Layout = "~/Views/Shared/_HMSMainLayout.cshtml";
+}
+
+<h1>Details</h1>
+
+<div>
+    <h4>HomeLocalForeignerCurrencyType</h4>
+    <hr />
+    <dl class="row">
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.HomeCurrency)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.HomeCurrency.CurrencyId)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.LocalCurrency)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.LocalCurrency.CurrencyId)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.ForeignerCurrency)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.ForeignerCurrency.CurrencyId)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.Nationality)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.Nationality.NationalityName)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.MultiplyHomeToForeigner)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.MultiplyHomeToForeigner)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.IsActive)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.IsActive)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.CreatedDate)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.CreatedDate)
+        </dd>
+    </dl>
+</div>
+<div>
+    <a asp-action="Edit" asp-route-id="@Model.HomeLocalForeignerCurrencyTypeId">Edit</a> |
+    <a asp-action="Index">Back to List</a>
+</div>

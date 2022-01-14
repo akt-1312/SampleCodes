@@ -1,0 +1,1152 @@
+﻿@model HMS.Models.ViewModels.Reception.PatientRegistrationAKTViewModel
+
+@{
+    ViewData["Title"] = "PatientRegistrationCreate";
+    Layout = "~/Views/Shared/_HMSMainLayout.cshtml";
+}
+
+@{
+    <style>
+        .row {
+            margin-bottom: 3px;
+        }
+
+        label {
+            font-weight: bold;
+        }
+
+        h5 {
+            text-decoration: underline;
+            margin-top:0px;
+        }
+
+        .border {
+            height: auto;
+        }
+
+        /*body{
+            margin-bottom:0px;
+        }*/
+
+        .accordion .fa {
+            margin-right: 0.5rem;
+            font-size: 24px;
+            font-weight: bold;
+            position: relative;
+            top: 2px;
+        }
+
+        .onlyNormalRegRequiredField{
+            display: @(ViewBag.RegName == RegistrationType.Emergency.ToString() ? "none" : "")
+        }
+
+        div.collapseHeader h5{
+            width:100%;
+            border:1px solid;
+        }
+
+        div.collapseHeader h5 a{
+            width:100%;
+            text-align:start;
+        }
+    </style>
+
+}
+
+@section CurrentPageNavigation{
+    <h4 class="page-title float-left">Reception</h4>
+
+    <ol class="breadcrumb float-right">
+        <li class="breadcrumb-item"><a href="#">Patient Registration Create</a></li>
+        @*<li class="breadcrumb-item"><a href="#">Register</a></li>*@
+    </ol>
+}
+
+@section LeftSideMenu{
+    <partial name="_ReceptionLeftSideMenuPartial" />
+}
+
+
+<form method="post" enctype="multipart/form-data" id="formRegCreate">
+    @*<input hidden name="RegName"
+        value="@ViewBag.RegName" id="regName" />*@
+    <div asp-validation-summary="ModelOnly"></div>
+    <div class="">
+        <div class="card-box w-100">
+            <div class="row my-3">
+                @*<div class="col-6">
+                        <h4 id="headerRegName">@ViewBag.RegName</h4>
+                    </div>*@
+                <div class="col-12 text-center">
+                    <div>
+                        <h4>@(Model.PatientRegistration.RegistrationType == RegistrationType.Emergency ? "Emergency Registration" : "Normal Registration")</h4>
+                        <select hidden id="ddlRegName" asp-for="PatientRegistration.RegistrationType" class="form-control input-sm">
+                            @foreach (var item in Enum.GetNames(typeof(RegistrationType)))
+                            {
+                                <option value="@item">@item</option>
+                            }
+                        </select>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-6">
+                    <div class="row">
+                        <div class="ml-2">
+                            <label for="rdoManual">Manual</label>
+                            <input type="radio" id="rdoManual" name="rdoMRNo" value="Manual" />
+                        </div>
+                        @*<div class="ml-2">
+                                <label> Defined</label>
+                                <input type="radio" checked="checked" id="rdoDefined" name="rdoMRNo" value="Defined" />
+                            </div>*@
+                        <div class="ml-2">
+                            <label for="rdoAuto"> Auto </label>
+                            <input type="radio" id="rdoAuto" name="rdoMRNo" value="Auto" checked />
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-4">
+                    <div class="row">
+                        <div class="col-5">
+                            <div class="">
+                                <label class="">MR No:</label>
+                            </div>
+                        </div>
+                        <div class="col-7">
+                            <div class="row">
+                                <input type="text" asp-for="PatientRegistration.MRNo" id="txtMRNo"
+                                       class="form-control input-sm" />
+                                <span class="text-danger">@ViewBag.NullMRNoError</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-4">
+                    <div class="row">
+                        <div class="col-5">
+                            <div class="">
+                                <label class="">Reg: Date</label>
+                            </div>
+                        </div>
+                        <div class="col-7">
+                            <div class="row">
+                                <span style="position: absolute; top: -18px; left: 10px;">mm/dd/yy</span>
+                                <div class="input-group">
+                                    <input asp-for="PatientRegistration.RegDate" value="@Model.PatientRegistration.RegDate.FormattedDateString()" type="text"
+                                           class="form-control input-sm" id="txtRegDate" readonly />
+                                    @*<div class="input-group-prepend">
+                                            <button class="btn btn-outline-secondary rounded-0 input-sm" type="button" id="btnRegDate">
+                                                <i class="fa fa-calendar-alt"></i>
+                                            </button>
+                                        </div>*@
+                                </div>
+                                <span asp-validation-for="PatientRegistration.RegDate" class="text-danger"></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                @*<div class="col-4">
+                        <div class="row">
+                            <div class="ml-2">
+                                <label>Outpatient</label>
+                                <input type="radio" id="rdoOptPatient" value="OutPatient"
+                                       checked="checked" asp-for="PatientRegistration.OptIpt" />
+                            </div>
+                            <div class="ml-2">
+                                <label> Inpatient</label>
+                                <input type="radio" id="rdoInpatient" value="InPatient"
+                                       asp-for="PatientRegistration.OptIpt" />
+                            </div>
+                        </div>
+                    </div>*@
+            </div>
+        </div>
+
+        <hr />
+        <div class="card-box w-100">
+            <h5>
+                Patient Information
+            </h5>
+
+            <div class="row">
+                <div class="col-4">
+                    <div class="row">
+                        <div class="col-5">
+                            <div class="">
+                                <label class="">Prefix <span class="text-danger">*</span></label>
+                            </div>
+                        </div>
+                        <div class="col-7">
+                            <div class="row">
+                                <select asp-for="PatientRegistration.PatientPrefix" id="ddlPrefix"
+                                        class="form-control input-sm" asp-items="@(new SelectList(Model.Prefixes,"PrefixName","PrefixName"))" )">
+                                    <option value="">--Select Prefix--</option>
+                                </select>
+                                <span asp-validation-for="PatientRegistration.PatientPrefix" class="text-danger"></span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-5">
+                            <div class="">
+                                <label class="">First Name <span class="text-danger">*</span></label>
+                            </div>
+                        </div>
+                        <div class="col-7">
+                            <div class="row">
+                                <input type="text" asp-for="PatientRegistration.PatientFirstName"
+                                       class="form-control input-sm" />
+                                <span asp-validation-for="PatientRegistration.PatientFirstName" class="text-danger"></span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-5">
+                            <div class="">
+                                <label class="">Middle Name</label>
+                            </div>
+                        </div>
+                        <div class="col-7">
+                            <div class="row">
+                                <input type="text" asp-for="PatientRegistration.PatientMiddleName" class="form-control input-sm" />
+                                <span asp-validation-for="PatientRegistration.PatientMiddleName" class="text-danger"></span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-5">
+                            <div class="">
+                                <label class="">Last Name</label>
+                            </div>
+                        </div>
+                        <div class="col-7">
+                            <div class="row">
+                                <input type="text" asp-for="PatientRegistration.PatientLastName"
+                                       class="form-control input-sm" />
+                                <span asp-validation-for="PatientRegistration.PatientLastName" class="text-danger"></span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-5">
+                            <div class="">
+                                <label class="">Father's Name</label>
+                            </div>
+                        </div>
+                        <div class="col-7">
+                            <div class="row">
+                                <input type="text" asp-for="PatientRegistration.FatherName"
+                                       class="form-control input-sm" />
+                                <span asp-validation-for="PatientRegistration.FatherName" class="text-danger"></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-4">
+                    <div class="row">
+                        <div class="col-5">
+                            <div class="">
+                                <label class="">Mobile 1 <span class="onlyNormalRegRequiredField text-danger">*</span></label>
+                            </div>
+                        </div>
+                        <div class="col-7">
+                            <div class="row">
+                                <input asp-for="PatientRegistration.PatientMobile1"
+                                       class="form-control input-sm" id="txtPatientMobile1" />
+                                <span asp-validation-for="PatientRegistration.PatientMobile1" class="text-danger"></span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-5">
+                            <div class="">
+                                <label class="">Gender <span class="text-danger">*</span></label>
+                            </div>
+                        </div>
+                        <div class="col-7">
+                            <div class="row">
+                                <select asp-for="PatientRegistration.Gender" id="ddlGender"
+                                        class="form-control input-sm" asp-items="@(new SelectList(Model.Genders,"GenderName","GenderName"))" )">
+                                    <option value="">--Select Gender--</option>
+                                </select>
+                                <span asp-validation-for="PatientRegistration.Gender" class="text-danger"></span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-5">
+                            <div class="">
+                                <label class="">Date of Birth <span class="onlyNormalRegRequiredField text-danger">*</span></label>
+                            </div>
+                        </div>
+                        <div class="col-7">
+                            <div class="row">
+                                <div class="input-group">
+                                    @{
+                                        string dobValue = Model.PatientRegistration.DOB == null ? "" : Model.PatientRegistration.DOB.Value.FormattedDateString();
+                                    }
+                                    <input asp-for="PatientRegistration.DOB" type="text"
+                                           class="form-control input-sm" id="txtDob" readonly value="@dobValue" />
+                                    <div class="input-group-prepend">
+                                        <button class="btn btn-outline-secondary rounded-0 input-sm" type="button" id="btnDob">
+                                            <i class="fa fa-calendar-alt"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                                <span asp-validation-for="PatientRegistration.DOB" class="text-danger"></span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-5">
+                            <div class="">
+                                <label class="">Age (Yrs) <span class="onlyNormalRegRequiredField text-danger">*</span></label>
+                            </div>
+                        </div>
+                        <div class="col-7">
+                            <div class="row">
+                                <input asp-for="PatientRegistration.Age" id="txtAge"
+                                       class="form-control input-sm" />
+                                <span asp-validation-for="PatientRegistration.Age" class="text-danger"></span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-5">
+                            <div class="">
+                                <label class="">Marital Status</label>
+                            </div>
+                        </div>
+                        <div class="col-7">
+                            <div class="row">
+                                <select asp-for="PatientRegistration.MaritalStatus"
+                                        class="form-control input-sm" asp-items="@(new SelectList(Model.MaritalStatuses,"Marital_Status","Marital_Status"))" )">
+                                    <option value="">--Select MaritalStatus--</option>
+                                </select>
+                                <span asp-validation-for="PatientRegistration.MaritalStatus" class="text-danger"></span>
+                            </div>
+                        </div>
+                    </div>
+
+
+                </div>
+
+                <div class="col-4">
+
+                    <div class="row">
+                        <div class="col-5">
+                            <div class="">
+                                <label class="">Mobile 2</label>
+                            </div>
+                        </div>
+                        <div class="col-7">
+                            <div class="row">
+                                <input type="text" asp-for="PatientRegistration.PatientMobile2"
+                                       class="form-control input-sm" />
+                                <span asp-validation-for="PatientRegistration.PatientMobile2" class="text-danger"></span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-5">
+                            <div class="">
+                                <label class="">Occupation</label>
+                            </div>
+                        </div>
+                        <div class="col-7">
+                            <div class="row">
+                                <select asp-for="PatientRegistration.Occupation" id="ddlOccupation"
+                                        class="form-control input-sm" asp-items="@(new SelectList(Model.Occupations,"OccupationName","OccupationName"))" )">
+                                    <option value="">--Select Occupation--</option>
+                                </select>
+                                <span asp-validation-for="PatientRegistration.Occupation" class="text-danger"></span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-5">
+                            <div class="">
+                                <label class="">Email</label>
+                            </div>
+                        </div>
+                        <div class="col-7">
+                            <div class="row">
+                                <input type="text" asp-for="PatientRegistration.Email" class="form-control input-sm" />
+                                <span asp-validation-for="PatientRegistration.Email" class="text-danger"></span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-5">
+                            <div class="">
+                                <label class="">Nationality</label>
+                            </div>
+                        </div>
+                        <div class="col-7">
+                            <div class="row">
+                                <select asp-for="PatientRegistration.Nationality" id="ddlNationality"
+                                        class="form-control input-sm" asp-items="@(new SelectList(Model.Nationalities,"NationalityName","NationalityName"))" )">
+                                    <option value="">--Select Nationality--</option>
+                                </select>
+                                <span asp-validation-for="PatientRegistration.Nationality" class="text-danger"></span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-5">
+                            <div class="">
+                                <label class="">Alias Name</label>
+                            </div>
+                        </div>
+                        <div class="col-7">
+                            <div class="row">
+                                <input type="text" asp-for="PatientRegistration.AliasName"
+                                       class="form-control input-sm" />
+                                <span asp-validation-for="PatientRegistration.AliasName" class="text-danger"></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-4">
+                    <div class="row ml-3">
+                        <div class="ml-2">
+                            <label>NRC</label>
+                            <input asp-for="PatientRegistration.PatientIdentityType" value="NRC" type="radio" checked="checked"
+                                   id="rdoNRC" />
+                            <span asp-validation-for="PatientRegistration.PatientIdentityType" class="text-danger"></span>
+                        </div>
+                        <div class="ml-2">
+                            <label> Driving Licence</label>
+                            <input asp-for="PatientRegistration.PatientIdentityType" value="Driving Licence"
+                                   type="radio" id="rdoDriveLicence" />
+                            <span asp-validation-for="PatientRegistration.PatientIdentityType" class="text-danger"></span>
+                        </div>
+                        <div class="ml-2">
+                            <label> Passport </label>
+                            <input asp-for="PatientRegistration.PatientIdentityType" value="Passport"
+                                   type="radio" id="rdoPassport" />
+                            <span asp-validation-for="PatientRegistration.PatientIdentityType" class="text-danger"></span>
+                        </div>
+                    </div>
+                    <div class="col-12">
+                        <div>
+                            <input type="text" asp-for="PatientRegistration.PatientIdentityNo"
+                                   class="form-control input-sm" />
+                            <span asp-validation-for="PatientRegistration.PatientIdentityNo" class="text-danger"></span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-4">
+                    <div class="form-group">
+                        <div class="row">
+                            <div class="col-12">
+                                <label asp-for="Photo" class=""></label>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-12">
+                                <div class="patientImgContainer" style="float:left;">
+                                    <img id="imgPatient" asp-append-version="true" style="width:24px; height:24px; padding:2px; border:1px solid;" src="~/images/PatientImages/PatientImage.png" />
+                                </div>
+                                <div>
+                                    <input asp-for="Photo" />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-2 offset-2">
+                    <div class="row">
+                        <div class="col-12"><label style="color:transparent;">1 </label></div>
+                    </div>
+                    <div class="row">
+                        <div class="form-group col-12">
+                            <input asp-for="PatientRegistration.Confidential" type="checkbox" id="chkConfidential" class="align-middle" />
+                            <label>Confidential</label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <hr />
+
+        <div class="accordion card-box w-100">
+            <div class="collapseHeader" id="collapseHeaderReferalHospital">
+                <div class="row">
+                    <h5 class="mb-0">
+                        <a class="btn btn-link collapsed" data-toggle="collapse" data-target="#collapseReferalHospital"><i class="fa fa-angle-right"></i> Referral</a>
+                    </h5>
+                </div>
+            </div>
+            <div id="collapseReferalHospital" class="collapse" aria-labelledby="collapseHeaderReferalHospital" data-parent="#collapseHeaderReferalHospital">
+                <div class="row">
+                    <div class="col-4">
+                        <div class="row">
+                            <div class="col-5">
+                                <label class="">Hospital</label>
+                            </div>
+                            <div class="col-7">
+                                <select asp-for="PatientRegistration.ReferalHospitalName" class="form-control input-sm">
+                                    <option value="">--Select--</option>
+                                    @if (Model.ReferalHospitals.Any())
+                                    {
+                                        foreach (var item in Model.ReferalHospitals)
+                                        {
+                                            <option value="@item.HospitalName">@item.HospitalName</option>
+                                        }
+                                    }
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-4">
+                        <div class="row">
+                            <div class="col-5">
+                                <label class="">Doctor's Name</label>
+                            </div>
+                            <div class="col-7">
+                                <input asp-for="PatientRegistration.FromReferalDoctorName" class="form-control input-sm" />
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-4">
+                        <div class="row">
+                            <div class="col-5">
+                                <label class="">Ref.ToConsultant</label>
+                            </div>
+                            <div class="col-7">
+                                <input asp-for="PatientRegistration.ToReferalDoctorName" class="form-control input-sm" />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-12">
+                        <div class="row">
+                            <div class="col-12">
+                                <label class="">Referral Remarks</label>
+                            </div>
+                            <div class="col-12">
+                                <textarea asp-for="PatientRegistration.ReferalRemarks" class="form-control input-sm"></textarea>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <hr />
+
+        <div class="accordion card-box w-100">
+            <div class="collapseHeader" id="collapseHeaderContactDetails">
+                <div class="row">
+                    <h5 class="mb-0">
+                        <a class="btn btn-link collapsed" data-toggle="collapse" data-target="#collapseContactDetails"><i class="fa fa-angle-right"></i> Contact Details</a>
+                    </h5>
+                </div>
+            </div>
+            <div id="collapseContactDetails" class="collapse" aria-labelledby="collapseHeaderContactDetails" data-parent="#collapseHeaderContactDetails">
+                <div class="row">
+                    <div class="col-4">
+                        <div class="row">
+                            <div class="col-5">
+                                <div class="">
+                                    <label class="">House No:</label>
+                                </div>
+                            </div>
+                            <div class="col-7">
+                                <div class="row">
+                                    <input type="text" asp-for="PatientRegistration.HouseNo" class="form-control input-sm" />
+                                    <span asp-validation-for="PatientRegistration.HouseNo" class="text-danger"></span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-4">
+                        <div class="row">
+                            <div class="col-5">
+                                <div class="">
+                                    <label class="">Street</label>
+                                </div>
+                            </div>
+                            <div class="col-7">
+                                <div class="row">
+                                    <input type="text" asp-for="PatientRegistration.Street" class="form-control input-sm" />
+                                    <span asp-validation-for="PatientRegistration.Street" class="text-danger"></span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-4">
+                        <div class="row">
+                            <div class="col-5">
+                                <div class="">
+                                    <label class="">Country</label>
+                                </div>
+                            </div>
+                            <div class="col-7">
+                                <div class="row">
+                                    <select asp-for="PatientRegistration.Country" id="ddlCountry"
+                                            class="form-control input-sm" asp-items="@(new SelectList(Model.Countries,"Cty_name","Cty_name"))" )">
+                                        <option value="">--Select Country--</option>
+                                    </select>
+                                    <span asp-validation-for="PatientRegistration.Country" class="text-danger"></span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-4">
+                        <div class="row">
+                            <div class="col-5">
+                                <div class="">
+                                    <label class="">State</label>
+                                </div>
+                            </div>
+                            <div class="col-7">
+                                <div class="row">
+                                    <select asp-for="PatientRegistration.State" id="ddlState" class="form-control input-sm"
+                                            asp-items="@(new SelectList(string.IsNullOrWhiteSpace(Model.PatientRegistration.Country) ? new List<State>() : Model.States,"State_name","State_name"))">
+                                        <option value="">--Select State--</option>
+                                    </select>
+                                    <span asp-validation-for="PatientRegistration.State" class="text-danger"></span>
+                                    @*<span class="text-danger">@ViewBag.StateNullError</span>*@
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-4">
+                        <div class="row">
+                            <div class="col-5">
+                                <div class="">
+                                    <label class="">Township</label>
+                                </div>
+                            </div>
+                            <div class="col-7">
+                                <div class="row">
+                                    <select asp-for="PatientRegistration.Township" id="ddlTownship"
+                                            class="form-control input-sm"
+                                            asp-items="@(new SelectList(string.IsNullOrWhiteSpace(Model.PatientRegistration.State) ? new List<Township>() : Model.Townships,"Tsp_name","Tsp_name"))">
+                                        <option value="">--Select Township--</option>
+                                    </select>
+                                    <span asp-validation-for="PatientRegistration.Township" class="text-danger"></span>
+                                    @*<span class="text-danger">@ViewBag.TownshipNullError</span>*@
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-12">
+                        <div>
+                            <input asp-for="PatientRegistration.CorrespondAddress" type="checkbox" />
+                            <label>Correspondance address same as above.</label>
+                            <span asp-validation-for="PatientRegistration.CorrespondAddress" class="text-danger"></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <hr />
+
+        <div class="accordion card-box w-100">
+            <div class="collapseHeader" id="collapseHeaderNextOfKinDetails">
+                <div class="row">
+                    <h5 class="mb-0">
+                        <a class="btn btn-link collapsed" data-toggle="collapse" data-target="#collapseNextOfKinDetails"><i class="fa fa-angle-right"></i> Next Of Kin Details</a>
+                    </h5>
+                </div>
+            </div>
+            <div id="collapseNextOfKinDetails" class="collapse" aria-labelledby="collapseHeaderNextOfKinDetails" data-parent="#collapseHeaderNextOfKinDetails">
+
+                <div class="row">
+                    <div class="col-4">
+                        <div class="row">
+                            <div class="col-5">
+                                <div class="">
+                                    <label class="">Relationship</label>
+                                </div>
+                            </div>
+                            <div class="col-7">
+                                <div class="row">
+                                    <select asp-for="PatientRegistration.KinRelationship"
+                                            class="form-control input-sm" asp-items="@(new SelectList(Model.Relationships,"RelationshipName","RelationshipName"))" )">
+                                        <option value="">--Select Relationship--</option>
+                                    </select>
+                                    <span asp-validation-for="PatientRegistration.KinRelationship" class="text-danger"></span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-5">
+                                <div class="">
+                                    <label class="">Prefix</label>
+                                </div>
+                            </div>
+                            <div class="col-7">
+                                <div class="row">
+                                    <select asp-for="PatientRegistration.KinPrefix"
+                                            class="form-control input-sm" asp-items="@(new SelectList(Model.Prefixes,"PrefixName","PrefixName"))" )">
+                                        <option value="">--Select Prefix--</option>
+                                    </select>
+                                    <span asp-validation-for="PatientRegistration.KinPrefix" class="text-danger"></span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-5">
+                                <div class="">
+                                    <label class="">First Name</label>
+                                </div>
+                            </div>
+                            <div class="col-7">
+                                <div class="row">
+                                    <input type="text" asp-for="PatientRegistration.KinFirstName" class="form-control input-sm" />
+                                    <span asp-validation-for="PatientRegistration.KinFirstName" class="text-danger"></span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-5">
+                                <div class="">
+                                    <label class="">Middle Name</label>
+                                </div>
+                            </div>
+                            <div class="col-7">
+                                <div class="row">
+                                    <input type="text" asp-for="PatientRegistration.KinMiddleName"
+                                           class="form-control input-sm" />
+                                    <span asp-validation-for="PatientRegistration.KinMiddleName" class="text-danger"></span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-5">
+                                <div class="">
+                                    <label class="">Last Name</label>
+                                </div>
+                            </div>
+                            <div class="col-7">
+                                <div class="row">
+                                    <input type="text" asp-for="PatientRegistration.KinLastName"
+                                           class="form-control input-sm" />
+                                    <span asp-validation-for="PatientRegistration.KinLastName" class="text-danger"></span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-4">
+                        <div class="row">
+                            <div class="col-5">
+                                <div class="">
+                                    <label class="">Mobile 1</label>
+                                </div>
+                            </div>
+                            <div class="col-7">
+                                <div class="row">
+                                    <input asp-for="PatientRegistration.KinMobile1"
+                                           class="form-control input-sm" />
+                                    <span asp-validation-for="PatientRegistration.KinMobile1" class="text-danger"></span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-5">
+                                <div class="">
+                                    <label class="">Mobile 2</label>
+                                </div>
+                            </div>
+                            <div class="col-7">
+                                <div class="row">
+                                    <input asp-for="PatientRegistration.KinMobile2"
+                                           class="form-control input-sm" />
+                                    <span asp-validation-for="PatientRegistration.KinMobile2" class="text-danger"></span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <hr />
+
+        <div class="accordion card-box w-100">
+            <div class="collapseHeader" id="collapseHeaderEmergencyContact">
+                <div class="row">
+                    <h5 class="mb-0">
+                        <a class="btn btn-link collapsed" data-toggle="collapse" data-target="#collapseEmergencyContact"><i class="fa fa-angle-right"></i> Emergency Contact</a>
+                    </h5>
+                </div>
+            </div>
+            <div id="collapseEmergencyContact" class="collapse" aria-labelledby="collapseHeaderEmergencyContact" data-parent="#collapseHeaderEmergencyContact">
+
+                <div class="row">
+                    <div class="col-3">
+                        <div class="row">
+                            <div class="col-5">
+                                <div class="">
+                                    <label class="">Contact Person</label>
+                                </div>
+                            </div>
+                            <div class="col-7">
+                                <div class="row">
+                                    <input asp-for="PatientRegistration.EmgContactPerson"
+                                           class="form-control input-sm" />
+                                    <span asp-validation-for="PatientRegistration.EmgContactPerson" class="text-danger"></span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-3">
+                        <div class="row">
+                            <div class="col-5">
+                                <div class="">
+                                    <label class="">Relationship</label>
+                                </div>
+                            </div>
+                            <div class="col-7">
+                                <div class="row">
+                                    <select asp-for="PatientRegistration.EmgRelationship"
+                                            class="form-control input-sm" asp-items="@(new SelectList(Model.Relationships,"RelationshipName","RelationshipName"))" )">
+                                        <option value="">Relationship</option>
+                                    </select>
+                                    <span asp-validation-for="PatientRegistration.EmgRelationship" class="text-danger"></span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-3">
+                        <div class="row">
+                            <div class="col-5">
+                                <div class="">
+                                    <label class="">Mobile 1</label>
+                                </div>
+                            </div>
+                            <div class="col-7">
+                                <div class="row">
+                                    <input asp-for="PatientRegistration.EmgMobile1"
+                                           class="form-control input-sm" />
+                                    <span asp-validation-for="PatientRegistration.EmgMobile1" class="text-danger"></span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-3">
+                        <div class="row">
+                            <div class="col-5">
+                                <div class="">
+                                    <label class="">Mobile 2</label>
+                                </div>
+                            </div>
+                            <div class="col-7">
+                                <div class="row">
+                                    <input asp-for="PatientRegistration.EmgMobile2"
+                                           class="form-control input-sm" />
+                                    <span asp-validation-for="PatientRegistration.EmgMobile2" class="text-danger"></span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+
+        <div class="card-box w-100">
+            <div class="row mt-3">
+                <div class="col-3 text-center  align-content-center">
+                    <div>
+                        <label>Service Fee</label>
+                    </div>
+                </div>
+                @*<div class="col-1 offset-8">
+                        <input type="button" id="btnAdd" value="Add" class="btn btn-secondary" />
+                    </div>*@
+            </div>
+
+            <div class="row">
+                <table class="table table-striped table-bordered toggle-circle m-b-0 " id="regFeeTable" style="width:100%;/*min-width:1107px;*/">
+                    <thead class="" @*style="background-color:#70a6e4;"*@>
+                        <tr class="text-center">
+                            <th class="">
+                                No.
+                            </th>
+                            <th class="">
+                                Service Name
+                            </th>
+                            <th class="">
+                                Amount
+                            </th>
+                            <th class="">
+                                FOC
+                            </th>
+                            @*<th class="border border-dark">
+
+                                </th>*@
+                        </tr>
+                    </thead>
+                </table>
+            </div>
+        </div>
+
+        @*<input hidden asp-for="PatientRegistration.RegTotalAmmount" id="txtTotalAmmount" />*@
+        <input hidden name="registrationFees" id="txtserviceFees" />
+        <input hidden name="bookedPatientId" id="txtBookedPatientId" value="@ViewBag.BookedPatientId" />
+
+        <div class="footerBtnRow">
+            <input type="submit" id="btnSave" class="btn btn-success regPageButtonWidth" value="Save">
+
+            <a class="btn btn-primary regPageButtonWidth" asp-area="Reception" asp-controller="PatientRegistration" asp-action="PatientRegistrationCreate">Cancel</a>
+            @*<a class="btn btn-secondary regPageButtonWidth" asp-area="Doctor" asp-controller="DoctorAppointment" asp-action="AppointmentList">Appointment List</a>*@
+        </div>
+
+        @*<div class="footerBtnRow">
+                <div class="footerBtnFormGroup">
+                    <input type="submit" id="btnSave" class="btn btn-success regPageButtonWidth" value="Save">
+
+                    <a class="btn btn-primary regPageButtonWidth" asp-area="Registration" asp-controller="PatientRegistrationAKT" asp-action="PatientRegList">Cancel</a>
+                    <a class="btn btn-secondary regPageButtonWidth" asp-area="Doctor" asp-controller="DoctorAppointment" asp-action="AppointmentList">Appointment List</a>
+
+                </div>
+            </div>*@
+
+        @*<div class="accordion card-box w-100">
+                <div class="collapseHeader" id="collapseHeaderReferalHospital">
+                    <h5 class="mb-0">
+                        <a class="btn btn-link collapsed" data-toggle="collapse" data-target="#collapseReferalHospital"><i class="fa fa-angle-right"></i> Referral</a>
+                    </h5>
+                </div>
+                <div id="collapseReferalHospital" class="collapse" aria-labelledby="collapseHeaderReferalHospital" data-parent="#collapseHeaderReferalHospital">
+
+                </div>
+            </div>*@
+
+    </div>
+</form>
+
+@section Scripts{
+    <script src="~/js/PatientRegistrationCommon.js"></script>
+    <script>
+
+        jQuery.validator.addMethod("requiredwhennormalregtype",
+            function (value, element, param) {
+
+                var regType = $("#ddlRegName").val().toString().trim();
+                var normalRegType = "@RegistrationType.Normal.ToString()";
+                if (regType.toLowerCase() == normalRegType.trim().toLowerCase()) {
+                    if (value == null || value.trim() == "") {
+                        return false;
+                    } else {
+                        return true;
+                    }
+                } else {
+                    return true;
+                }
+            });
+        jQuery.validator.unobtrusive.adapters.addBool("requiredwhennormalregtype");
+
+        $(document).ready(function () {
+
+            FormSubmitLoadingPage("form#formRegCreate");
+
+            // Add down arrow icon for collapse element which is open by default
+            $(".collapse.show").each(function () {
+                $(this).prev(".card-header").find(".fa").addClass("fa-angle-down").removeClass("fa-angle-right");
+            });
+
+            // Toggle right and down arrow icon on show hide of collapse element
+            $(".collapse").on('show.bs.collapse', function () {
+                $(this).prev(".collapseHeader").find(".fa").removeClass("fa-angle-right").addClass("fa-angle-down");
+            }).on('hide.bs.collapse', function () {
+                $(this).prev(".collapseHeader").find(".fa").removeClass("fa-angle-down").addClass("fa-angle-right");
+            });
+
+
+
+            $("#txtAge").val("");
+            var age = "@ViewBag.Age";
+            if (age != "" && age != null && age != "0") {
+                $("#txtAge").val(age);
+            }
+            else if(age=="0") {
+                $("#txtAge").val("");
+            }
+
+            //$("input:radio[value='Auto']").attr("checked","checked");
+
+            if ("@ViewBag.rdoMRNo" != "" || "@ViewBag.rdoMRNo" != null) {
+
+                    $("input:radio[value='@ViewBag.rdoMRNo']").attr("checked","checked");
+            }
+            if ("@ViewBag.PatientIdentityType" != "" || "@ViewBag.PatientIdentityType" != null) {
+                    $("input:radio[value='@ViewBag.PatientIdentityType']").attr("checked","checked");
+                }
+
+            $('select#ddlRegName option[value="@ViewBag.RegName"]').attr("selected", "selected");
+            
+            function RadioMRNo() {
+                if ($('input[type=radio][name=rdoMRNo]:checked').val() == "Auto") {
+                    $("#txtMRNo").prop("readonly", true);
+                    $("#btnRegDate").prop("disabled", true);
+                }
+            }
+            RadioMRNo();
+
+            $('input[type=radio][name=rdoMRNo]').change(function () {
+                if (this.value == 'Manual') {
+                    $("#txtMRNo").val("");
+                    $("#txtMRNo").prop("readonly", false);
+                    $("#btnRegDate").prop("disabled", false);
+
+                }
+                else if (this.value == 'Auto') {
+                    RadioMRNo();
+                    $("#txtMRNo").val("");
+                    //$("#btnRegDate").prop("disabled", true);
+                }
+                @*else if(this.value == 'Auto'){
+
+                    $("#txtMRNo").prop("readonly", true);
+                    $("#txtRegDate").prop("readonly", true);
+
+                    var url = '@Url.Content("~/")' + "Registration/PatientRegistrationAKT/MRNoSerial";
+
+            $.getJSON(url, { CountOfDigit: "@ViewBag.MRNoCount" }, function (data) {
+                $("#txtMRNo").val(data);
+
+            });
+                }*@
+            });
+
+            $("#ddlNationality").change(function () {
+                $("#regFeeTable tbody").empty();
+                GetRegFees();
+            });
+
+            function GetRegFees() {
+                var ddlNationality = $("#ddlNationality").val();
+                var ddlRegName = $("#ddlRegName").val();
+                //console.log(ddlNationality);
+                @*if (ddlNationality.trim() == "Myanmar" || ddlNationality.trim() == "") {
+                    var url = '@Url.Content("~/")' + "CommonAjaxCall/PatientRegistrationAjaxCall/GetRegTypes";
+                } else {
+                    var url = '@Url.Content("~/")' + "CommonAjaxCall/PatientRegistrationAjaxCall/GetRegTypesForForeigner";
+                }*@
+
+                var url = '@Url.Content("~/")' + "CommonAjaxCall/PatientRegistrationAjaxCall/GetServiceFees";
+
+                $.getJSON(url, { Nationality : ddlNationality, RegName: ddlRegName }, function (data) {
+                    if ($("#regFeeTable tbody").length == 0) {
+                        $("#regFeeTable").append("<tbody id='regFeeTbody'></tbody>");
+                    }
+                    //console.log(data.length);
+                    //console.log(data);
+
+                    if (data != null && data.length > 0) {
+                        var totalAmmount = 0;
+                        $.each(data, function (i, registrationFees) {
+
+                            var chkId = "chkFOC" + i;
+
+                            var tdNo = '<td class="">' + (i + 1) + '</td>';
+                            var tdServiceName = '<td class="tdServiceName">' + registrationFees.serviceName + '</td>';
+                            var tdServiceAmmountAndCurrency = '<td class="tdServiceAmmountAndCurrency">' + registrationFees.serviceAmmount + '<span style="float:right;">' + registrationFees.currencyCode + '</span>' + '</td>';
+                            var tdServiceAmmount = '<td class="tdServiceAmmount" hidden>' + registrationFees.serviceAmmount + '</td>';
+                            var tdServiceFoc = '<td class="tdServiceFoc" id="tdFOC">' + '<input class="chkFOC" type="checkbox"' + 'id=' + '"' + chkId + '"' + '>' + '</input>' + '</td>';
+                            var tdServiceCurrencyCode = '<td class="tdServiceCurrencyCode" hidden>' + registrationFees.currencyCode + '</td>';
+
+                            totalAmmount += parseFloat(registrationFees.serviceAmmount);
+                            $("tbody").append('<tr class="TrDataLoop">' + tdNo + tdServiceName + tdServiceAmmountAndCurrency + tdServiceAmmount + tdServiceFoc + tdServiceCurrencyCode + /*tdDel + */'</tr>');
+
+                            $(".chkFOC#" + chkId).change(function () {
+                                //console.log(registrationFees.serviceAmmount);
+                                if ($(this).is(':checked')) {
+                                    totalAmmount = totalAmmount - parseFloat(registrationFees.serviceAmmount);
+                                }
+                                else if (!($(this).is(':checked'))) {
+                                    totalAmmount = totalAmmount + parseFloat(registrationFees.serviceAmmount);
+                                }
+                                $("#lblTotalAmmount").html(totalAmmount.toFixed(4) + " " + registrationFees.currencyCode);
+                            });
+
+                            //console.log(registrationFees.serviceId);
+                            //console.log(registrationFees.service.serviceName);
+                        });
+                        //$("tbody").append('<tr>' + '<td>' + '</td>' + '<td class="text-right" style="display:block;">' + '<label>' + 'Total :' + '</label>' + '</td>' + '<td class="text-right">' + '<label id="lblTotalAmmount">' + '</label>' + '</td>' + '<td>' + '</td>' +/*'<td>'+'</td>'+*/'</tr>')
+                        $("tbody").append('<tr><td class="text-right" colspan="2" sytle="display:block;"><label>Total :</label></td><td class="text-right"><label id="lblTotalAmmount"></label></td><td></td>' + '</tr>');
+                        $("#lblTotalAmmount").html(totalAmmount.toFixed(4) + " " + data[0].currencyCode);
+                    }
+
+                });
+
+            }
+
+            GetRegFees();
+
+            $("form").on("click", "#btnSave", function () {
+                //var regTotal = ($("#lblTotalAmmount").text());
+                //$("#txtTotalAmmount").val(regTotal);
+
+
+                var serviceFees = new Array();
+
+                $("#regFeeTable TBODY TR.TrDataLoop").each(function () {
+                    var row = $(this);
+
+                    var serviceFee = {};
+
+                    serviceFee.ServiceName = row.find("TD.tdServiceName").html();
+                    serviceFee.ServiceAmmount = row.find("TD.tdServiceAmmount").html();
+                    serviceFee.IsFoc = row.find('TD#tdFOC input[type="checkbox"]').prop("checked");
+                    serviceFee.CurrencyCode = row.find("TD.tdServiceCurrencyCode").html();
+
+
+                    serviceFees.push(serviceFee);
+                });
+                var serviceFeesList = JSON.stringify(serviceFees);
+                $("#txtserviceFees").val(serviceFeesList);
+            });
+
+            //function HideRequiredErrors() {
+            //    $("#txtPatientMobile1-error").hide();
+            //    $("#txtDob-error").hide();
+            //    $("#txtAge-error").hide();
+            //}
+
+            //function ShowRequiredErrors() {
+            //    $("#txtPatientMobile1-error").show();
+            //    $("#txtDob-error").show();
+            //    $("#txtAge-error").show();
+            //}
+
+    });
+    </script>
+
+}
+

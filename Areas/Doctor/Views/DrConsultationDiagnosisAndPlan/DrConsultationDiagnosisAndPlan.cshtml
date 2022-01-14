@@ -1,0 +1,288 @@
+﻿@model DrConsultationDiagnosisAndPlanViewModel
+@{
+    ViewData["Title"] = "DrConsultationDiagnosisAndPlan";
+    Layout = "~/Views/Shared/_HMSMainLayout.cshtml";
+}
+
+<style>
+    .form
+    {
+        padding:5px 3px;
+    }
+    .cardbox {
+        padding:5px;
+    }
+</style>
+
+@section CurrentPageNavigation{
+    <h4 class="page-title float-left">Doctor WorkBench</h4>
+
+    <ol class="breadcrumb float-right">
+        <li class="breadcrumb-item"><a href="#">Doctor Consultation</a></li>
+        @*<li class="breadcrumb-item"><a href="#">Register</a></li>*@
+    </ol>
+}
+
+
+@section LeftSideMenu{
+    <partial name="_DoctorWorkBenchLeftSideMenuPartial" />
+}
+
+<div class="row">
+    <div class="card-box w-100" style="margin-bottom:5px;">
+        <partial name="_PatientAppointmentDataPartial" for="@Model.DoctorConsultationViewModel.DoctorAppointmentData" />
+    </div>
+</div>
+
+<partial name="_DrConsultationActionsTabPartial" for="@Model.DoctorConsultationViewModel" />
+<br />
+<h4>Diagnosis And Plan</h4>
+<hr />
+<div class="row">
+    <div class="card-box w-100">
+        <div class="row">
+            <div class="col-2">
+                <label>Blood Group</label>
+            </div>
+            <div class="col-4">
+                <select id="hospitalname" required="required" class="form-control input-sm">
+                    <option value="">--Select--</option>
+                    <option> Something</option>
+                    <option>Testing</option>
+                </select>
+            </div>
+            <div class="col-2">
+                <label>Weight(Kg)</label>
+            </div>
+            <div class="col-4">
+                <input type="text" class="form-control input-sm" />
+            </div>
+        </div>
+        <br />
+
+        @*<label>Clinical Notes</label>
+            <textarea class="form-control"></textarea>*@
+
+        <div class="form-group">
+            <label>Clinical Notes</label>
+            <div class="col-lg-9" id="Content">
+
+            </div>
+        </div>
+
+
+        <div class="form-group">
+            <label>Provisional Diagnosis</label>
+            <div class="col-lg-9" id="Context">
+
+            </div>
+        </div>
+
+        <br />
+        <div class="row">
+            <div class="col-sm-1">
+                <label>Final Diagnosis:</label>
+            </div>
+            <div class="col-sm-6">
+                <label>ICD Code for</label>
+
+                <input type="radio" name="final" checked />
+
+                <label>All</label>
+
+                <input type="radio" name="final" />
+
+                <label>CARDIOLOGY DEPARTMENT</label>
+
+                <input type="radio" name="final" />
+                <label>Favourite</label>
+            </div>
+            <div class="col-sm-2">
+                <input type="text" class="" />
+            </div>
+            <div class=" col-sm-3">
+
+                <label>Favorite</label>
+                <select class="" required="required">
+                    <option value="">--Select--</option>
+                    <option>Something</option>
+                </select>
+            </div>
+
+        </div>
+        <br />
+      <div class="card-box cardbox">
+        <div class="row" style="border:2px double;border-color:white;">
+            <div class="col-6">
+                <label>Final Diagnosis</label>
+            </div>
+            <div class="col-4">
+                <label>Present On Admission</label>
+            </div>
+            <div class="col-2">
+                <label>Remove/Favourite</label>
+            </div>
+        </div>
+      <div class="form" style="border:2px double;background-color:skyblue;border-color:white;">
+        <div class="row" >
+           
+                <div class="col-6" >
+                    <label>146.2:Cardiac arrest due to underlying cardiac condition</label>
+                </div>
+                <div class="col-5">
+                    <select><option>Present</option></select>
+                </div>
+                <div class="col-1" style="text-align:left;">
+                    <div class="row">
+                        <i class="fas fa-times-circle"></i>&nbsp; &nbsp; 
+                        <i class="far fa-star"></i>
+                    </div>
+                </div>
+           
+        </div>
+        <div>
+            <textarea class="form-control"></textarea>
+        </div>
+        </div>
+       </div>
+        <br />
+        <div class="row">
+            <div class="col-sm-1">
+                <label>Secondary Diagnosis:</label>
+            </div>
+            <div class="col-sm-6">
+                <label>ICD Code for</label>
+
+                <input type="radio" name="final" checked />
+
+                <label>All</label>
+
+                <input type="radio" name="final" />
+
+                <label>CARDIOLOGY DEPARTMENT</label>
+
+                <input type="radio" name="final" />
+                <label>Favourite</label>
+            </div>
+            <div class=" col-sm-3">
+                <label>
+                    No Known Co-Morbidities
+                </label>
+                <input type="checkbox" id="vehicle1" name="chkbox" value="Bike">
+            </div>
+            <div class="col-sm-2">
+                <input type="text" class="" />
+            </div>
+
+
+        </div>
+        <br />
+        <div class="card-box cardbox">
+            <div class="row" style="border:2px double;border-color:white;">
+                <div class="col-6">
+                    <label>Secondary Diagnosis</label>
+                </div>
+                <div class="col-4">
+                    <label>Present On Admission</label>
+                </div>
+                <div class="col-2">
+                    <label>Remove/Favourite</label>
+                </div>
+            </div>
+            <div class="form" style="border:2px double;background-color:skyblue;border-color:white;">
+                <div class="row">
+
+                    <div class="col-6">
+                        <label>A00.0:Cholera  due to Vibrio cholerae 01,biovar cholerae A00.0</label>
+                    </div>
+                    <div class="col-5">
+                        <select><option>Not Present</option></select>
+                    </div>
+                    <div class="col-1" style="text-align:left;">
+                        <div class="row">
+                            <i class="fas fa-times-circle"></i>&nbsp; &nbsp; 
+                            <i class="far fa-star"></i>
+                        </div>
+                    </div>
+
+                </div>
+                <div>
+                    <textarea class="form-control"></textarea>
+                </div>
+            </div>
+        </div>        <br />
+        <div class="row">
+            <div class="col-1">
+                <label>Disposition</label>
+            </div>
+            <div class="col-4">
+                <select required="required" class="form-control input-sm">
+                    <option value="">--Select--</option>
+                    <option> Something</option>
+                    <option>Testing</option>
+                </select>
+            </div>
+        </div>
+
+        <br />
+        <label>Remarks</label>
+        <textarea class="form-control"></textarea>
+        <br />
+        <div class="col-12">
+            <button class="btn-success">Save Clinical Details</button>
+            <button class="btn-success">Back To Patient List</button>
+        </div>
+    </div>
+</div>
+
+@section Scripts{
+    <script src="~/texteditor/summernote/summernote.js"></script>
+    <script src="~/scripts/home-index.js"></script>
+    <script src="~/scripts/home.js"></script>
+
+
+    <script>
+        $(document).ready(function () {
+            var modelRemarkText = "@Model.Content";
+            modelRemarkText = $("<div/>").html(modelRemarkText).text();
+
+            BindTextToTextEditor();
+            function BindTextToTextEditor() {
+                $(".note-editable").append(modelRemarkText);
+            }
+
+            SaveTextFile();
+            function SaveTextFile() {
+                $("#btnSubmit").click(function () {
+                    var content = $(".note-editable").html().toString();
+                    $("#contentStr").val(content);
+
+                    $("form#formRemarkTextEditor").submit();
+                });
+            }
+        });
+    </script>
+
+    <script>
+                $(document).ready(function () {
+            var modelRemarkText = "@Model.Context_1";
+            modelRemarkText = $("<div/>").html(modelRemarkText).text();
+
+            BindTextToTextEditor();
+            function BindTextToTextEditor() {
+                $(".note-editable").append(modelRemarkText);
+            }
+
+            SaveTextFile();
+            function SaveTextFile() {
+                $("#btnSubmit").click(function () {
+                    var content = $(".note-editable").html().toString();
+                    $("#contentStr").val(content);
+
+                    $("form#formRemarkTextEditor").submit();
+                });
+            }
+        });
+
+    </script>
+}

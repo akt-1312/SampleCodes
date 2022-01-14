@@ -1,0 +1,204 @@
+﻿@model DrConsultationVitalSignsViewModel
+@{
+    ViewData["Title"] = "DrConsultationVitalSigns";
+    Layout = "~/Views/Shared/_HMSMainLayout.cshtml";
+}
+
+<style>
+</style>
+
+@section CurrentPageNavigation{
+    <h4 class="page-title float-left">Doctor WorkBench</h4>
+
+    <ol class="breadcrumb float-right">
+        <li class="breadcrumb-item"><a href="#">Doctor Consultation</a></li>
+    </ol>
+}
+
+@section LeftSideMenu{
+    <partial name="_DoctorWorkBenchLeftSideMenuPartial" />
+}
+
+<div class="row">
+    <div class="card-box w-100" style="margin-bottom:5px;">
+        <partial name="_PatientAppointmentDataPartial" for="@Model.DoctorConsultationViewModel.DoctorAppointmentData" />
+    </div>
+</div>
+
+<partial name="_DrConsultationActionsTabPartial" for="@Model.DoctorConsultationViewModel" />
+
+<div class="row">
+    <div class="row">
+        <div class="col-12">
+            <div class="card-box">
+                <div class="col-9 p-2 my-2 bg-light">
+                    <form asp-action="DrConsultationVitalSigns" method="post">
+                        <table id="demo-foo-filtering" class="table table-striped table-bordered toggle-circle m-b-0 col-12" data-page-size="7">
+                            <thead>
+                                <tr>
+
+                                    <th>
+                                        @Html.DisplayNameFor(model => model.VitalSignDescription)
+                                    </th>
+                                    <th>
+                                        @Html.DisplayNameFor(model => model.UnitOfMeasurementDescription)
+                                    </th>
+                                    <th>
+                                        @Html.DisplayNameFor(model => model.PatientVitalInfo.CurrentValue)
+                                    </th>
+                                    <th>
+                                        MinRange_MaxRange
+                                    </th>
+                                    <th>
+                                        @Html.DisplayNameFor(model => model.PatientVitalInfo.Remarks)
+                                    </th>
+
+                                </tr>
+                            </thead>
+                       
+                            <tbody>
+                                @for (int i = 0; i < Model.VitalSignSetups.Count(); i++)
+                                {
+                                    var item = Model.VitalSignSetups;
+                                    <input hidden asp-for="@Model.VitalSignSetup.VitalSignSetupId" />
+                                    <input hidden asp-for="@Model.PatientVitalInfos" />
+                                    <tr>
+                                        <td>
+                                            @Html.DisplayFor(modelItem => item[i].Description)
+                                        </td>
+                                        <td>
+                                            @Html.DisplayFor(modelItem => Model.PatientVitalInfos[i].UnitOfMeasurementDescription)
+                                        </td>
+                                        <td>
+                                            <input type="text" asp-for="@Model.PatientVitalInfo.CurrentValue" />
+                                        </td>
+                                        <td>
+                                            @Html.DisplayFor(modelItem => item[i].MinRange)
+                                            _
+                                            @Html.DisplayFor(modelItem => item[i].MaxRange)
+                                        </td>
+                                        <td>
+                                            <input type="text" asp-for="@Model.PatientVitalInfo.Remarks" />
+                                        </td>
+                                    </tr>
+                                }
+
+                            </tbody>
+                         
+                        </table>
+                        <button type="submit" name="btnSubmit" value="Create" class="btn btn-success" asp-route-appointmentId="@Model.AppointmentId">Save</button>
+                        <a asp-action="DrConsultationVitalSigns" class="btn btn-secondary" asp-route-appointmentId="@Model.AppointmentId">Cancel</a>
+                    </form>
+                </div>
+            </div>
+            <div class="card-box">
+                <div class="form-inline m-b-20">
+                    <div class="row" style=" width: 48rem;">
+                        <div class="col-md-6 text-xs-center" style="display:none;">
+                            <div class="form-group">
+                                <label class="control-label m-r-5">Status</label>
+                                <select id="demo-foo-filter-status" class="form-control input-sm">
+                                    <option value="">Show all</option>
+                                    <option value="active">Active</option>
+                                    <option value="disabled">Disabled</option>
+                                    <option value="suspended">Suspended</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-6 text-center ">
+                            <div class="form-group ">
+                                <input id="demo-foo-search" type="text" placeholder="Search" class="form-control input-sm col-10" autocomplete="on">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <table id="demo-foo-filtering" class="table table-striped table-bordered toggle-circle m-b-0" data-page-size="7">
+                    <thead>
+                        <tr>
+                            <th>
+                                No.
+                            </th>
+                            <th>
+                                Vital Signs
+                            </th>
+                            <th>
+                                Value
+                            </th>
+                            <th>
+                                Unit
+                            </th>
+                            <th>
+                                Remarks
+                            </th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        @for (int i = 0; i < Model.totalPVS.Count(); i++)
+                        {
+                            var item = Model.totalPVS;
+                            @*<input type="hidden" asp-for="PageNamesInModule.PageNamesInModuleId" />*@
+                        <tr>
+                            <td>
+                                @(i + 1)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item[i].VitalSignDescription)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item[i].CurrentValue)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item[i].UnitOfMeasurementDescription)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item[i].Remarks)
+                            </td>
+                            @*<td>
+                                <a class="btn btn-outline-primary" asp-route-btnActionName="Edit" asp-action="Department" asp-route-DepartmentId="@item[i].DepartmentId"><i class="fa fa-edit"></i></a> |
+                                <a class="btn btn-outline-danger" asp-route-btnActionName="Delete" asp-action="Department" asp-route-DepartmentId="@item[i].DepartmentId"><i class="fa fa-trash-alt"></i></a>
+                            </td>*@
+
+                        </tr>
+                        }
+                    </tbody>
+                    <tfoot>
+                        <tr class="active">
+                            <td colspan="5">
+                                <div class="text-right">
+                                    <ul class="pagination pagination-split footable-pagination m-t-10 m-b-0"></ul>
+                                </div>
+                            </td>
+                        </tr>
+                    </tfoot>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts{
+
+    <!-- Counter js  -->
+    <script src="~/plugins/waypoints/jquery.waypoints.min.js"></script>
+    <script src="~/plugins/counterup/jquery.counterup.min.js"></script>
+
+
+    <!--FooTable-->
+    <script src="~/plugins/footable/js/footable.all.min.js"></script>
+
+    <!--FooTable Example-->
+    <script src="~/pages/jquery.footable.js"></script>
+    <script>
+        $(document).ready(function () {
+             var successedAlertMessage = "@ViewBag.SuccessedAlertMessage";
+            AlertSnackBarByActionName(successedAlertMessage);
+
+            var actionName = "@Model.BtnActionName";
+            if (actionName== "Delete") {
+                $("#UnitName").attr("readonly", true);
+                $("#DepartmentId").attr("disabled", true);
+            }
+        });
+    </script>
+}

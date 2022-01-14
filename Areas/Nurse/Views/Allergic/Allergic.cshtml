@@ -1,0 +1,465 @@
+﻿@model HMS.Models.ViewModels.Nurse.AllergicViewModel
+
+@{
+    ViewData["Title"] = "Create";
+    Layout = "~/Views/Shared/_HMSMainLayout.cshtml";
+}
+
+@section CurrentPageNavigation{
+    <h4 class="page-title float-left">Reception</h4>
+
+    <ol class="breadcrumb float-right">
+        <li class="breadcrumb-item"><a href="#">Allergic Recording </a></li>
+        @*<li class="breadcrumb-item"><a href="#">Register</a></li>*@
+    </ol>
+}
+
+@section LeftSideMenu{
+    <partial name="_NursingLeftSideMenuPartial" />
+}
+<style>
+    .container {
+        /*border: 2px solid #ccc;*/
+        width: 300px;
+        max-height: 300px;
+        overflow-y: auto;
+    }
+
+    .lblReaction {
+        font-size: 10px;
+        margin-bottom: 0px;
+        vertical-align: text-top;
+    }
+
+    .forIsAllergic{
+        display: @(Model.IsAllergy ? "" : "none")
+    }
+
+    .forNotAllergic{
+        display: @(Model.IsAllergy ? "none" : "")
+    }
+
+    .btnSaveSubmitToggle{
+        display: @(Model.AllergicId == null || Model.AllergicId.Value == 0 ? "" : "none")
+    }
+    .btnUpdateSubmitToggle{
+        display: @(Model.AllergicId == null || Model.AllergicId.Value == 0 ? "none" : "")
+    }
+
+    #ShowHide{
+        display: @(Model.IsNoKnownAllergy ? "none" : "")
+    }
+
+    .separateScrollFullHeight{
+        height: 60vh;
+    }
+</style>
+
+<div class="row">
+    <div class="card-box w-100 mb-0">
+        <partial name="_PatientAppointmentDataPartial" for="@Model.DoctorAppointmentData" />
+    </div>
+</div>
+<div class="row">
+    <div class="col-4 p-2 my-2 bg-light separateScrollFullHeight">
+        <div class="card-box">
+            <form asp-action="Allergic" method="post" id="formNurseAllergic" asp-route-appointmentId="@Model.DoctorAppointmentData.AppointmentId">
+                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                <input type="hidden" asp-for="AllergicId" class="" />
+                <input type="hidden" asp-for="DoctorAppointmentData.AppointmentId" />
+
+                <div class="form-group form-check">
+                    <label class="form-check-label">
+                        <input class="form-check-input" onclick="showHide(this)" asp-for="IsNoKnownAllergy" /> @Html.DisplayNameFor(model => model.IsNoKnownAllergy)
+                    </label>
+                    <span asp-validation-for="IsNoKnownAllergy" class="text-danger"></span>
+
+                </div>
+                <div id="ShowHide">
+                    <div class="form-group">
+                        <label asp-for="AllergicTypeId" class="control-label">AllergicType*</label>
+                        <select asp-for="AllergicTypeId" class="form-control input-sm resetInputValue nullWhenClickNoKnownAllergy" asp-items="@(new SelectList(Model.AllergicTypes, "AllergicTypeId","AllergicTypeName"))"><option value="">--Select--</option></select>
+                        <span asp-validation-for="AllergicTypeId" class="text-danger"></span>
+
+                    </div>
+                    <div class="form-group">
+                        <label asp-for="AllergicTo" class="control-label">AllergicTo* &nbsp;</label>
+                        <input asp-for="AllergicTo" class="form-control input-sm resetInputValue nullWhenClickNoKnownAllergy" />
+                        <span asp-validation-for="AllergicTo" class="text-danger"></span>
+                    </div>
+                    <div class="form-group">
+                        <label asp-for="OnSetTypeId" class="control-label">OnSetType</label>
+                        <select asp-for="OnSetTypeId" class="form-control input-sm resetInputValue nullWhenClickNoKnownAllergy" asp-items="@(new SelectList(Model.OnSetTypes, "OnSetTypeId","OnSetTypeName"))"><option value="">--Select--</option></select>
+                        @*<span asp-validation-for="OnSetTypeId" class="text-danger"></span>*@
+
+                    </div>
+                    <div class="form-group">
+                        <label asp-for="OnSetId" class="control-label">OnSet</label>
+                        <select asp-for="OnSetId" class="form-control input-sm resetInputValue nullWhenClickNoKnownAllergy" asp-items="@(new SelectList(Model.OnSets, "OnSetId","OnSetName"))"><option value="">--Select--</option></select>
+                        @*<span asp-validation-for="OnSetId" class="text-danger"></span>*@
+
+                    </div>
+
+                    <div class="form-group">
+                        <label asp-for="OnSetDate" class="control-label">OnSetDate</label>
+                        <div class="form-g input-group-prepend row" style="padding-left:10px">
+                            <input asp-for="OnSetDate" class="form-control input-sm col-md-8 resetInputValue nullWhenClickNoKnownAllergy" type="text" readonly />
+                            <button class="btn btn-outline-secondary rounded-0 input-sm col-md-3" type="button" id="btnOnDatePicker">
+                                <i class="fa fa-calendar-alt"></i>
+                            </button>
+                        </div>
+                        @*<span asp-validation-for="OnSetDate" class="text-danger"></span>*@
+                    </div>
+                    <div class="form-group">
+                        <label asp-for="AllergicStatus" class="control-label">AllergicStatus*</label>
+                        <select asp-for="AllergicStatus" class="form-control input-sm resetInputValue nullWhenClickNoKnownAllergy">
+                            <option value="">--Select Status--</option>
+                            @foreach (AllergicStatus item in Enum.GetValues(typeof(AllergicStatus)))
+                            {
+                                <option value="@((int)item)">@item.GetEnumDisplayName()</option>
+                            }
+                        </select>
+                        <span asp-validation-for="AllergicStatus" class="text-danger"></span>
+                    </div>
+                    <div class="form-group">
+
+                        <label asp-for="ResolvedDate" class="control-label">ResolvedDate</label>
+                        <div class="form-g input-group-prepend row" style="padding-left:10px">
+                            <input asp-for="ResolvedDate" class="form-control input-sm  col-md-8 resetInputValue nullWhenClickNoKnownAllergy" type="text" readonly />
+                            <button class="btn btn-outline-secondary rounded input-sm  col-md-3" type="button" id="btnReDatePicker">
+                                <i class="fa fa-calendar-alt"></i>
+                            </button>
+                        </div>
+                        @*<span asp-validation-for="ResolvedDate" class="text-danger"></span>*@
+
+                    </div>
+                    <div class="form-group">
+                        <label asp-for="@Model.Reactions" class="control-label">Reaction</label>
+                        <br />
+                        <div class="container">
+                            <div id="create">
+                                @for (int i = 0; i < Model.Reactions.Count(); i++)
+                                {
+                                    <span class="spanReactions">
+                                        <input asp-for="Reactions[i].IsChecked" class="custom-checkbox chkReaction" />
+                                        <label asp-for="Reactions[i].IsChecked" class="lblReaction">@Model.Reactions[i].ReactionName</label><br />
+                                        <input hidden asp-for="Reactions[i].ReactionId" class="txtReactionId" />
+                                        <input hidden asp-for="Reactions[i].ReactionName" />
+                                    </span>
+                                }
+                            </div>
+                        </div>
+
+
+                        @*<span asp-validation-for="ReactionName" class="text-danger"></span>*@
+                    </div>
+
+                </div>
+                <div class="form-group">
+                    <label asp-for="Remark" class="control-label">Remark<span class="btnUpdateSubmitToggle">*</span></label><br />
+                    <span asp-validation-for="Remark" class="text-danger"></span>
+                    <textarea asp-for="Remark" class="form-control input-sm"></textarea>
+                </div>
+                <div class="form-group">
+                    @if ((await authorizationService.AuthorizeAsync(User, "PatientAllergicUpdate")).Succeeded)
+                    {
+                        <button type="submit" name="btnSubmit" value="Update" class="btn btn-success btnUpdateSubmitToggle">Update</button>
+                    }
+                    @if ((await authorizationService.AuthorizeAsync(User, "PatientAllergicDelete")).Succeeded)
+                    {
+                        <button type="submit" name="btnSubmit" value="Create" class="btn btn-success btnSaveSubmitToggle">Save</button>
+                    }
+
+                    <button type="button" onclick="ResetFormAndShowHideBtnSubmit('form#formNurseAllergic'); ResetCheckBox();" class="btn btn-secondary">Cancel</button>
+                </div>
+
+            </form>
+        </div>
+    </div>
+
+    <div class="col-8 p-2 my-2 bg-light">
+        <div class="row separateScrollFullHeight">
+            <div class="col-12">
+                <div class="card-box">
+
+                    <table id="demo-foo-filtering" class="table table-striped table-bordered toggle-circle m-b-0" data-page-size="7">
+                        <thead>
+                            <tr>
+                                <th>
+                                    <b>No.</b>
+                                </th>
+                                <th class="forNotAllergic">
+                                    <b>Is NoKnownAllergy</b>
+                                </th>
+                                <th class="forIsAllergic">
+                                    <b>AllergicType</b>
+                                </th>
+                                <th class="forIsAllergic">
+                                    <b>AllergicStatus</b>
+                                </th>
+                                <th class="forIsAllergic">
+                                    @Html.DisplayNameFor(model => model.AllergicTo)
+                                </th>
+                                @if ((await authorizationService.AuthorizeAsync(User, "PatientAllergicUpdate")).Succeeded
+|| (await authorizationService.AuthorizeAsync(User, "PatientAllergicDelete")).Succeeded)
+                                {
+                                    <th class="text-center"><b>Action</b></th>
+                                }
+
+                            </tr>
+                        </thead>
+
+                        <tbody>
+                            @foreach (var item in Model.Allergics.Select((value, i) => new { value, i }))
+                            {
+                                var allergic = item.value.Allergic;
+                                string checkedOrNot = item.value.Allergic.IsNoKnownAllergy ? "checked" : "";
+                                string allergicJsonData = Newtonsoft.Json.JsonConvert.SerializeObject(new
+                                {
+                                    AllergicId = allergic.AllergicId,
+                                    AllergicStatus = allergic.AllergicStatus,
+                                    AllergicTypeId = allergic.AllergicTypeId,
+                                    AllergicTo = allergic.AllergicTo,
+                                    AppointmentId = allergic.AppointmentId,
+                                    IsNoKnownAllergy = allergic.IsNoKnownAllergy,
+                                    OnSetId = allergic.OnSetId,
+                                    OnSetTypeId = allergic.OnSetTypeId,
+                                    Remark = allergic.Remark,
+                                    OnSetDate = allergic.OnSetDate.HasValue ? allergic.OnSetDate.Value.FormattedDateString() : "",
+                                    ResolvedDate = allergic.ResolvedDate.HasValue ? allergic.ResolvedDate.Value.FormattedDateString() : "",
+                                });
+                                string reactionJsonData = Newtonsoft.Json.JsonConvert.SerializeObject(item.value.ReactionsOfAllergic);
+                                <tr>
+                                    <td>
+                                        @(item.i + 1)
+                                    </td>
+                                    <td class="forNotAllergic">
+                                        <input type="checkbox" @checkedOrNot disabled />
+                                    </td>
+                                    <td class="forIsAllergic">
+                                        @Html.DisplayFor(modelItem => item.value.Allergic.AllergicType.AllergicTypeName)
+                                    </td>
+                                    <td class="forIsAllergic">
+                                        @Html.DisplayFor(modelItem => item.value.Allergic.AllergicStatus)
+                                    </td>
+                                    <td class="forIsAllergic">
+                                        @Html.DisplayFor(modelItem => item.value.Allergic.AllergicTo)
+                                    </td>
+                                    @if ((await authorizationService.AuthorizeAsync(User, "PatientAllergicUpdate")).Succeeded
+                     || (await authorizationService.AuthorizeAsync(User, "PatientAllergicDelete")).Succeeded)
+                                    {
+                                        <td class="text-center">
+                                            @if ((await authorizationService.AuthorizeAsync(User, "PatientAllergicUpdate")).Succeeded)
+                                            {
+                                                <button class="btn btn-outline-primary" type="button" onclick="AllergicTableRowEditClick(@allergicJsonData); BindAllergicReactionEditClick(@reactionJsonData);"><i class="fa fa-edit"></i></button>
+
+                                            }
+                                            @if ((await authorizationService.AuthorizeAsync(User, "PatientAllergicUpdate")).Succeeded
+                          && (await authorizationService.AuthorizeAsync(User, "PatientAllergicDelete")).Succeeded)
+                                            {
+                                                <span>|</span>
+                                            }
+                                            @if ((await authorizationService.AuthorizeAsync(User, "PatientAllergicDelete")).Succeeded)
+                                            {
+                                                <button type="button" class="btn btn-outline-danger" onclick="ResetFormAndShowHideBtnSubmit('form#formNurseAllergic'); ResetCheckBox(); TableRowDeleteClick('@item.value.Allergic.AllergicId')"><i class="fa fa-trash-alt"></i></button>
+
+                                            }
+
+
+                                        </td>
+                                    }
+                                </tr>
+                            }
+                        </tbody>
+
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+@{
+    ViewData["DeleteConfirmPolicyName"] = "PatientAllergicDelete";
+    ViewData["DeleteConfirmActionName"] = "Allergic";
+    ViewData["DeleteConfirmControllerName"] = "Allergic";
+    ViewData["DeleteConfirmAreaName"] = "Nurse";
+    ViewData["DeleteConfirmParameterName"] = "toDeleteAllergicId";
+}
+
+<partial name="_DeleteConfirmPartial" view-data="ViewData" />
+
+
+@section Scripts{
+
+    <script>
+        jQuery.validator.addMethod("allergyfieldsrequired",
+            function (value, element, param) {
+                var isNoKnownAllergy = $("#IsNoKnownAllergy").is(":checked");
+                if (isNoKnownAllergy) {
+                    return true;
+                } else {
+                    if (value == null || value.toString().trim() == "") {
+                        return false;
+                    } else {
+                        return true;
+                    }
+                }
+            });
+        jQuery.validator.unobtrusive.adapters.addBool("allergyfieldsrequired");
+
+        function AllergicTableRowEditClick(data) {
+            $(".field-validation-error, .field-validation-valid, .validation-summary-errors, .validation-summary-valid").empty();
+            $(".btnSaveSubmitToggle").hide();
+            $(".btnUpdateSubmitToggle").show();
+            $.each(data, function (key, value) {
+                var modelToId = key.replace(/\.|\[|\]/g, "_");
+                var dynamicId = "#" + modelToId;
+                //console.log(dynamicId);
+                if (!$(dynamicId).is(":checkbox")) {
+                    $(dynamicId).val(value);
+                }
+            });
+
+            if (data.IsNoKnownAllergy) {
+                $("#ShowHide").hide(500);
+                $("#IsNoKnownAllergy").attr("checked", "checked").prop("checked", true);
+            } else {
+                $("#ShowHide").show(500);
+                $("#IsNoKnownAllergy").removeAttr("checked").prop("checked", false);
+            }
+        }
+
+        function BindAllergicReactionEditClick(data) {
+            $(".chkReaction").removeAttr("checked").prop("checked", false);
+            $.each(data, function (key, value) {
+                $(".txtReactionId").each(function () {
+                    if ($(this).val().trim() == value.ReactionId.toString().trim()) {
+                        var inputCheck = $(this).parent(".spanReactions").find(".chkReaction");
+                        $(inputCheck).attr("checked", "checked").prop("checked", true);
+                    }
+                });
+            });
+        }
+
+        function ResetCheckBox() {
+            $("#AllergicId").val("");
+            $(".chkReaction").removeAttr("checked").prop("checked", false);
+            $("#IsNoKnownAllergy").removeAttr("checked").prop("checked", false);
+            $("#ShowHide").show(500);
+        }
+
+        function showHide(checkbox) {  
+            $(".resetInputValue").val("");
+            $(".chkReaction").removeAttr("checked").prop("checked", false);
+            $(".field-validation-error, .field-validation-valid, .validation-summary-errors, .validation-summary-valid").empty();
+            if ($(checkbox).is(":checked")) {
+                $("#ShowHide").hide(500);
+            }
+            else {
+                $("#ShowHide").show(500);
+            }
+        }
+
+        //function initialShowOrHide() {
+        //    var isNoKnownAllergy = $("#IsNoKnownAllergy").is(":checked");
+        //    if (isNoKnownAllergy) {
+        //        $("#ShowHide").hide(500);
+        //    } else {
+        //        $("#ShowHide").show(500);
+        //    }
+        //}
+
+        //initialShowOrHide();
+    </script>
+    <script>
+         $(document).ready(function () {
+
+             var successedAlertMessage = "@ViewBag.SuccessedAlertMessage";
+            AlertSnackBarByActionName(successedAlertMessage);
+
+             $('#btnOnDatePicker').on('click', function (e) {      //jquery
+                 e.preventDefault();
+                 $.dateSelect.show({
+                     element: 'input#OnSetDate'
+
+                 });
+             });
+
+             $('#btnReDatePicker').on('click', function (f) {      //jquery
+                 f.preventDefault();
+                 $.dateSelect.show({
+                     element: 'input#ResolvedDate'
+
+                 });
+             });
+
+             $("#IsNoKnownAllergy").change(function () {
+                 $(".nullWhenClickNoKnownAllergy").val("");
+             });
+        });
+    </script>
+    @*<script>
+            $(document).ready(function () {
+                $("#IsNoKnownAllergy").change(function () {
+                    if ($(this).not(":checked")) {
+                        $('#allergicTo').val("");
+                    }
+                });
+
+                $("#IsNoKnownAllergy").change(function () {
+                    if ($(this).not(":checked")) {
+                        $('#remark').val("");
+                    }
+                });
+
+                $("#IsNoKnownAllergy").change(function () {
+                    if ($(this).not(":checked")) {
+                        $('#AllergicTypeId').val("");
+                    }
+                });
+
+                $("#IsNoKnownAllergy").change(function () {
+                    if ($(this).not(":checked")) {
+                        $('#onsettype').val("");
+                    }
+                });
+
+                $("#IsNoKnownAllergy").change(function () {
+                    if ($(this).not(":checked")) {
+                        $('#onset').val("");
+                    }
+                });
+                $("#IsNoKnownAllergy").change(function () {
+                    if ($(this).not(":checked")) {
+                        $('#allergicstatus').val("");
+                    }
+                });
+
+
+                $("#IsNoKnownAllergy").change(function () {
+                    if ($(this).not(":checked")) {
+                        $('#txtReDatePicker').val("");
+                    }
+                });
+
+                $("#IsNoKnownAllergy").change(function () {
+                    if ($(this).not(":checked")) {
+                        $('#txtOnDatePicker').val("");
+                    }
+                });
+
+                $("#IsNoKnownAllergy").click(function () {
+                    $(".edit").prop("checked", false);
+                });
+
+                $("#IsNoKnownAllergy").click(function () {
+                    $("#create").prop("checked", false);
+                });
+
+            });
+        </script>*@
+
+
+}

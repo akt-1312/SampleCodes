@@ -1,0 +1,235 @@
+﻿@model DrConsultationOrdersViewModel
+@{
+    ViewData["Title"] = "DrConsultationOrders";
+    Layout = "~/Views/Shared/_HMSMainLayout.cshtml";
+}
+
+<style>
+</style>
+
+@section CurrentPageNavigation{
+    <h4 class="page-title float-left">Doctor WorkBench</h4>
+
+    <ol class="breadcrumb float-right">
+        <li class="breadcrumb-item"><a href="#">Doctor Consultation</a></li>
+        @*<li class="breadcrumb-item"><a href="#">Register</a></li>*@
+    </ol>
+}
+
+@section LeftSideMenu{
+    <partial name="_DoctorWorkBenchLeftSideMenuPartial" />
+}
+<style>
+    .customers {
+        border-collapse: collapse;
+        width: 100%;
+    }
+
+        .customers th {
+            padding-top: 12px;
+            padding-bottom: 12px;
+            text-align: left;
+            background-color: lightgray;
+            color: black;
+        }
+
+        .customers td, .customers th {
+            border: 1px solid #ddd;
+            padding:1px;
+        }
+        .info{
+            text-decoration:underline;
+        }
+    .fontsize {
+        font-size: 12px;
+    }
+    .cardbox{
+        padding:5px;
+    }
+</style>
+<div class="row">
+    <div class="card-box w-100" style="margin-bottom:5px;">
+        <partial name="_PatientAppointmentDataPartial" for="@Model.DoctorConsultationViewModel.DoctorAppointmentData" />
+    </div>
+</div>
+
+<partial name="_DrConsultationActionsTabPartial" for="@Model.DoctorConsultationViewModel" />
+
+
+<br />
+<div class="row">
+    <div class="card-box w-100">
+        <partial name="_OrderActonsTabPartial" for="@Model.DoctorConsultationViewModel" />
+        <label class="info">
+            Prev 
+        </label> |
+        <label class="info">MI</label> |
+        <label class="info">Sponsor CPOE Services</label> 
+        <input type="checkbox" id="vehicle1" name="chkbox" value="Bike">
+
+        <div class="row">
+
+            <div class="col-1">
+                <label>ServiceType</label>
+            </div>
+            <div class="col-3">
+                <select class="form-control input-sm"><option>--Select--</option></select>
+            </div>
+            <div class="col-1">
+                <label>Department</label>
+            </div>
+            <div class="col-3">
+                <select class="form-control input-sm"><option>--Select--</option></select>
+
+            </div>
+            <div class="col-1">
+                <label>Service Center</label>
+            </div>
+            <div class="col-3">
+                <select class="form-control input-sm"><option>--Select--</option></select>
+
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-1">
+                <label>Service Name</label>
+            </div>
+            <div class="col-3">
+                <input class="form-control input-sm" />
+            </div>
+            <div class="col-1">
+                <label>Tariff Group</label>
+            </div>
+            <div class="col-3">
+                <select class="form-control input-sm"><option>--Select--</option></select>
+            </div>
+        </div>
+        <div class="">
+            <label>
+                Favourites
+            </label>
+            <input type="checkbox" id="vehicle1" name="chkbox" value="Bike">
+        </div>
+        <div class="card-box cardbox">
+            <table class="customers">
+                <tr>
+                    <td>
+                        <input type="checkbox" id="vehicle1" name="chkbox" value="Bike">
+                        <label class="fontsize">5th Floor(Single Room)</label>
+                    </td>
+                    <td>
+                        <input type="checkbox" id="vehicle1" name="chkbox" value="Bike">
+                        <label class="fontsize">7th Floor Orchid Room</label>
+
+                    </td>
+                    <td>
+                        <input type="checkbox" id="vehicle1" name="chkbox" value="Bike">
+                        <label class="fontsize">Abdomen/Plain X Ray/Lateral Decubitus</label>
+                    </td>
+                    <td>
+                       
+                            <input type="checkbox" id="vehicle1" name="chkbox">
+                            <label class="fontsize">Abdomen/Plain X Ray/Lateral Decubitus-Portable</label>
+                       
+                    </td>
+
+                </tr>
+                <tr>
+                    <td>
+                        <input type="checkbox" id="vehicle1" name="chkbox" value="Bike">
+                        <label class="fontsize">ABDOMEN/PLAIN X-RAY/LATERALDECUBITUS</label>
+
+                    </td>
+                    <td>
+                        <input type="checkbox" id="vehicle1" name="chkbox" value="Bike">
+                        <label class="fontsize">Abdominal Aortogram</label>
+                    </td>
+                    <td>
+                        <input type="checkbox" id="vehicle1" name="chkbox" value="Bike">
+                        <label class="fontsize">Abdominal Set</label>
+
+                    </td>
+                    <td>
+                        <input type="checkbox" id="vehicle1" name="chkbox" value="Bike">
+                        <label class="fontsize">ABO Blood Grouping</label>
+                    </td>
+
+
+                </tr>
+                <tr>
+                    <td>
+                        <input type="checkbox" id="vehicle1" name="chkbox" value="Bike">
+                        <label class="fontsize">Absolute Eosinophil Cont</label>
+
+                    </td>
+                    <td>
+                        <input type="checkbox" id="vehicle1" name="chkbox" value="Bike">
+                        <label class="fontsize">Acid Fast Bacilli(first Day)</label>
+                    </td>
+                    <td>
+                        <input type="checkbox" id="vehicle1" name="chkbox" value="Bike">
+                        <label class="fontsize">Acid Fast Bacilli(second Day)</label>
+
+                    </td>
+                    <td>
+                        <input type="checkbox" id="vehicle1" name="chkbox" value="Bike">
+                        <label class="fontsize">Acid Fast Bacilli(third Day)</label>
+                    </td>
+
+
+                </tr>
+                <tr>
+                    <td>
+                        <input type="checkbox" id="vehicle1" name="chkbox" value="Bike">
+                        <label class="fontsize">Acid Phosphatase</label>
+
+                    </td>
+                    <td>
+                        <input type="checkbox" id="vehicle1" name="chkbox" value="Bike">
+                        <label class="fontsize">ACTH</label>
+                    </td>
+                    <td>
+                        <input type="checkbox" id="vehicle1" name="chkbox" value="Bike">
+                        <label class="fontsize">ACTH Ab Receptor</label>
+
+                    </td>
+                    <td>
+                        <input type="checkbox" id="vehicle1" name="chkbox" value="Bike">
+                        <label class="fontsize">APTT</label>
+                    </td>
+
+                </tr>
+            </table>
+        </div>
+
+        <button class="btn-success">Add Service</button>
+        <br />
+        <br />
+        <table class="customers">
+            <tr>
+                <th>Service Name</th>
+                <th>Portable</th>
+                <th>Qty</th>
+
+                <th>Unit Price</th>
+                <th>Total Price</th>
+                <th>FC</th>
+                <th>Priority</th>
+                <th>Start Date</th>
+                <th>Service Center</th>
+                <th>Order Remarks</th>
+
+            </tr>
+        </table>
+        <br />
+
+        <button class="btn-success">Save Order</button> &nbsp;
+        <button class="btn-success">Save As Draft </button>&nbsp;
+        <button class="btn-success">Save as order set</button>&nbsp;
+        <button class="btn-success">Package Inclusion Details</button>&nbsp;
+
+        <button class="btn-success">Back To Patient List</button>&nbsp;
+
+    </div>
+</div>
+

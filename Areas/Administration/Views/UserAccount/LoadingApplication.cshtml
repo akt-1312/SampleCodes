@@ -1,0 +1,61 @@
+﻿
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <link rel="shortcut icon" type="image/png" href="~/images/PatientRegistrationImages/small_logo.png">
+    <title>LoadingApplication</title>
+
+    <style>
+        body.enlarged {
+            min-height: unset;
+        }
+
+        html, body {
+            background-color: floralwhite;
+        }
+
+        .gifLoading {
+            position: fixed;
+            top: 36%;
+            display: block;
+            left: 45%;
+        }
+    </style>
+</head>
+<body>
+            <img class="gifLoading" src="~/images/LoadingGifts/HospitalLoading.gif" />
+    <div id="fullDiv">
+        <div id="gifContainer">
+        </div>
+    </div>
+</body>
+</html>
+
+<script src="~/lib/jquery/dist/jquery.js"></script>
+<script>
+    $(document).ready(function () {
+
+        setTimeout(function () {
+            window.location.href = '@Url.Action("Login", "UserAccount", new { Area = "Administration" })';
+        }, 2000);
+
+        @*var url = '@Url.Content("~/")' + "CommonAjaxCall/SettingDataAndLoadingAjaxCall/GetSettingData";
+
+        $.getJSON(url).done(function (data) {
+            if (data) {
+                window.location.href = '@Url.Action("Login", "UserAccount", new { Area = "Administration" })';
+            } else {
+                window.location.href = '@Url.Action("Error", "UserAccount", new { Area = "Administration" })';
+            }
+        }).fail(function (data) {
+            window.location.href = '@Url.Action("Error", "UserAccount", new { Area = "Administration" })';
+
+        });*@
+    });
+</script>

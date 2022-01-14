@@ -1,0 +1,225 @@
+﻿@model HMS.Models.ViewModels.Administration.CreateRoleViewModel
+@{
+    ViewData["Title"] = "Role";
+}
+
+@section CurrentPageNavigation{
+    <h4 class="page-title float-left">Administration</h4>
+
+    <ol class="breadcrumb float-right">
+        <li class="breadcrumb-item"><a href="#">Role</a></li>
+        @*<li class="breadcrumb-item"><a href="#">Register</a></li>*@
+    </ol>
+}
+
+@section LeftSideMenu{
+    <partial name="_AdministrationLeftSideMenuPartial" />
+}
+
+<style>
+    .btnUpdateSubmitToggle {
+        display: @(string.IsNullOrWhiteSpace(Model.Id) ? "none" : "")
+    }
+
+    .btnSaveSubmitToggle {
+        display: @(string.IsNullOrWhiteSpace(Model.Id) ? "" : "none")
+    }
+</style>
+
+
+@*<div class="row">
+        <div class="col-6">
+            <form method="post">
+                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                <div class="form-group">
+                    <label asp-for="RoleName"></label>
+                    <input asp-for="RoleName" class="form-control" />
+                    <span asp-validation-for="RoleName" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <input type="submit" value="Save" class="btn btn-success" />
+                </div>
+            </form>
+        </div>
+    </div>*@
+
+<div class="row">
+    <div class="col-5 separateScrollFullHeight">
+        <div class="col-12 card-box">
+            <form asp-action="Role" id="formRole" method="post">
+                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                <input hidden asp-for="Id" class="resetInputValue" />
+                <div class="form-group">
+                    <label asp-for="Name"></label>
+                    <input asp-for="Name" class="form-control resetInputValue" />
+                    <span asp-validation-for="Name" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    @if ((await authorizationService.AuthorizeAsync(User, "RoleUpdate")).Succeeded)
+                    {
+                        <button id="btnUpdateSubmit" type="submit" name="btnSubmit" value="Update" class="btn btn-success btnUpdateSubmitToggle">Update</button>
+                    }
+                    @if ((await authorizationService.AuthorizeAsync(User, "RoleCreate")).Succeeded)
+                    {
+                        <button id="btnSaveSubmit" type="submit" name="btnSubmit" value="Create" class="btn btn-success btnSaveSubmitToggle">Save</button>
+                    }
+                    <button type="button" class="btn btn-secondary" onclick="ResetFormAndShowHideBtnSubmit('form#formRole')">Cancel</button>
+                </div>
+            </form>
+        </div>
+    </div>
+    <div class="col-7 separateScrollFullHeight">
+        <div class="col-12">
+            <div class="card-box">
+
+                <div class="form-inline m-b-20">
+                    <div class="row" style=" width: 48rem;">
+                        <div class="col-md-6 text-xs-center" style="display:none;">
+                            <div class="form-group">
+                                <label class="control-label m-r-5">Status</label>
+                                <select id="demo-foo-filter-status" class="form-control input-sm">
+                                    <option value="">Show all</option>
+                                    <option value="active">Active</option>
+                                    <option value="disabled">Disabled</option>
+                                    <option value="suspended">Suspended</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-6 text-center ">
+                            <div class="form-group ">
+                                <input id="demo-foo-search" type="text" placeholder="Search" class="form-control input-sm col-10" autocomplete="on">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <table id="demo-foo-filtering" class="table table-hover table-striped m-b-0 toggle-circle" data-page-size="10">
+                    <thead>
+                        <tr>
+                            <th>
+                                <b>No.</b>
+                            </th>
+                            <th>
+                                <b>@Html.DisplayNameFor(model => model.Name)</b>
+                            </th>
+
+                            @if ((await authorizationService.AuthorizeAsync(User, "RoleUpdate")).Succeeded
+                             || (await authorizationService.AuthorizeAsync(User, "RoleDelete")).Succeeded)
+                            {
+                                <th class="text-center thActionMinwidth"><b>Action</b></th>
+                            }
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        @foreach (var item in Model.IdentityRoles.Select((value, i) => new { value, i }))
+                        {
+                            string roleData = Newtonsoft.Json.JsonConvert.SerializeObject(item.value);
+                            <tr>
+                                <td>
+                                    @((item.i+1).ToString())
+                                </td>
+
+                                <td class="tdRoleId" hidden>
+                                    @item.value.Id
+                                </td>
+                                <td class="tdRoleName">
+                                    @item.value.Name
+                                </td>
+
+                                @if ((await authorizationService.AuthorizeAsync(User, "RoleUpdate")).Succeeded
+                     || (await authorizationService.AuthorizeAsync(User, "RoleDelete")).Succeeded)
+                                {
+                                    <td style="text-align: center">
+                                        @if ((await authorizationService.AuthorizeAsync(User, "RoleUpdate")).Succeeded)
+                                        {
+                                            <button onclick="TableRowEditClick(@roleData)" class="btn btn-outline-primary">
+                                                <i class="fa fa-edit"></i>
+                                            </button>
+                                        }
+
+                                        @if ((await authorizationService.AuthorizeAsync(User, "RoleUpdate")).Succeeded
+                                         && (await authorizationService.AuthorizeAsync(User, "RoleDelete")).Succeeded)
+                                        {
+                                            <span>|</span>
+                                        }
+                                        @*<a asp-action="Details" asp-route-id="@item.Id" class="btn btn-outline-info">Details</a> |*@
+                                        @if ((await authorizationService.AuthorizeAsync(User, "RoleDelete")).Succeeded)
+                                        {
+                                            <button onclick="TableRowDeleteClick('@item.value.Id', '@($"Are You Sure To Delete RoleName ({item.value.Name})")')" class="btn btn-outline-danger">
+                                                <i class="fa fa-trash-alt"></i>
+                                            </button>
+                                        }
+                                    </td>
+                                }
+                            </tr>
+                        }
+                    </tbody>
+                    <tfoot>
+                        <tr class="active">
+                            <td colspan="3">
+                                <div class="text-right">
+                                    <ul class="pagination pagination-split footable-pagination m-t-10 m-b-0"></ul>
+                                </div>
+                            </td>
+                        </tr>
+                    </tfoot>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+@{ 
+    ViewData["DeleteConfirmPolicyName"] = "RoleDelete";
+    ViewData["DeleteConfirmActionName"] = "Role";
+    ViewData["DeleteConfirmControllerName"] = "Role";
+    ViewData["DeleteConfirmAreaName"] = "Administration";
+    ViewData["DeleteConfirmParameterName"] = "roleId";
+}
+
+<partial name="_DeleteConfirmPartial" view-data="ViewData"/>
+
+@section Scripts{
+    <!-- Counter js  -->
+    <script src="~/plugins/waypoints/jquery.waypoints.min.js"></script>
+    <script src="~/plugins/counterup/jquery.counterup.min.js"></script>
+
+
+    <!--FooTable-->
+    <script src="~/plugins/footable/js/footable.all.min.js"></script>
+
+    <!--FooTable Example-->
+    <script src="~/pages/jquery.footable.js"></script>
+
+    <script>
+        
+
+        @*function DeleteConfirm(element, actionUrl, parameterName) {
+            var toDeleteId = $(element).attr("deleteRecordId");
+            var deleteUrl = '@Url.Content("~/")' + actionUrl + "?" + parameterName + "=" + toDeleteId;
+
+            $.ajax({
+                type: "POST",
+                url: deleteUrl,
+                contentType: "application/json",
+                dataType: "json",
+                success: function (data) {
+                    if (data) {
+                        ContentPageLoading();
+                    window.location.href = '@Url.Action("Error", "UserAccount", new { area = "Administration" })';
+                    } else {
+                        window.location.href = '@Url.Action("Error", "Home")';
+                    }
+                },
+                error: function (data) {
+                    window.location.href = '@Url.Action("Error", "Home")';
+                }
+            });
+        }*@
+
+        $(document).ready(function () {
+            var successedAlertMessage = "@ViewBag.SuccessedAlertMessage";
+            AlertSnackBarByActionName(successedAlertMessage);
+        });
+    </script>
+}

@@ -1,0 +1,65 @@
+﻿@model HMS.Models.ViewModels.Doctor.ClinicalNotesBootstrapViewModel
+@{
+    ViewData["Title"] = "Index";
+    Layout = "~/Views/Shared/_HMSMainLayout.cshtml";
+}
+<div class="panel panel-primary">
+    <div class="panel-heading panel-head">Add Remark(Note)</div>
+    <div class="panel-body">
+        <form method="post" id="formRemarkTextEditor">
+            <div class="form-horizontal">
+                @*<div class="form-group">
+                    <label>MRNO: @Model.MRNO</label>
+                </div>*@
+              
+                <div class="form-group">
+                   <label>Clinical Notes</label>
+                    <div class="col-lg-9" id="Content">
+
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="col-lg-9"></div>
+                    <div class="col-lg-3">
+                        <button class="btn btn-success" id="btnSubmit" type="button">
+                            Submit
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            @*<input asp-for="MRNO" hidden />*@
+            <input asp-for="Content" type="text" id="contentStr" hidden />
+        </form>
+
+      
+    </div>
+</div>
+@section Scripts{
+    <script src="~/texteditor/summernote/summernote.js"></script>
+    <script src="~/scripts/home-index.js"></script>
+
+    <script>
+        $(document).ready(function () {
+            var modelRemarkText = "@Model.Content";
+            modelRemarkText = $("<div/>").html(modelRemarkText).text();
+
+            BindTextToTextEditor();
+            function BindTextToTextEditor() {
+                $(".note-editable").append(modelRemarkText);
+            }
+
+            SaveTextFile();
+            function SaveTextFile() {
+                $("#btnSubmit").click(function () {
+                    var content = $(".note-editable").html().toString();
+                    $("#contentStr").val(content);
+
+                    $("form#formRemarkTextEditor").submit();
+                });
+            }
+        });
+    </script>
+
+  
+}

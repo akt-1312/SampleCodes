@@ -1,0 +1,72 @@
+﻿@model IEnumerable<HMS.Models.Administration.HomeLocalForeignerCurrencyType>
+
+@{
+    ViewData["Title"] = "Index";
+    Layout = "~/Views/Shared/_HMSMainLayout.cshtml";
+}
+
+<h1>Index</h1>
+
+<p>
+    <a asp-action="Create">Create New</a>
+</p>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.HomeCurrency)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.LocalCurrency)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.ForeignerCurrency)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Nationality)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.MultiplyHomeToForeigner)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.IsActive)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.CreatedDate)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.HomeCurrency.CurrencyId)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.LocalCurrency.CurrencyId)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.ForeignerCurrency.CurrencyId)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Nationality.NationalityName)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.MultiplyHomeToForeigner)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.IsActive)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.CreatedDate)
+            </td>
+            <td>
+                <a asp-action="Edit" asp-route-id="@item.HomeLocalForeignerCurrencyTypeId">Edit</a> |
+                <a asp-action="Details" asp-route-id="@item.HomeLocalForeignerCurrencyTypeId">Details</a> |
+                <a asp-action="Delete" asp-route-id="@item.HomeLocalForeignerCurrencyTypeId">Delete</a>
+            </td>
+        </tr>
+}
+    </tbody>
+</table>

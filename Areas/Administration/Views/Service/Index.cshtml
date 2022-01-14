@@ -1,0 +1,84 @@
+﻿@model IEnumerable<HMS.Models.Administration.Service>
+
+@{
+    ViewData["Title"] = "Index";
+    Layout = "~/Views/Shared/_HMSMainLayout.cshtml";
+}
+
+<h1>Index</h1>
+
+<p>
+    <a asp-action="Create">Create New</a>
+</p>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.ServiceName)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.ServiceRateAmount)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.ServiceGroupType)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Currency)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.IsForNormal)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.IsForEmergency)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.IsActive)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.CreatedDate)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.UpdatedDate)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.ServiceName)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.ServiceRateAmount)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.ServiceGroupType.ServiceGroupTypeName)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Currency.CurrencyId)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.IsForNormal)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.IsForEmergency)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.IsActive)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.CreatedDate)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.UpdatedDate)
+            </td>
+            <td>
+                <a asp-action="Edit" asp-route-id="@item.ServiceId">Edit</a> |
+                <a asp-action="Details" asp-route-id="@item.ServiceId">Details</a> |
+                <a asp-action="Delete" asp-route-id="@item.ServiceId">Delete</a>
+            </td>
+        </tr>
+}
+    </tbody>
+</table>
